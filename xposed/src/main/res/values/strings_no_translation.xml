@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="url_readme">https://github.com/tkgktyk/ForceTouch/blob/master/README.md</string>
+
+    <!-- Setting -->
+    <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
+    <!-- Action -->
+    <string name="key_action_tap" translatable="false">key_action_tap</string>
+    <string name="key_action_double_tap" translatable="false">key_action_double_tap</string>
+    <string name="key_action_long_press" translatable="false">key_action_long_press</string>
+    <string name="key_action_flick_left" translatable="false">key_action_flick_left</string>
+    <string name="key_action_flick_right" translatable="false">key_action_flick_right</string>
+    <string name="key_action_flick_up" translatable="false">key_action_flick_up</string>
+    <string name="key_action_flick_down" translatable="false">key_action_flick_down</string>
+</resources>

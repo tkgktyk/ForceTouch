@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="jp.tkgktyk.xposed.forcetouchdetector"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:name=".app.MyApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true"/>
+        <meta-data
+            android:name="xposedminversion"
+            android:value="2.0*"/>
+        <meta-data
+            android:name="xposeddescription"
+            android:value="@string/xposed_description"/>
+
+        <activity
+            android:name=".app.SettingsActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".app.picker.ActionPickerActivity"
+            android:theme="@style/DialogTheme"/>
+        <activity
+            android:name=".app.picker.ToolPickerActivity"
+            android:theme="@style/DialogTheme"/>
+        <activity
+            android:name=".app.PressureThresholdActivity"
+            android:label="@string/title_pressure_threshold"/>
+    </application>
+
+</manifest>

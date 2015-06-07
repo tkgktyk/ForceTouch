@@ -1,0 +1,29 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+    defaultConfig {
+        applicationId 'jp.tkgktyk.xposed.forcetouchdetector'
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName '0.1.0'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    provided fileTree(include: ['*.jar'], dir: 'provided_libs')
+    compile project(':lib')
+    compile 'com.jakewharton:butterknife:5.1.1'
+    compile 'com.android.support:design:22.2.0'
+}
