@@ -131,6 +131,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                         String key = data.getStringExtra(BasePickerActivity.EXTRA_KEY);
                         Intent intent = data.getParcelableExtra(BasePickerActivity.EXTRA_INTENT);
                         String uri = getUri(intent);
+                        MyApp.logD("picked intent: " + intent);
+                        MyApp.logD("picked uri: " + uri);
                         // save
                         Preference pref = findPreference(key);
                         pref.getSharedPreferences()
