@@ -2,7 +2,7 @@
 *****
 ## Introduction
 Android devices report pressure of your touch when you tap, press, swipe, and so on.
-However the pressure is different from Apple's Force Touch Technology.
+However the pressure is different from Apple's Force Touch Technology. (That is mechanical implement, isn't it?)
 Android's pressure is depending on touch area of your finger, not strength.
 But the touch area provides ous new UI.
 
