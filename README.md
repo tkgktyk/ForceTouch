@@ -2,9 +2,9 @@
 *****
 ## Introduction
 Android devices report pressure of your touch when you tap, press, swipe, and so on.
-However the pressure is different from Apple's Force Touch Technology. (That is mechanical implement, isn't it?)
+However the pressure is different from Apple's Force Touch Technology. (That is mechanical implementation, isn't it?)
 Android's pressure is depending on touch area of your finger, not strength.
-But the touch area provides ous new UI.
+But the touch area provides us new UI.
 
 ## Android's Force Touch
 ![touch1](art/touch1.png)
@@ -29,7 +29,7 @@ For example,
 *  Expand notifications by performing **force flick to bottom** anywhere.
 
 ## Xposed Module is here!
-Force Touch Detector (FTD) is an Xposed module to detect Force Touch and switch touch action.
+[Force Touch Detector (FTD)](http://repo.xposed.info/module/jp.tkgktyk.xposed.forcetouchdetector) is an Xposed module to detect Force Touch and switch touch action.
 FTD assigns seven force actions:
 
 *  Tap
