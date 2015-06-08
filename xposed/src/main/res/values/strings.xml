@@ -8,7 +8,7 @@
     <string name="help">Help</string>
     <string name="back">Back</string>
     <string name="open_readme">Open README</string>
-    <string name="practice_description">Examine pressure of your touch. At first, get max pressure when you touch as usual. After that, do force touch several times and record minimum force touch pressure that is 3rd value. Finally, input average of max pressure and minimum force touch pressure, (max + min) / 2, into text box at the bottom. For more information, open README.</string>
+    <string name="practice_description">Examine pressure of your touch. At first, get max touch pressure that is 2nd value (red) when you touch as usual. After that, do force touch several times and record minimum force touch pressure that is 3rd value. Finally, input average of max touch pressure and minimum force touch pressure, (max + min) / 2, into text box at the bottom. For more information, open README.</string>
     <string name="practice_tap">Tap</string>
     <string name="practice_double_tap">Double tap</string>
     <string name="practice_long_press">Exclude long press</string>
@@ -20,7 +20,7 @@
     <string name="pressure_max">Max</string>
     <string name="pressure_force_touch">Force</string>
     <string name="reset">Reset</string>
-    <string name="hint_pressure_threshold">Threshold: strongly recommended more than 1.0</string>
+    <string name="hint_pressure_threshold">Threshold: strongly recommended more than 0.7</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>

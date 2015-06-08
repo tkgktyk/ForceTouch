@@ -92,7 +92,7 @@ public class PressureThresholdActivity extends AppCompatActivity {
         mPressurePeeper.setOnPressureUpdatedListener(new PressurePeeper.OnPressureUpdatedListener() {
             @Override
             public void onPressureUpdated(float pressure, boolean forceTouch) {
-                if (pressure > mMaxPressure) {
+                if (forceTouch && pressure > mMaxPressure) {
                     mMaxPressure = pressure;
                 }
                 mCurrentPressureText.setText(String.format("%.4f", pressure));
