@@ -200,7 +200,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
         public void onConfirmed(int requestCode, Bundle extras) {
             switch (requestCode) {
                 case REQUEST_DESCRIPTION:
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/tkgktyk"));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.url_readme)));
                     startActivity(intent);
                     break;
             }
