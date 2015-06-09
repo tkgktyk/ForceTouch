@@ -19,38 +19,39 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.FrameLayout;
+import android.widget.Button;
 
 /**
- * Created by tkgktyk on 2015/06/07.
+ * Created by tkgktyk on 2015/06/09.
  */
-public class PressurePeeper extends FrameLayout {
-    public PressurePeeper(Context context) {
+public class PressureButton extends Button {
+    public PressureButton(Context context) {
         super(context);
     }
 
-    public PressurePeeper(Context context, AttributeSet attrs) {
+    public PressureButton(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PressurePeeper(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PressureButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        boolean forceTouch = (ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN;
-        mOnPressureUpdatedListener.onPressureUpdated(ev.getPressure(), forceTouch);
-        return super.dispatchTouchEvent(ev);
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+            mOnPressedListener.onPressed(event.getPressure());
+        }
+        return super.dispatchTouchEvent(event);
     }
 
-    private OnPressureUpdatedListener mOnPressureUpdatedListener;
+    private OnPressedListener mOnPressedListener;
 
-    public void setOnPressureUpdatedListener(OnPressureUpdatedListener listener) {
-        mOnPressureUpdatedListener = listener;
+    public void setOnPressedListener(OnPressedListener listener) {
+        mOnPressedListener = listener;
     }
 
-    public interface OnPressureUpdatedListener {
-        void onPressureUpdated(float pressure, boolean forceTouch);
+    public interface OnPressedListener {
+        void onPressed(float pressure);
     }
 }

@@ -30,6 +30,7 @@
             android:defaultValue="1.0"
             android:icon="@null"
             android:key="@string/key_pressure_threshold"
+            android:summary="@string/summary_pressure_threshold"
             android:title="@string/title_pressure_threshold"/>
     </PreferenceCategory>
     <!-- Action -->

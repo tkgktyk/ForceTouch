@@ -11,18 +11,14 @@
     <string name="back">Back</string>
     <string name="open_readme">Open README</string>
     <string name="practice_description">Examine pressure of your touch. At first, get max touch pressure that is 2nd value (red) when you touch as usual. After that, do Force Touch several times and record minimum Force Touch pressure that is 3rd value. Finally, input average of max touch pressure and minimum Force Touch pressure, (max + min) / 2, into text box at the bottom. For more information, open README.</string>
-    <string name="practice_tap">Tap</string>
-    <string name="practice_double_tap">Double tap</string>
-    <string name="practice_long_press">Exclude long press</string>
-    <string name="practice_scroll">Scroll list</string>
-    <string name="practice_swipe">Swipe page</string>
-    <string name="practice_flick">Flick</string>
     <!-- Pressure -->
-    <string name="pressure">Pressure</string>
-    <string name="pressure_max">Max</string>
-    <string name="pressure_force_touch">Force</string>
-    <string name="reset">Reset</string>
-    <string name="hint_pressure_threshold">Threshold: strongly recommended greater than 0.7</string>
+    <string name="pressure_f1">Pressure: %1$.04f</string>
+    <string name="max_pressure_f1">Max: %1$.04f</string>
+    <string name="please_tap_d1">Tap this\n%1$d times or more</string>
+    <string name="ave_pressure_f1">Ave: %1$.04f</string>
+    <string name="please_force_touch_d1">Force Touch this\n%1$d times or more</string>
+    <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
+    <string name="hint_pressure_threshold">Threshold; strongly recommended greater than 0.7</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>
@@ -41,6 +37,7 @@
     <string name="category_setting">Setting</string>
     <string name="title_enabled">Master Switch</string>
     <string name="title_pressure_threshold">Pressure Threshold</string>
+    <string name="summary_pressure_threshold">Adjust and practice Force Touch</string>
     <!-- Action -->
     <string name="category_action">Action</string>
     <string name="title_action_tap">Tap</string>

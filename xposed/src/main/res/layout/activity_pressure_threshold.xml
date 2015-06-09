@@ -14,12 +14,11 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:ignore="MergeRootFrame">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="MergeRootFrame">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -30,92 +29,92 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <jp.tkgktyk.xposed.forcetouchdetector.app.PressurePeeper
-        android:id="@+id/pressure_peeper"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tab_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
-    </jp.tkgktyk.xposed.forcetouchdetector.app.PressurePeeper>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pressure"
-            android:textAllCaps="true"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-
+        <!-- for tap -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/current_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pressure"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp"/>
-
-            <TextView
                 android:id="@+id/max_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_max"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/max_pressure_f1"
                 android:textColor="?attr/colorAccent"/>
 
             <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp"/>
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
             <TextView
-                android:id="@+id/force_touch"
+                android:id="@+id/tap_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_force_touch"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                android:text="@string/pressure_f1"
+                android:textColor="?attr/colorAccent"/>
+        </LinearLayout>
+
+        <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
+            android:id="@+id/tap_button"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="@string/please_tap_d1"/>
+
+        <!-- for Force Touch -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ave_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ave_pressure_f1"
+                android:textColor="?attr/colorAccent"/>
 
             <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp"/>
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
-            <Button
-                android:id="@+id/reset_button"
-                style="@style/Widget.AppCompat.Button"
+            <TextView
+                android:id="@+id/force_touch_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/reset"/>
-
+                android:text="@string/pressure_f1"
+                android:textColor="?attr/colorAccent"/>
         </LinearLayout>
+
+        <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
+            android:id="@+id/force_touch_button"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:text="@string/please_force_touch_d1"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <!-- Pressure Threshold -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description_pressure_threshold"/>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -129,4 +128,4 @@
                 android:inputType="numberDecimal"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

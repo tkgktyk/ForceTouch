@@ -16,32 +16,19 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
-import jp.tkgktyk.lib.ConfirmDialogFragment;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
@@ -50,37 +37,62 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
  * Created by tkgktyk on 2015/06/07.
  */
 public class PressureThresholdActivity extends AppCompatActivity {
+
+    private static final int MAX_COUNT = 5;
+    private static final int AVERAGE_COUNT = 5;
+
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.pressure_peeper)
-    PressurePeeper mPressurePeeper;
-    @InjectView(R.id.tab_layout)
-    TabLayout mTabLayout;
-    @InjectView(R.id.view_pager)
-    ViewPager mViewPager;
-    @InjectView(R.id.current_pressure)
-    TextView mCurrentPressureText;
     @InjectView(R.id.max_pressure)
     TextView mMaxPressureText;
-    @InjectView(R.id.force_touch)
-    TextView mForceTouchText;
-    @InjectView(R.id.reset_button)
-    Button mResetButton;
+    @InjectView(R.id.tap_pressure)
+    TextView mTapPressureText;
+    @InjectView(R.id.tap_button)
+    PressureButton mTapButton;
+    @InjectView(R.id.ave_pressure)
+    TextView mAvePressureText;
+    @InjectView(R.id.force_touch_pressure)
+    TextView mForceTouchPressureText;
+    @InjectView(R.id.force_touch_button)
+    PressureButton mForceTouchButton;
     @InjectView(R.id.pressure_threshold)
     EditText mPressureThreshold;
 
-    private float mMaxPressure;
+    private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
+    private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
 
-    @OnClick(R.id.reset_button)
-    void onReset(Button button) {
-        mMaxPressure = 0.0f;
-        resetPressureText();
+    private void updateTapPressureText(float pressure) {
+        // size limited queue
+        if (mMaxPressureList.size() > MAX_COUNT) {
+            mMaxPressureList.remove();
+        }
+        mMaxPressureList.add(pressure);
+
+        mMaxPressureText.setText(getString(R.string.max_pressure_f1, getMaxPressure()));
+        mTapPressureText.setText(getString(R.string.pressure_f1, pressure));
     }
 
-    private void resetPressureText() {
-        mCurrentPressureText.setText(getString(R.string.pressure));
-        mMaxPressureText.setText(getString(R.string.pressure_max));
-        mForceTouchText.setText(getString(R.string.pressure_force_touch));
+    private float getMaxPressure() {
+        return Collections.max(mMaxPressureList);
+    }
+
+    private void updateForceTouchPressureText(float pressure) {
+        // size limited queue
+        if (mAvePressureList.size() > AVERAGE_COUNT) {
+            mAvePressureList.remove();
+        }
+        mAvePressureList.add(pressure);
+
+        mAvePressureText.setText(getString(R.string.ave_pressure_f1, getAvePressure()));
+        mForceTouchPressureText.setText(getString(R.string.pressure_f1, pressure));
+    }
+
+    private float getAvePressure() {
+        float sum = 0;
+        for (float v : mAvePressureList) {
+            sum += v;
+        }
+        return sum / mAvePressureList.size();
     }
 
     @Override
@@ -90,23 +102,24 @@ public class PressureThresholdActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         setSupportActionBar(mToolbar);
 
-        mPressurePeeper.setOnPressureUpdatedListener(new PressurePeeper.OnPressureUpdatedListener() {
+        updateTapPressureText(0.0f);
+        updateForceTouchPressureText(0.0f);
+
+        mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
+        mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
+
+        mTapButton.setOnPressedListener(new PressureButton.OnPressedListener() {
             @Override
-            public void onPressureUpdated(float pressure, boolean forceTouch) {
-                if (forceTouch && pressure > mMaxPressure) {
-                    mMaxPressure = pressure;
-                }
-                mCurrentPressureText.setText(String.format("%.4f", pressure));
-                mMaxPressureText.setText(String.format("%.4f", mMaxPressure));
-                if (forceTouch) {
-                    mForceTouchText.setText(String.format("%.4f", pressure));
-                }
+            public void onPressed(float pressure) {
+                updateTapPressureText(pressure);
             }
         });
-        resetPressureText();
-
-        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-        mTabLayout.setupWithViewPager(mViewPager);
+        mForceTouchButton.setOnPressedListener(new PressureButton.OnPressedListener() {
+            @Override
+            public void onPressed(float pressure) {
+                updateForceTouchPressureText(pressure);
+            }
+        });
 
         String key = getString(R.string.key_pressure_threshold);
         mPressureThreshold.setText(FTD.getSharedPreferences(this)
@@ -122,90 +135,5 @@ public class PressureThresholdActivity extends AppCompatActivity {
                 .edit()
                 .putString(key, mPressureThreshold.getText().toString())
                 .apply();
-    }
-
-    public class PagerAdapter extends FragmentPagerAdapter {
-
-        public PagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return TouchPracticeFragment.newInstance();
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return getString(R.string.tab_title_d1, position);
-        }
-    }
-
-    public static class TouchPracticeFragment extends ListFragment
-    implements ConfirmDialogFragment.OnConfirmedListener {
-        private static final int REQUEST_DESCRIPTION = 1;
-
-        public static TouchPracticeFragment newInstance() {
-            return new TouchPracticeFragment();
-        }
-
-        private static int[] TEXT_ID_LIST = {
-                R.string.practice_description,
-                R.string.practice_tap,
-                R.string.practice_double_tap,
-                R.string.practice_long_press,
-                R.string.practice_scroll,
-                R.string.practice_swipe,
-                R.string.practice_flick
-        };
-
-        private static int EXTRA_ITEM_COUNT = 30;
-
-        @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            view.setBackgroundResource(R.color.primary_light);
-
-            ArrayList<String> texts = Lists.newArrayList();
-            for (int id : TEXT_ID_LIST) {
-                texts.add(getString(id));
-            }
-            for (int i = 0; i < EXTRA_ITEM_COUNT; ++i) {
-                texts.add("" + i);
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
-                    android.R.layout.simple_list_item_multiple_choice, texts);
-            setListAdapter(adapter);
-
-            getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        }
-
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            if (position != 0) {
-                return;
-            }
-            ConfirmDialogFragment
-                    .newInstance(getString(R.string.help), (String) getListAdapter().getItem(0),
-                            getString(R.string.open_readme), getString(R.string.back),
-                            null, this, REQUEST_DESCRIPTION)
-                    .show(getFragmentManager(), "description");
-        }
-
-        @Override
-        public void onConfirmed(int requestCode, Bundle extras) {
-            switch (requestCode) {
-                case REQUEST_DESCRIPTION:
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.url_readme)));
-                    startActivity(intent);
-                    break;
-            }
-        }
     }
 }
