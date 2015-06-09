@@ -149,6 +149,7 @@ public class FTD {
     }
 
     public static class Settings implements Serializable {
+        public boolean enabled;
         public float pressureThreshold;
 
         public String actionTap;
@@ -164,6 +165,7 @@ public class FTD {
         }
 
         public void load(SharedPreferences prefs) {
+            enabled = prefs.getBoolean("key_enabled", false);
             pressureThreshold = Float.parseFloat(prefs.getString("key_pressure_threshold",
                     ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
 

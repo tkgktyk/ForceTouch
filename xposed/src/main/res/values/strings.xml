@@ -2,6 +2,8 @@
     <string name="app_name">Force Touch Detector</string>
     <string name="xposed_description"></string>
 
+    <string name="action_turn_off">Turn off</string>
+
     <!-- Pressure Threshold Activity -->
     <string name="tab_title_d1">Page %1$d</string>
     <!-- Practice -->
@@ -20,7 +22,7 @@
     <string name="pressure_max">Max</string>
     <string name="pressure_force_touch">Force</string>
     <string name="reset">Reset</string>
-    <string name="hint_pressure_threshold">Threshold: strongly recommended more than 0.7</string>
+    <string name="hint_pressure_threshold">Threshold: strongly recommended greater than 0.7</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>
@@ -37,6 +39,7 @@
 
     <!-- Setting -->
     <string name="category_setting">Setting</string>
+    <string name="title_enabled">Master Switch</string>
     <string name="title_pressure_threshold">Pressure Threshold</string>
     <!-- Action -->
     <string name="category_action">Action</string>

@@ -80,7 +80,7 @@ public class ModActivity extends XposedModule {
                             FrameLayout decorView = (FrameLayout) methodHookParam.thisObject;
                             MotionEvent event = (MotionEvent) methodHookParam.args[0];
                             ForceTouchDetector ftd = getForceTouchDetector(decorView);
-                            if (ftd != null) {
+                            if (ftd != null && ftd.getSettings().enabled) {
                                 handled = ftd.onTouchEvent(event);
                             }
                         } catch (Throwable t) {
@@ -161,7 +161,8 @@ public class ModActivity extends XposedModule {
             onSettingsLoaded(settings);
             mGestureDetector = new GestureDetector(mTargetView.getContext(), this);
 
-            int n = 2 * 2;
+            int n = 4;
+            n = n * n;
             multiplyIntField("mTouchSlopSquare", n);
             multiplyIntField("mDoubleTapTouchSlopSquare", n);
             multiplyIntField("mDoubleTapSlopSquare", n);
@@ -174,6 +175,10 @@ public class ModActivity extends XposedModule {
 
         public void onSettingsLoaded(FTD.Settings settings) {
             mSettings = settings;
+        }
+
+        public FTD.Settings getSettings() {
+            return mSettings;
         }
 
         public void showToast(String text) {

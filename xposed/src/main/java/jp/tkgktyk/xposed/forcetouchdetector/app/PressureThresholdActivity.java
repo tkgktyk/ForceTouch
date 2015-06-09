@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import jp.tkgktyk.lib.ConfirmDialogFragment;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.R;

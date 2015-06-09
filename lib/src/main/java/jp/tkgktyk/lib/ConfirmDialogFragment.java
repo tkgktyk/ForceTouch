@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jp.tkgktyk.xposed.forcetouchdetector.app;
+package jp.tkgktyk.lib;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

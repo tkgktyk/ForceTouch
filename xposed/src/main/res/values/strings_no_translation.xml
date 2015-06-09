@@ -3,6 +3,7 @@
     <string name="url_readme">https://github.com/tkgktyk/ForceTouch/blob/master/README.md</string>
 
     <!-- Setting -->
+    <string name="key_enabled" translatable="false">key_enabled</string>
     <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
     <!-- Action -->
     <string name="key_action_tap" translatable="false">key_action_tap</string>
