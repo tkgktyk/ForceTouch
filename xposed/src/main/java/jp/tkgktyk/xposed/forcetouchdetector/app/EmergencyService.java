@@ -58,6 +58,5 @@ public class EmergencyService extends Service {
         PendingIntent intent = PendingIntent.getActivity(this, 0, activity, PendingIntent.FLAG_CANCEL_CURRENT);
         mServiceNotification.getBuilder()
                 .addAction(0, getString(R.string.action_turn_off), intent);
-        mServiceNotification.update();
     }
 }
