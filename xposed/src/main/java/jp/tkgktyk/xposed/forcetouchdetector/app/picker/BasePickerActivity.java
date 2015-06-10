@@ -36,7 +36,7 @@ public class BasePickerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_list_view);
+        setContentView(R.layout.activity_picker);
         ButterKnife.inject(this);
 
         setSupportActionBar(mToolbar);
