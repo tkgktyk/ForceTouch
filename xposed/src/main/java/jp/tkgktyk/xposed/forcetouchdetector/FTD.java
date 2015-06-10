@@ -238,8 +238,7 @@ public class FTD {
             enabled = prefs.getBoolean("key_enabled", false);
             pressureThreshold = Float.parseFloat(prefs.getString("key_pressure_threshold",
                     ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
-            int area = Integer.parseInt(prefs.getString("key_force_touch_area",
-                    ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
+            int area = Integer.parseInt(prefs.getString("key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
 
             actionTap = prefs.getString("key_action_tap", "");
