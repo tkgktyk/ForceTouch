@@ -66,7 +66,6 @@
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
             android:id="@+id/tap_button"
-            style="@style/Widget.AppCompat.Button"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:text="@string/please_tap_d1"/>
@@ -98,7 +97,6 @@
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
             android:id="@+id/force_touch_button"
-            style="@style/Widget.AppCompat.Button"
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:text="@string/please_force_touch_d1"/>
@@ -109,7 +107,6 @@
 
         <Button
             android:id="@+id/learn_more_button"
-            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
