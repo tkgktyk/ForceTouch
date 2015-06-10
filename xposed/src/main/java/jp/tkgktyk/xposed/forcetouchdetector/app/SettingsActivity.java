@@ -86,6 +86,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 }
             });
             openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
+            showTextSummary(R.string.key_force_touch_area, getString(R.string.unit_force_touch_area));
             // Action
             pickAction(R.string.key_action_tap);
             pickAction(R.string.key_action_double_tap);

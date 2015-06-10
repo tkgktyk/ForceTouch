@@ -133,7 +133,7 @@ public class FTD {
     private static void performTouchAction(@NonNull ViewGroup container, @NonNull String action,
                                            @NonNull MotionEvent event) {
         if (action.equals(ACTION_DOUBLE_TAP)) {
-            // TODO: implement
+            // TODO: implement. use input command?
         } else if (action.equals(ACTION_LONG_PRESS)) {
             // TODO: this works partially. use input command?
             View view = findViewOnPoint(container, event.getX(), event.getY(), true);
@@ -166,7 +166,7 @@ public class FTD {
                 if ((x > viewX && x < (viewX + child.getWidth())) &&
                         (y > viewY && y < (viewY + child.getHeight()))) {
                     if (longClickable) {
-                        if (child.isLongClickable()){
+                        if (child.isLongClickable()) {
                             return child;
                         }
                     } else {
@@ -220,25 +220,25 @@ public class FTD {
     }
 
     public static class Settings implements Serializable {
-        public boolean enabled;
-        public float pressureThreshold;
+        public final boolean enabled;
+        public final float pressureThreshold;
+        public final float forceTouchArea;
 
-        public String actionTap;
-        public String actionDoubleTap;
-        public String actionLongPress;
-        public String actionFlickLeft;
-        public String actionFlickRight;
-        public String actionFlickUp;
-        public String actionFlickDown;
+        public final String actionTap;
+        public final String actionDoubleTap;
+        public final String actionLongPress;
+        public final String actionFlickLeft;
+        public final String actionFlickRight;
+        public final String actionFlickUp;
+        public final String actionFlickDown;
 
         public Settings(SharedPreferences prefs) {
-            load(prefs);
-        }
-
-        public void load(SharedPreferences prefs) {
             enabled = prefs.getBoolean("key_enabled", false);
             pressureThreshold = Float.parseFloat(prefs.getString("key_pressure_threshold",
                     ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
+            int area = Integer.parseInt(prefs.getString("key_force_touch_area",
+                    ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
+            forceTouchArea = (100.0f - area) / 100.0f;
 
             actionTap = prefs.getString("key_action_tap", "");
             actionDoubleTap = prefs.getString("key_action_double_tap", "");

@@ -16,6 +16,9 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -59,7 +62,8 @@ public class ModActivity extends XposedModule {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     FrameLayout decorView = (FrameLayout) param.thisObject;
-                    if (decorView.getContext().getPackageName().equals(FTD.PACKAGE_NAME)) {
+                    Context context = decorView.getContext();
+                    if (context.getPackageName().equals(FTD.PACKAGE_NAME)) {
                         // blacklist
                         return;
                     }
@@ -197,10 +201,13 @@ public class ModActivity extends XposedModule {
             } else {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
-                        if (event.getPressure() > mSettings.pressureThreshold) {
+                        float y = event.getY();
+                        if (event.getPressure() > mSettings.pressureThreshold &&
+                                y > mTargetView.getHeight() * mSettings.forceTouchArea) {
                             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                             mIsForceTouch = true;
                             gesture = true;
+                            startRipple(event);
                         }
                         break;
                     case MotionEvent.ACTION_CANCEL:
@@ -215,6 +222,52 @@ public class ModActivity extends XposedModule {
                 mGestureDetector.onTouchEvent(event);
             }
             return mIsForceTouch;
+        }
+
+        private static final int RIPPLE_SIZE = 5;
+
+        private void startRipple(MotionEvent event) {
+            float x = event.getX();
+            float y = event.getY();
+            Context context = mTargetView.getContext();
+            final View ripple = new View(context);
+            int size = context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size) *
+                    RIPPLE_SIZE;
+            ripple.setLayoutParams(new ViewGroup.LayoutParams(size, size));
+            Context mod = FTD.getModContext(context);
+            ripple.setBackground(mod.getResources().getDrawable(R.drawable.force_touch_ripple));
+            ripple.setTranslationX(x - size / 2.0f);
+            ripple.setTranslationY(y - size / 2.0f);
+
+            float startScale = 1.0f / RIPPLE_SIZE;
+            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", startScale, 1.0f);
+            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", startScale, 1.0f);
+            PropertyValuesHolder holderAlpha = PropertyValuesHolder.ofFloat("alpha", 0.7f, 0.0f);
+
+            ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(ripple,
+                    holderScaleX, holderScaleY, holderAlpha);
+            animator.setDuration(300); // default
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mTargetView.addView(ripple);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mTargetView.removeView(ripple);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    mTargetView.removeView(ripple);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+            animator.start();
         }
 
         @Override
@@ -271,21 +324,21 @@ public class ModActivity extends XposedModule {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             if (Math.abs(velocityX) > Math.abs(velocityY)) {
                 if (velocityX > 0) {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickRight, e1)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickRight, e2)) {
                         showToast("force fling x: " + velocityX);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickLeft, e1)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickLeft, e2)) {
                         showToast("force fling x: " + velocityX);
                     }
                 }
             } else {
                 if (velocityY > 0) {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickDown, e1)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickDown, e2)) {
                         showToast("force fling y: " + velocityY);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickUp, e1)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickUp, e2)) {
                         showToast("force fling y: " + velocityY);
                     }
                 }

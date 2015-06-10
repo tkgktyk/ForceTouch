@@ -13,9 +13,9 @@
     <string name="max_pressure_f1">Max: %1$.04f</string>
     <string name="please_tap_d1">Tap this\n%1$d times or more</string>
     <string name="ave_pressure_f1">Ave: %1$.04f</string>
-    <string name="please_force_touch_d1">Force Touch this\n%1$d times or more</string>
+    <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
     <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
-    <string name="hint_pressure_threshold">Threshold; strongly recommended greater than 0.7</string>
+    <string name="hint_pressure_threshold">Threshold: strongly recommended greater than 0.7</string>
     <!-- Practice -->
     <string name="learn_more">Learn more</string>
 
@@ -30,7 +30,7 @@
     <string name="action_expand_notifications">Expand Notifications</string>
     <string name="action_expand_quick_settings">Expand Quick Settings</string>
     <string name="action_double_tap">Double Tap (not work)</string>
-    <string name="action_long_press">Long Press (work partially)</string>
+    <string name="action_long_press">Long Press (works partially)</string>
 
     <string name="not_found">Not found</string>
 
@@ -39,6 +39,8 @@
     <string name="title_enabled">Master Switch</string>
     <string name="title_pressure_threshold">Pressure Threshold</string>
     <string name="summary_pressure_threshold">Adjust and practice Force Touch</string>
+    <string name="title_force_touch_area">Force Touch Area</string>
+    <string name="unit_force_touch_area">% from bottom of screen</string>
     <!-- Action -->
     <string name="category_action">Action</string>
     <string name="title_action_tap">Tap</string>

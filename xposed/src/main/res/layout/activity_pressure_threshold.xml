@@ -61,8 +61,7 @@
                 android:id="@+id/tap_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_f1"
-                android:textColor="?attr/colorAccent"/>
+                android:text="@string/pressure_f1"/>
         </LinearLayout>
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
@@ -94,8 +93,7 @@
                 android:id="@+id/force_touch_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_f1"
-                android:textColor="?attr/colorAccent"/>
+                android:text="@string/pressure_f1"/>
         </LinearLayout>
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
@@ -114,9 +112,10 @@
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/learn_more"
             android:layout_gravity="end"
-            android:drawableStart="@android:drawable/ic_menu_info_details"/>
+            android:drawableLeft="@android:drawable/ic_menu_info_details"
+            android:drawableStart="@android:drawable/ic_menu_info_details"
+            android:text="@string/learn_more"/>
 
         <Space
             android:layout_width="match_parent"
