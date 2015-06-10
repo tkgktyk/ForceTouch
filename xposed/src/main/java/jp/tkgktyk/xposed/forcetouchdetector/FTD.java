@@ -220,6 +220,8 @@ public class FTD {
     }
 
     public static class Settings implements Serializable {
+        static final long serialVersionUID = 1L;
+
         public final boolean enabled;
         public final float pressureThreshold;
         public final float forceTouchArea;
@@ -250,4 +252,3 @@ public class FTD {
         }
     }
 }
-
