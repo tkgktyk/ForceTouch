@@ -69,10 +69,10 @@ public class PressureThresholdActivity extends AppCompatActivity {
 
     private void updateTapPressureText(float pressure) {
         // size limited queue
+        mMaxPressureList.add(pressure);
         if (mMaxPressureList.size() > MAX_COUNT) {
             mMaxPressureList.remove();
         }
-        mMaxPressureList.add(pressure);
 
         mMaxPressureText.setText(getString(R.string.max_pressure_f1, getMaxPressure()));
         mTapPressureText.setText(getString(R.string.pressure_f1, pressure));
@@ -84,10 +84,10 @@ public class PressureThresholdActivity extends AppCompatActivity {
 
     private void updateForceTouchPressureText(float pressure) {
         // size limited queue
+        mAvePressureList.add(pressure);
         if (mAvePressureList.size() > AVERAGE_COUNT) {
             mAvePressureList.remove();
         }
-        mAvePressureList.add(pressure);
 
         mAvePressureText.setText(getString(R.string.ave_pressure_f1, getAvePressure()));
         mForceTouchPressureText.setText(getString(R.string.pressure_f1, pressure));

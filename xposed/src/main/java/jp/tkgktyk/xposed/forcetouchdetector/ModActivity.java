@@ -111,7 +111,6 @@ public class ModActivity extends XposedModule {
                                         return;
                                     }
                                     logD(decorView.getContext().getPackageName() + ": reload settings");
-                                    // need to reload on each package?
                                     FTD.Settings settings = (FTD.Settings) intent
                                             .getSerializableExtra(FTD.EXTRA_SETTINGS);
                                     ftd.onSettingsLoaded(settings);
