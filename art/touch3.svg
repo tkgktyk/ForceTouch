@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="478.64284"
-     inkscape:cy="189.36778"
+     inkscape:zoom="2"
+     inkscape:cx="248.57298"
+     inkscape:cy="409.50619"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -76,13 +76,13 @@
        rx="32" />
     <path
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 88,892.36216 -40,152.00004 160,0 16,-24 72,-56.00004 c 0,0 -57.42928,6.03539 -72,0 -14.57072,-6.03539 -13.21378,-14.79775 -16,-24 -2.31827,-7.65674 -3.06147,-16.60896 0,-24 7.21595,-17.42084 22.99342,-25.62965 40,-40 17.00658,-14.37035 51.89803,-39.42088 64,-56 12.10197,-16.57912 12.80582,-27.42145 8,-40 -4.80582,-12.57855 -17.09556,-21.58134 -32,-24 -14.90444,-2.41866 -48,16 -48,16 l -72,48 0,-80 -56,64 z"
+       d="m 88,892.36216 -40,152.00004 160,0 16,-24 72,-56.00004 c 0,0 -57.42928,6.03539 -72,0 -14.57072,-6.03539 -13.21378,-14.79775 -16,-24 -2.31827,-7.65674 -3.06147,-16.60896 0,-24 7.21595,-17.42084 22.99342,-25.62965 40,-40 17.00658,-14.37035 51.89803,-39.42088 64,-56 12.10197,-16.57912 12.80582,-27.42145 8,-40 -4.80582,-12.57855 -17.09556,-21.58134 -32,-24 -14.90444,-2.41866 -48,16 -48,16 l -72,48 0,-80 c 0,0 -42.59563,39.02244 -56,64 -14.37735,26.7906 -24,88 -24,88 z"
        id="path3757"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccczaazzzzccccc" />
+       sodipodi:nodetypes="ccccczaazzzzcccac" />
     <path
        sodipodi:type="arc"
-       style="fill:#1976d2;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#303f9f;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="path3793"
        sodipodi:cx="240"
        sodipodi:cy="288"
@@ -93,5 +93,37 @@
        sodipodi:start="0.00062683775"
        sodipodi:end="6.2833249"
        sodipodi:open="true" />
+    <g
+       id="g3808"
+       transform="translate(-56,104)" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="176"
+       y="612.36218"
+       id="text2986"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="176"
+         y="612.36218"
+         style="fill:#ffffff;fill-opacity:1"
+         id="tspan3013">Force Touch</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#9e9e9e;fill-opacity:1;stroke:none;font-family:Sans"
+       x="176"
+       y="652.36218"
+       id="text2986-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="176"
+         y="652.36218"
+         style="font-size:32px;font-style:italic;fill:#9e9e9e;fill-opacity:1;-inkscape-font-specification:Sans Italic"
+         id="tspan3013-6">Press with</tspan><tspan
+         sodipodi:role="line"
+         x="176"
+         y="692.36218"
+         style="font-size:32px;font-style:italic;fill:#9e9e9e;fill-opacity:1;-inkscape-font-specification:Sans Italic"
+         id="tspan3038"> ball of thumb</tspan></text>
   </g>
 </svg>
