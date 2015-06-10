@@ -16,9 +16,12 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -29,6 +32,7 @@ import java.util.LinkedList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
@@ -57,6 +61,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
     PressureButton mForceTouchButton;
     @InjectView(R.id.pressure_threshold)
     EditText mPressureThreshold;
+    @InjectView(R.id.learn_more_button)
+    Button mLearnMoreButton;
 
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
@@ -135,5 +141,11 @@ public class PressureThresholdActivity extends AppCompatActivity {
                 .edit()
                 .putString(key, mPressureThreshold.getText().toString())
                 .apply();
+    }
+
+    @OnClick(R.id.learn_more_button)
+    void onLearnMore(Button button) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_readme)));
+        startActivity(intent);
     }
 }

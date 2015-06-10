@@ -107,6 +107,19 @@
 
         <Space
             android:layout_width="match_parent"
+            android:layout_height="16dp"/>
+
+        <Button
+            android:id="@+id/learn_more_button"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/learn_more"
+            android:layout_gravity="end"
+            android:drawableStart="@android:drawable/ic_menu_info_details"/>
+
+        <Space
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
