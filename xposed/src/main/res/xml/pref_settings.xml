@@ -37,9 +37,9 @@
             android:defaultValue="100"
             android:icon="@null"
             android:inputType="number"
-            android:key="@string/key_force_touch_area"
-            android:title="@string/title_force_touch_area"
-            android:dialogMessage="@string/unit_force_touch_area"/>
+            android:key="@string/key_detection_area"
+            android:title="@string/title_detection_area"
+            android:dialogMessage="@string/unit_detection_area"/>
     </PreferenceCategory>
     <!-- Action -->
     <PreferenceCategory

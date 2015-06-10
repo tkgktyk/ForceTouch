@@ -39,8 +39,8 @@
     <string name="title_enabled">Master Switch</string>
     <string name="title_pressure_threshold">Pressure Threshold</string>
     <string name="summary_pressure_threshold">Adjust and practice Force Touch</string>
-    <string name="title_force_touch_area">Force Touch Area</string>
-    <string name="unit_force_touch_area">% from bottom of screen</string>
+    <string name="title_detection_area">Detection Area</string>
+    <string name="unit_detection_area">% from bottom of screen</string>
     <!-- Action -->
     <string name="category_action">Action</string>
     <string name="title_action_tap">Tap</string>

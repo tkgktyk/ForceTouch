@@ -5,7 +5,7 @@
     <!-- Setting -->
     <string name="key_enabled" translatable="false">key_enabled</string>
     <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
-    <string name="key_force_touch_area" translatable="false">key_force_touch_area</string>
+    <string name="key_detection_area" translatable="false">key_detection_area</string>
     <!-- Action -->
     <string name="key_action_tap" translatable="false">key_action_tap</string>
     <string name="key_action_double_tap" translatable="false">key_action_double_tap</string>
