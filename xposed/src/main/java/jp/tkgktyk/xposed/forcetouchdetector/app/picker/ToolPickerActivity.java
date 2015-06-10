@@ -22,7 +22,9 @@ public class ToolPickerActivity extends BasePickerActivity {
             FTD.ACTION_HOME,
             FTD.ACTION_RECENTS,
             FTD.ACTION_EXPAND_NOTIFICATIONS,
-            FTD.ACTION_EXPAND_QUICK_SETTINGS
+            FTD.ACTION_EXPAND_QUICK_SETTINGS,
+            FTD.ACTION_DOUBLE_TAP,
+            FTD.ACTION_LONG_PRESS,
     };
 
 

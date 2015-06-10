@@ -219,7 +219,7 @@ public class ModActivity extends XposedModule {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            if (!FTD.performAction(mTargetView.getContext(), mSettings.actionTap)) {
+            if (!FTD.performAction(mTargetView, mSettings.actionTap, e)) {
                 showToast("force tap");
             }
             return true;
@@ -227,7 +227,7 @@ public class ModActivity extends XposedModule {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            if (!FTD.performAction(mTargetView.getContext(), mSettings.actionDoubleTap)) {
+            if (!FTD.performAction(mTargetView, mSettings.actionDoubleTap, e)) {
                 showToast("force double tap");
             }
             return true;
@@ -261,7 +261,7 @@ public class ModActivity extends XposedModule {
         @Override
         public void onLongPress(MotionEvent e) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            if (!FTD.performAction(mTargetView.getContext(), mSettings.actionLongPress)) {
+            if (!FTD.performAction(mTargetView, mSettings.actionLongPress, e)) {
                 showToast("force long press");
             }
         }
@@ -271,21 +271,21 @@ public class ModActivity extends XposedModule {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             if (Math.abs(velocityX) > Math.abs(velocityY)) {
                 if (velocityX > 0) {
-                    if (!FTD.performAction(mTargetView.getContext(), mSettings.actionFlickRight)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickRight, e1)) {
                         showToast("force fling x: " + velocityX);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView.getContext(), mSettings.actionFlickLeft)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickLeft, e1)) {
                         showToast("force fling x: " + velocityX);
                     }
                 }
             } else {
                 if (velocityY > 0) {
-                    if (!FTD.performAction(mTargetView.getContext(), mSettings.actionFlickDown)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickDown, e1)) {
                         showToast("force fling y: " + velocityY);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView.getContext(), mSettings.actionFlickUp)) {
+                    if (!FTD.performAction(mTargetView, mSettings.actionFlickUp, e1)) {
                         showToast("force fling y: " + velocityY);
                     }
                 }

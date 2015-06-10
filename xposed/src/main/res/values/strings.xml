@@ -2,15 +2,12 @@
     <string name="app_name">Force Touch Detector</string>
     <string name="xposed_description"></string>
 
+    <!-- Notification -->
+    <string name="state_running">Running</string>
     <string name="action_turn_off">Turn off</string>
 
     <!-- Pressure Threshold Activity -->
     <string name="tab_title_d1">Page %1$d</string>
-    <!-- Practice -->
-    <string name="help">Help</string>
-    <string name="back">Back</string>
-    <string name="open_readme">Open README</string>
-    <string name="practice_description">Examine pressure of your touch. At first, get max touch pressure that is 2nd value (red) when you touch as usual. After that, do Force Touch several times and record minimum Force Touch pressure that is 3rd value. Finally, input average of max touch pressure and minimum Force Touch pressure, (max + min) / 2, into text box at the bottom. For more information, open README.</string>
     <!-- Pressure -->
     <string name="pressure_f1">Pressure: %1$.04f</string>
     <string name="max_pressure_f1">Max: %1$.04f</string>
@@ -19,6 +16,8 @@
     <string name="please_force_touch_d1">Force Touch this\n%1$d times or more</string>
     <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
     <string name="hint_pressure_threshold">Threshold; strongly recommended greater than 0.7</string>
+    <!-- Practice -->
+    <string name="learn_more">Learn more</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>
@@ -28,8 +27,10 @@
     <string name="action_back">Back</string>
     <string name="action_home">Home</string>
     <string name="action_recents">Recents</string>
-    <string name="action_expand_notifications">Expand notifications</string>
-    <string name="action_expand_quick_settings">Expand quick settings</string>
+    <string name="action_expand_notifications">Expand Notifications</string>
+    <string name="action_expand_quick_settings">Expand Quick Settings</string>
+    <string name="action_double_tap">Double Tap (not work)</string>
+    <string name="action_long_press">Long Press (work partially)</string>
 
     <string name="not_found">Not found</string>
 

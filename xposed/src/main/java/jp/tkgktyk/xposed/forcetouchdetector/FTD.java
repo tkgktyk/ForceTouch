@@ -22,6 +22,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.common.base.Strings;
 
@@ -38,6 +41,7 @@ public class FTD {
     public static final String NAME = FTD.class.getSimpleName();
     public static final String PREFIX_ACTION = PACKAGE_NAME + ".intent.action.";
     public static final String PREFIX_EXTRA = PACKAGE_NAME + ".intent.extra.";
+    public static final String SUFFIX_TOUCH_ACTION = ".touch";
 
     public static final String ACTION_BACK = PREFIX_ACTION + "back";
     public static final String ACTION_HOME = PREFIX_ACTION + "home";
@@ -45,7 +49,11 @@ public class FTD {
     public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "expand_notifications";
     public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "expand_quick_settings";
 
+    public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "double_tap" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "long_press" + SUFFIX_TOUCH_ACTION;
+
     public static final IntentFilter LOCAL_ACTION_FILTER;
+
     /**
      * IntentFilters initialization
      */
@@ -69,24 +77,29 @@ public class FTD {
             return context.getString(R.string.action_expand_notifications);
         } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
             return context.getString(R.string.action_expand_quick_settings);
+        } else if (action.equals(ACTION_DOUBLE_TAP)) {
+            return context.getString(R.string.action_double_tap);
+        } else if (action.equals(ACTION_LONG_PRESS)) {
+            return context.getString(R.string.action_long_press);
         }
         return "";
     }
 
-    public static boolean performAction(Context context, String uri) {
+    public static boolean performAction(@NonNull ViewGroup container, String uri,
+                                        MotionEvent event) {
         XposedModule.logD(uri);
         Intent intent = loadIntent(uri);
         if (intent == null) {
             return false;
         }
         if (isLocalAction(intent)) {
-            performLocalAction(context, intent);
+            performLocalAction(container, intent, event);
             return true;
         }
         if (intent.getComponent() == null) {
             return false;
         }
-        context.startActivity(intent);
+        container.getContext().startActivity(intent);
         return true;
     }
 
@@ -104,9 +117,67 @@ public class FTD {
         return !Strings.isNullOrEmpty(action) && action.startsWith(PREFIX_ACTION);
     }
 
-    private static void performLocalAction(Context context, Intent intent) {
-        context.sendBroadcast(intent);
-        XposedModule.logD(intent.getAction());
+    private static void performLocalAction(@NonNull ViewGroup container, @NonNull Intent intent,
+                                           MotionEvent event) {
+        String action = intent.getAction();
+        XposedModule.logD(action);
+        if (action.endsWith(SUFFIX_TOUCH_ACTION)) {
+            if (event != null) {
+                performTouchAction(container, action, event);
+            }
+        } else {
+            container.getContext().sendBroadcast(intent);
+        }
+    }
+
+    private static void performTouchAction(@NonNull ViewGroup container, @NonNull String action,
+                                           @NonNull MotionEvent event) {
+        if (action.equals(ACTION_DOUBLE_TAP)) {
+            // TODO: implement
+        } else if (action.equals(ACTION_LONG_PRESS)) {
+            // TODO: this works partially. use input command?
+            View view = findViewOnPoint(container, event.getX(), event.getY(), true);
+            if (view == null) {
+                XposedModule.logD("view was not found");
+                return;
+            }
+            XposedModule.logD(view.toString());
+            view.performLongClick();
+        }
+    }
+
+    private static View findViewOnPoint(ViewGroup container, float x, float y,
+                                        boolean longClickable) {
+        int location[] = new int[2];
+
+        int count = container.getChildCount();
+        for (int i = count - 1; i >= 0; --i) {
+            View child = container.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                View view = findViewOnPoint((ViewGroup) child, x, y, longClickable);
+                if (view != null) {
+                    return view;
+                }
+            } else {
+                child.getLocationOnScreen(location);
+                int viewX = location[0];
+                int viewY = location[1];
+                // point is inside view bounds
+                if ((x > viewX && x < (viewX + child.getWidth())) &&
+                        (y > viewY && y < (viewY + child.getHeight()))) {
+                    if (longClickable) {
+                        if (child.isLongClickable()){
+                            return child;
+                        }
+                    } else {
+                        if (child.isClickable()) {
+                            return child;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static final String ACTION_SETTINGS_CHANGED = PREFIX_ACTION + "SETTINGS_CHANGED";
