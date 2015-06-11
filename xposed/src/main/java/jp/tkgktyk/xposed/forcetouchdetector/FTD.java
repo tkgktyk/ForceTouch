@@ -236,9 +236,9 @@ public class FTD {
 
         public Settings(SharedPreferences prefs) {
             enabled = prefs.getBoolean("key_enabled", false);
-            pressureThreshold = Float.parseFloat(prefs.getString("key_pressure_threshold",
+            pressureThreshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
                     ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
-            int area = Integer.parseInt(prefs.getString("key_detection_area", "100"));
+            int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
 
             actionTap = prefs.getString("key_action_tap", "");
@@ -248,6 +248,14 @@ public class FTD {
             actionFlickRight = prefs.getString("key_action_flick_right", "");
             actionFlickUp = prefs.getString("key_action_flick_up", "");
             actionFlickDown = prefs.getString("key_action_flick_down", "");
+        }
+
+        private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
+            String str = prefs.getString(key, defValue);
+            if (Strings.isNullOrEmpty(str)) {
+                str = defValue;
+            }
+            return str;
         }
     }
 }
