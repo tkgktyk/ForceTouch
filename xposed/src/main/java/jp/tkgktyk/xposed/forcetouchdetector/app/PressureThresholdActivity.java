@@ -36,6 +36,7 @@ import butterknife.OnClick;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton;
 
 /**
  * Created by tkgktyk on 2015/06/07.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jp.tkgktyk.xposed.forcetouchdetector.app;
+package jp.tkgktyk.xposed.forcetouchdetector.app.util;
 
 import android.content.Context;
 import android.util.AttributeSet;

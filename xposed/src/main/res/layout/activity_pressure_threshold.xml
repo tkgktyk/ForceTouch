@@ -64,7 +64,7 @@
                 android:text="@string/pressure_f1_default"/>
         </LinearLayout>
 
-        <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
+        <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
             android:id="@+id/tap_button"
             android:layout_width="match_parent"
             android:layout_height="80dp"
@@ -95,7 +95,7 @@
                 android:text="@string/pressure_f1_default"/>
         </LinearLayout>
 
-        <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
+        <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
             android:id="@+id/force_touch_button"
             android:layout_width="match_parent"
             android:layout_height="160dp"
