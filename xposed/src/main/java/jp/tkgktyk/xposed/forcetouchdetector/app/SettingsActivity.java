@@ -31,8 +31,6 @@ import java.net.URISyntaxException;
 import jp.tkgktyk.lib.BaseSettingsActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
-import jp.tkgktyk.xposed.forcetouchdetector.app.picker.ActionPickerActivity;
-import jp.tkgktyk.xposed.forcetouchdetector.app.picker.BasePickerActivity;
 
 
 public class SettingsActivity extends BaseSettingsActivity {
@@ -137,8 +135,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             switch (requestCode) {
                 case REQUEST_ACTION:
                     if (resultCode == RESULT_OK) {
-                        String key = data.getStringExtra(BasePickerActivity.EXTRA_KEY);
-                        Intent intent = data.getParcelableExtra(BasePickerActivity.EXTRA_INTENT);
+                        String key = data.getStringExtra(ActionPickerActivity.EXTRA_KEY);
+                        Intent intent = data.getParcelableExtra(ActionPickerActivity.EXTRA_INTENT);
                         String uri = getUri(intent);
                         MyApp.logD("picked intent: " + intent);
                         MyApp.logD("picked uri: " + uri);
