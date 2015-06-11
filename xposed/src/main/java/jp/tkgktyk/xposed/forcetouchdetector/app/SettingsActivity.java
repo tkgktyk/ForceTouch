@@ -24,10 +24,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-
-import com.google.common.base.Objects;
 
 import java.net.URISyntaxException;
 
@@ -39,27 +36,14 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.picker.BasePickerActivity;
 
 
 public class SettingsActivity extends BaseSettingsActivity {
-    public static final String ACTION_TURN_OFF = "turn_off";
 
     @Override
     protected BaseFragment newFragment() {
         return new SettingsFragment();
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getIntent() != null &&
-                Objects.equal(getIntent().getAction(), ACTION_TURN_OFF)) {
-            FTD.getSharedPreferences(this)
-                    .edit()
-                    .putBoolean(getString(R.string.key_enabled), false)
-                    .apply();
-        }
-    }
-
     public static class SettingsFragment extends BaseFragment {
+
         private final SharedPreferences.OnSharedPreferenceChangeListener mChangeListener
                 = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override

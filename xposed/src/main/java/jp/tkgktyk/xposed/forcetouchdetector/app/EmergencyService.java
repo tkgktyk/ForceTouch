@@ -16,7 +16,6 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -51,14 +50,13 @@ public class EmergencyService extends Service {
 
         mServiceNotification = new ServiceNotification(this, R.drawable.ic_stat_emergency,
                 R.string.app_name, SettingsActivity.class);
+        mServiceNotification.update(R.string.state_running);
+    }
 
-        Intent activity = new Intent(this, SettingsActivity.class);
-        activity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        activity.setAction(SettingsActivity.ACTION_TURN_OFF);
-        PendingIntent intent = PendingIntent.getActivity(this, 0, activity, PendingIntent.FLAG_CANCEL_CURRENT);
-        mServiceNotification.getBuilder()
-                .addAction(0, getString(R.string.action_turn_off), intent)
-                .setContentText(getString(R.string.state_running));
-        mServiceNotification.update();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mServiceNotification.stop();
     }
 }

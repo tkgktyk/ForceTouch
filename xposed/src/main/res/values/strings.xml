@@ -4,7 +4,6 @@
 
     <!-- Notification -->
     <string name="state_running">Running</string>
-    <string name="action_turn_off">Turn off</string>
 
     <!-- Pressure Threshold Activity -->
     <string name="tab_title_d1">Page %1$d</string>
