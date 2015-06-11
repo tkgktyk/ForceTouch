@@ -165,15 +165,15 @@ public class ModActivity extends XposedModule {
             mGestureDetector = new GestureDetector(mTargetView.getContext(), this);
 
             int n = 4;
-            n = n * n;
-            multiplyIntField("mTouchSlopSquare", n);
-            multiplyIntField("mDoubleTapTouchSlopSquare", n);
-            multiplyIntField("mDoubleTapSlopSquare", n);
-            multiplyIntField("mMinimumFlingVelocity", n);
+            multiplyIntField("mTouchSlopSquare", n * n); // 8 * density
+            multiplyIntField("mDoubleTapTouchSlopSquare", n * n); // 8 * density
+//            multiplyIntField("mDoubleTapSlopSquare", n * n); // 100 * density
+            multiplyIntField("mMinimumFlingVelocity", n); // 50 * density
         }
 
         private void multiplyIntField(String fieldName, int n) {
             int value = XposedHelpers.getIntField(mGestureDetector, fieldName);
+            XposedModule.logD(fieldName + " = " + value);
             XposedHelpers.setIntField(mGestureDetector, fieldName, value * n);
         }
 
@@ -298,7 +298,6 @@ public class ModActivity extends XposedModule {
 
         @Override
         public void onShowPress(MotionEvent e) {
-
         }
 
         @Override
