@@ -49,7 +49,7 @@
                 android:id="@+id/max_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/max_pressure_f1"
+                android:text="@string/max_pressure_f1_default"
                 android:textColor="?attr/colorAccent"/>
 
             <Space
@@ -61,7 +61,7 @@
                 android:id="@+id/tap_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_f1"/>
+                android:text="@string/pressure_f1_default"/>
         </LinearLayout>
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton
@@ -80,7 +80,7 @@
                 android:id="@+id/ave_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ave_pressure_f1"
+                android:text="@string/ave_pressure_f1_default"
                 android:textColor="?attr/colorAccent"/>
 
             <Space
@@ -92,7 +92,7 @@
                 android:id="@+id/force_touch_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pressure_f1"/>
+                android:text="@string/pressure_f1_default"/>
         </LinearLayout>
 
         <jp.tkgktyk.xposed.forcetouchdetector.app.PressureButton

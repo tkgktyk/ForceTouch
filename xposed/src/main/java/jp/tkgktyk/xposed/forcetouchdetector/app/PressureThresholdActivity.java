@@ -108,9 +108,6 @@ public class PressureThresholdActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         setSupportActionBar(mToolbar);
 
-        updateTapPressureText(0.0f);
-        updateForceTouchPressureText(0.0f);
-
         mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
         mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
 

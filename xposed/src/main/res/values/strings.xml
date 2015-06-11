@@ -10,9 +10,12 @@
     <string name="tab_title_d1">Page %1$d</string>
     <!-- Pressure -->
     <string name="pressure_f1">Pressure: %1$.04f</string>
+    <string name="pressure_f1_default">Pressure: ------</string>
     <string name="max_pressure_f1">Max: %1$.04f</string>
+    <string name="max_pressure_f1_default">Max: ------</string>
     <string name="please_tap_d1">Tap this\n%1$d times or more</string>
     <string name="ave_pressure_f1">Ave: %1$.04f</string>
+    <string name="ave_pressure_f1_default">Ave: ------</string>
     <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
     <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
     <string name="hint_pressure_threshold">Threshold: strongly recommended greater than 0.7</string>
