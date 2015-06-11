@@ -169,6 +169,7 @@ public class ModActivity extends XposedModule {
             multiplyIntField("mTouchSlopSquare", n);
             multiplyIntField("mDoubleTapTouchSlopSquare", n);
             multiplyIntField("mDoubleTapSlopSquare", n);
+            multiplyIntField("mMinimumFlingVelocity", n);
         }
 
         private void multiplyIntField(String fieldName, int n) {
