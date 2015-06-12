@@ -222,32 +222,44 @@ public class FTD {
     public static class Settings implements Serializable {
         static final long serialVersionUID = 1L;
 
-        public final boolean enabled;
-        public final float pressureThreshold;
+        // General
         public final float forceTouchArea;
 
-        public final String actionTap;
-        public final String actionDoubleTap;
-        public final String actionLongPress;
-        public final String actionFlickLeft;
-        public final String actionFlickRight;
-        public final String actionFlickUp;
-        public final String actionFlickDown;
+        // Pressure
+        public final Holder pressure = new Holder();
+
+        // Size
+        public final Holder size = new Holder();
 
         public Settings(SharedPreferences prefs) {
-            enabled = prefs.getBoolean("key_enabled", false);
-            pressureThreshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
-                    ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
 
-            actionTap = prefs.getString("key_action_tap", "");
-            actionDoubleTap = prefs.getString("key_action_double_tap", "");
-            actionLongPress = prefs.getString("key_action_long_press", "");
-            actionFlickLeft = prefs.getString("key_action_flick_left", "");
-            actionFlickRight = prefs.getString("key_action_flick_right", "");
-            actionFlickUp = prefs.getString("key_action_flick_up", "");
-            actionFlickDown = prefs.getString("key_action_flick_down", "");
+            // Pressure
+            pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);
+            pressure.threshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
+                    ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+
+            pressure.actionTap = prefs.getString("key_pressure_action_tap", "");
+            pressure.actionDoubleTap = prefs.getString("key_pressure_action_double_tap", "");
+            pressure.actionLongPress = prefs.getString("key_pressure_action_long_press", "");
+            pressure.actionFlickLeft = prefs.getString("key_pressure_action_flick_left", "");
+            pressure.actionFlickRight = prefs.getString("key_pressure_action_flick_right", "");
+            pressure.actionFlickUp = prefs.getString("key_pressure_action_flick_up", "");
+            pressure.actionFlickDown = prefs.getString("key_pressure_action_flick_down", "");
+
+            // Size
+            size.enabled = prefs.getBoolean("key_size_enabled", false);
+            size.threshold = Float.parseFloat(getStringToParse(prefs, "key_size_threshold",
+                    ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+
+            size.actionTap = prefs.getString("key_size_action_tap", "");
+            size.actionDoubleTap = prefs.getString("key_size_action_double_tap", "");
+            size.actionLongPress = prefs.getString("key_size_action_long_press", "");
+            size.actionFlickLeft = prefs.getString("key_size_action_flick_left", "");
+            size.actionFlickRight = prefs.getString("key_size_action_flick_right", "");
+            size.actionFlickUp = prefs.getString("key_size_action_flick_up", "");
+            size.actionFlickDown = prefs.getString("key_size_action_flick_down", "");
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
@@ -256,6 +268,26 @@ public class FTD {
                 str = defValue;
             }
             return str;
+        }
+
+        public boolean isEnabled() {
+            return pressure.enabled || size.enabled;
+        }
+
+        public class Holder implements Serializable {
+            static final long serialVersionUID = 1L;
+
+            // Setting
+            public boolean enabled;
+            public float threshold;
+            // Action
+            public String actionTap;
+            public String actionDoubleTap;
+            public String actionLongPress;
+            public String actionFlickLeft;
+            public String actionFlickRight;
+            public String actionFlickUp;
+            public String actionFlickDown;
         }
     }
 }

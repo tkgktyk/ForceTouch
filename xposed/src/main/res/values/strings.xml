@@ -4,10 +4,11 @@
 
     <!-- Notification -->
     <string name="state_running">Running</string>
+    <string name="state_disabled">Disabled</string>
 
-    <!-- Pressure Threshold Activity -->
-    <string name="tab_title_d1">Page %1$d</string>
+    <!-- Threshold Activity -->
     <!-- Pressure -->
+    <string name="label_pressure_threshold">Pressure Threshold</string>
     <string name="pressure_f1">Pressure: %1$.04f</string>
     <string name="pressure_f1_default">Pressure: ------</string>
     <string name="max_pressure_f1">Max: %1$.04f</string>
@@ -18,6 +19,16 @@
     <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
     <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
     <string name="hint_pressure_threshold">Threshold: strongly recommended greater than 0.7</string>
+    <!-- Size -->
+    <string name="label_size_threshold">Size Threshold</string>
+    <string name="size_f1">Size: %1$.04f</string>
+    <string name="size_f1_default">Size: ------</string>
+    <string name="max_size_f1">Max: %1$.04f</string>
+    <string name="max_size_f1_default">Max: ------</string>
+    <string name="ave_size_f1">Ave: %1$.04f</string>
+    <string name="ave_size_f1_default">Ave: ------</string>
+    <string name="description_size_threshold">Input a number between Ave and Max by trial and error</string>
+    <string name="hint_size_threshold">Threshold: strongly recommended greater than 0.4</string>
     <!-- Practice -->
     <string name="learn_more">Learn more</string>
 
@@ -36,13 +47,26 @@
 
     <string name="not_found">Not found</string>
 
+    <!-- Header -->
     <!-- Setting -->
     <string name="category_setting">Setting</string>
-    <string name="title_enabled">Master Switch</string>
-    <string name="title_pressure_threshold">Pressure Threshold</string>
-    <string name="summary_pressure_threshold">Adjust and practice Force Touch</string>
+    <string name="header_general">General</string>
+    <string name="header_pressure">Pressure</string>
+    <string name="header_size">Size</string>
+    <!-- Information -->
+    <string name="category_information">Information</string>
+    <string name="title_about">About</string>
+    <string name="title_support">Support</string>
+    <string name="summary_support">Tap to open support thread on XDA</string>
+
+    <!-- General -->
     <string name="title_detection_area">Detection Area</string>
     <string name="unit_detection_area">% from bottom of screen</string>
+
+    <!-- Setting -->
+    <string name="title_enabled">Master Switch</string>
+    <string name="title_threshold">Threshold</string>
+    <string name="summary_threshold">Adjust and practice Force Touch</string>
     <!-- Action -->
     <string name="category_action">Action</string>
     <string name="title_action_tap">Tap</string>

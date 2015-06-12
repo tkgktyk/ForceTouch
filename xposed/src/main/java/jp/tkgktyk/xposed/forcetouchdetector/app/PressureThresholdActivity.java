@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -68,6 +69,26 @@ public class PressureThresholdActivity extends AppCompatActivity {
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
 
+    protected int getMaxPressureResource() {
+        return R.string.max_pressure_f1;
+    }
+
+    protected int getPressureResource() {
+        return R.string.pressure_f1;
+    }
+
+    protected int getAvePressureResource() {
+        return R.string.ave_pressure_f1;
+    }
+
+    protected String getThresholdKey() {
+        return getString(R.string.key_pressure_threshold);
+    }
+
+    protected float getPressure(MotionEvent event) {
+        return event.getPressure();
+    }
+
     private void updateTapPressureText(float pressure) {
         // size limited queue
         mMaxPressureList.add(pressure);
@@ -75,8 +96,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
             mMaxPressureList.remove();
         }
 
-        mMaxPressureText.setText(getString(R.string.max_pressure_f1, getMaxPressure()));
-        mTapPressureText.setText(getString(R.string.pressure_f1, pressure));
+        mMaxPressureText.setText(getString(getMaxPressureResource(), getMaxPressure()));
+        mTapPressureText.setText(getString(getPressureResource(), pressure));
     }
 
     private float getMaxPressure() {
@@ -90,8 +111,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
             mAvePressureList.remove();
         }
 
-        mAvePressureText.setText(getString(R.string.ave_pressure_f1, getAvePressure()));
-        mForceTouchPressureText.setText(getString(R.string.pressure_f1, pressure));
+        mAvePressureText.setText(getString(getAvePressureResource(), getAvePressure()));
+        mForceTouchPressureText.setText(getString(getPressureResource(), pressure));
     }
 
     private float getAvePressure() {
@@ -114,35 +135,33 @@ public class PressureThresholdActivity extends AppCompatActivity {
 
         mTapButton.setOnPressedListener(new PressureButton.OnPressedListener() {
             @Override
-            public void onPressed(float pressure) {
-                updateTapPressureText(pressure);
+            public void onPressed(MotionEvent event) {
+                updateTapPressureText(getPressure(event));
             }
         });
         mForceTouchButton.setOnPressedListener(new PressureButton.OnPressedListener() {
             @Override
-            public void onPressed(float pressure) {
-                updateForceTouchPressureText(pressure);
+            public void onPressed(MotionEvent event) {
+                updateForceTouchPressureText(getPressure(event));
             }
         });
 
-        String key = getString(R.string.key_pressure_threshold);
         mPressureThreshold.setText(FTD.getSharedPreferences(this)
-                .getString(key, ModActivity.ForceTouchDetector.DEFAULT_PRESSURE_THRESHOLD));
+                .getString(getThresholdKey(), ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        String key = getString(R.string.key_pressure_threshold);
         FTD.getSharedPreferences(this)
                 .edit()
-                .putString(key, mPressureThreshold.getText().toString())
+                .putString(getThresholdKey(), mPressureThreshold.getText().toString())
                 .apply();
     }
 
     @OnClick(R.id.learn_more_button)
-    void onLearnMore(Button button) {
+    void onLearnMoreClicked(Button button) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_readme)));
         startActivity(intent);
     }

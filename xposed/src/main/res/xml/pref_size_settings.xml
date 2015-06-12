@@ -23,23 +23,15 @@
         <jp.tkgktyk.lib.SwitchPreference
             android:defaultValue="false"
             android:icon="@null"
-            android:key="@string/key_enabled"
+            android:key="@string/key_size_enabled"
             android:title="@string/title_enabled"/>
         <!-- Pressure Threshold -->
         <Preference
             android:defaultValue="1.0"
             android:icon="@null"
-            android:key="@string/key_pressure_threshold"
-            android:summary="@string/summary_pressure_threshold"
-            android:title="@string/title_pressure_threshold"/>
-        <!-- Force Touch Area -->
-        <EditTextPreference
-            android:defaultValue="100"
-            android:icon="@null"
-            android:inputType="number"
-            android:key="@string/key_detection_area"
-            android:title="@string/title_detection_area"
-            android:dialogMessage="@string/unit_detection_area"/>
+            android:key="@string/key_size_threshold"
+            android:summary="@string/summary_threshold"
+            android:title="@string/title_threshold"/>
     </PreferenceCategory>
     <!-- Action -->
     <PreferenceCategory
@@ -48,40 +40,40 @@
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_tap"
+            android:key="@string/key_size_action_tap"
             android:title="@string/title_action_tap"/>
         <!-- Double Tap -->
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_double_tap"
+            android:key="@string/key_size_action_double_tap"
             android:title="@string/title_action_double_tap"/>
         <!-- Long Press -->
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_long_press"
+            android:key="@string/key_size_action_long_press"
             android:title="@string/title_action_long_press"/>
         <!-- Flick -->
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_flick_left"
+            android:key="@string/key_size_action_flick_left"
             android:title="@string/title_action_flick_left"/>
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_flick_right"
+            android:key="@string/key_size_action_flick_right"
             android:title="@string/title_action_flick_right"/>
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_flick_up"
+            android:key="@string/key_size_action_flick_up"
             android:title="@string/title_action_flick_up"/>
         <Preference
             android:defaultValue=""
             android:icon="@null"
-            android:key="@string/key_action_flick_down"
+            android:key="@string/key_size_action_flick_down"
             android:title="@string/title_action_flick_down"/>
     </PreferenceCategory>
 

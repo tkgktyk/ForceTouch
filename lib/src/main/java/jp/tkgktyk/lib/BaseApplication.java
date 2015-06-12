@@ -107,6 +107,8 @@ public abstract class BaseApplication extends Application {
 
     protected abstract boolean isDebug();
 
+    protected abstract String getVersionName();
+
     protected abstract void onVersionUpdated(MyVersion next, MyVersion old);
 
     public class MyVersion {
@@ -121,7 +123,7 @@ public abstract class BaseApplication extends Application {
         }
 
         public MyVersion(Context context) {
-            set(BuildConfig.VERSION_NAME);
+            set(getVersionName());
         }
 
         public void set(String version) {

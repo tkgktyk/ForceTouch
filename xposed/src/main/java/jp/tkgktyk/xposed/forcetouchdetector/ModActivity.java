@@ -84,7 +84,7 @@ public class ModActivity extends XposedModule {
                             FrameLayout decorView = (FrameLayout) methodHookParam.thisObject;
                             MotionEvent event = (MotionEvent) methodHookParam.args[0];
                             ForceTouchDetector ftd = getForceTouchDetector(decorView);
-                            if (ftd != null && ftd.getSettings().enabled) {
+                            if (ftd != null) {
                                 handled = ftd.onTouchEvent(event);
                             }
                         } catch (Throwable t) {
@@ -151,7 +151,7 @@ public class ModActivity extends XposedModule {
 
     public static class ForceTouchDetector implements GestureDetector.OnGestureListener,
             GestureDetector.OnDoubleTapListener {
-        public static final String DEFAULT_PRESSURE_THRESHOLD = "1.0";
+        public static final String DEFAULT_THRESHOLD = "1.0";
 
         private final ViewGroup mTargetView;
         private FTD.Settings mSettings;
@@ -159,16 +159,26 @@ public class ModActivity extends XposedModule {
         private boolean mIsForceTouch;
         private Toast mToast;
 
+        // ripple
+        private static final int RIPPLE_SIZE = 5;
+        private static final float START_SCALE = 1.0f / RIPPLE_SIZE;
+        private static final float START_ALPHA = 0.7f;
+        private View mRippleView;
+        private int mRippleSize;
+        private ObjectAnimator mRippleAnimator;
+
         public ForceTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             mTargetView = targetView;
             onSettingsLoaded(settings);
-            mGestureDetector = new GestureDetector(mTargetView.getContext(), this);
+            mGestureDetector = new GestureDetector(getContext(), this);
 
             int n = 4;
             multiplyIntField("mTouchSlopSquare", n * n); // 8 * density
             multiplyIntField("mDoubleTapTouchSlopSquare", n * n); // 8 * density
 //            multiplyIntField("mDoubleTapSlopSquare", n * n); // 100 * density
             multiplyIntField("mMinimumFlingVelocity", n); // 50 * density
+
+            setUpRipple();
         }
 
         private void multiplyIntField(String fieldName, int n) {
@@ -181,8 +191,45 @@ public class ModActivity extends XposedModule {
             mSettings = settings;
         }
 
-        public FTD.Settings getSettings() {
-            return mSettings;
+        private Context getContext() {
+            return mTargetView.getContext();
+        }
+
+        private void setUpRipple() {
+            mRippleView = new View(getContext());
+            mRippleSize = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size) *
+                    RIPPLE_SIZE;
+            mRippleView.setLayoutParams(new ViewGroup.LayoutParams(mRippleSize, mRippleSize));
+            Context mod = FTD.getModContext(getContext());
+            mRippleView.setBackground(mod.getResources().getDrawable(R.drawable.force_touch_ripple));
+
+            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", START_SCALE, 1.0f);
+            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", START_SCALE, 1.0f);
+            PropertyValuesHolder holderAlpha = PropertyValuesHolder.ofFloat("alpha", START_ALPHA, 0.0f);
+
+            mRippleAnimator = ObjectAnimator.ofPropertyValuesHolder(mRippleView,
+                    holderScaleX, holderScaleY, holderAlpha);
+            mRippleAnimator.setDuration(300); // default
+            mRippleAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mTargetView.addView(mRippleView);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mTargetView.removeView(mRippleView);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    onAnimationEnd(animation);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
         }
 
         public void showToast(String text) {
@@ -201,13 +248,19 @@ public class ModActivity extends XposedModule {
             } else {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
+                        if (!mSettings.isEnabled()) {
+                            break;
+                        }
+
                         float y = event.getY();
-                        if (event.getPressure() > mSettings.pressureThreshold &&
-                                y > mTargetView.getHeight() * mSettings.forceTouchArea) {
-                            mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                            mIsForceTouch = true;
-                            gesture = true;
-                            startRipple(event);
+                        if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
+                            FTD.Settings.Holder holder = judgeForceTouch(event);
+                            if (holder != null) {
+                                mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                mIsForceTouch = true;
+                                gesture = true;
+                                startRipple(event);
+                            }
                         }
                         break;
                     case MotionEvent.ACTION_CANCEL:
@@ -224,55 +277,34 @@ public class ModActivity extends XposedModule {
             return mIsForceTouch;
         }
 
-        private static final int RIPPLE_SIZE = 5;
+        private FTD.Settings.Holder judgeForceTouch(MotionEvent event) {
+            if (mSettings.pressure.enabled &&
+                    event.getPressure() > mSettings.pressure.threshold) {
+                return mSettings.pressure;
+            } else if (mSettings.size.enabled &&
+                    event.getSize() > mSettings.size.threshold) {
+                return mSettings.size;
+            }
+            return null;
+        }
 
         private void startRipple(MotionEvent event) {
+            mRippleView.setScaleX(START_SCALE);
+            mRippleView.setScaleY(START_SCALE);
+            mRippleView.setAlpha(START_ALPHA);
+
             float x = event.getX();
             float y = event.getY();
-            Context context = mTargetView.getContext();
-            final View ripple = new View(context);
-            int size = context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size) *
-                    RIPPLE_SIZE;
-            ripple.setLayoutParams(new ViewGroup.LayoutParams(size, size));
-            Context mod = FTD.getModContext(context);
-            ripple.setBackground(mod.getResources().getDrawable(R.drawable.force_touch_ripple));
-            ripple.setTranslationX(x - size / 2.0f);
-            ripple.setTranslationY(y - size / 2.0f);
+            mRippleView.setTranslationX(x - mRippleSize / 2.0f);
+            mRippleView.setTranslationY(y - mRippleSize / 2.0f);
 
-            float startScale = 1.0f / RIPPLE_SIZE;
-            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", startScale, 1.0f);
-            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", startScale, 1.0f);
-            PropertyValuesHolder holderAlpha = PropertyValuesHolder.ofFloat("alpha", 0.7f, 0.0f);
-
-            ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(ripple,
-                    holderScaleX, holderScaleY, holderAlpha);
-            animator.setDuration(300); // default
-            animator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mTargetView.addView(ripple);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mTargetView.removeView(ripple);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    mTargetView.removeView(ripple);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-            animator.start();
+            mRippleAnimator.start();
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            if (!FTD.performAction(mTargetView, mSettings.actionTap, e)) {
+            FTD.Settings.Holder holder = judgeForceTouch(e);
+            if (!FTD.performAction(mTargetView, holder.actionTap, e)) {
                 showToast("force tap");
             }
             return true;
@@ -280,7 +312,8 @@ public class ModActivity extends XposedModule {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            if (!FTD.performAction(mTargetView, mSettings.actionDoubleTap, e)) {
+            FTD.Settings.Holder holder = judgeForceTouch(e);
+            if (!FTD.performAction(mTargetView, holder.actionDoubleTap, e)) {
                 showToast("force double tap");
             }
             return true;
@@ -313,7 +346,8 @@ public class ModActivity extends XposedModule {
         @Override
         public void onLongPress(MotionEvent e) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            if (!FTD.performAction(mTargetView, mSettings.actionLongPress, e)) {
+            FTD.Settings.Holder holder = judgeForceTouch(e);
+            if (!FTD.performAction(mTargetView, holder.actionLongPress, e)) {
                 showToast("force long press");
             }
         }
@@ -321,23 +355,24 @@ public class ModActivity extends XposedModule {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            FTD.Settings.Holder holder = judgeForceTouch(e1);
             if (Math.abs(velocityX) > Math.abs(velocityY)) {
                 if (velocityX > 0) {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickRight, e2)) {
+                    if (!FTD.performAction(mTargetView, holder.actionFlickRight, e2)) {
                         showToast("force fling x: " + velocityX);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickLeft, e2)) {
+                    if (!FTD.performAction(mTargetView, holder.actionFlickLeft, e2)) {
                         showToast("force fling x: " + velocityX);
                     }
                 }
             } else {
                 if (velocityY > 0) {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickDown, e2)) {
+                    if (!FTD.performAction(mTargetView, holder.actionFlickDown, e2)) {
                         showToast("force fling y: " + velocityY);
                     }
                 } else {
-                    if (!FTD.performAction(mTargetView, mSettings.actionFlickUp, e2)) {
+                    if (!FTD.performAction(mTargetView, holder.actionFlickUp, e2)) {
                         showToast("force fling y: " + velocityY);
                     }
                 }

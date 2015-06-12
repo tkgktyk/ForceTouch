@@ -40,7 +40,7 @@ public class PressureButton extends Button {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-            mOnPressedListener.onPressed(event.getPressure());
+            mOnPressedListener.onPressed(event);
         }
         return super.dispatchTouchEvent(event);
     }
@@ -52,6 +52,6 @@ public class PressureButton extends Button {
     }
 
     public interface OnPressedListener {
-        void onPressed(float pressure);
+        void onPressed(MotionEvent event);
     }
 }

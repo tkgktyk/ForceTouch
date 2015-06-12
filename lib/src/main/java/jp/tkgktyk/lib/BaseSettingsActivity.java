@@ -16,6 +16,7 @@
 
 package jp.tkgktyk.lib;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -29,6 +30,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.google.common.base.Strings;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by tkgktyk on 2015/04/27.
@@ -45,19 +48,67 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
         if (savedInstanceState == null) {
+            getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    setTitle(((BaseFragment)getFragmentManager().findFragmentById(R.id.container)).getTitle());
+                }
+            });
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, newFragment())
+                    .replace(R.id.container, newRootFragment())
                     .commit();
         }
     }
 
-    protected abstract BaseFragment newFragment();
+    protected void changeFragment(BaseFragment fragment) {
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(fragment.getTag())
+                .commit();
+    }
 
-    public static class BaseFragment extends PreferenceFragment {
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    protected abstract BaseFragment newRootFragment();
+
+    public static abstract class BaseFragment extends PreferenceFragment {
+
+        protected abstract String getTitle();
 
         protected Preference findPreference(@StringRes int id) {
             return findPreference(getString(id));
+        }
+
+        protected void changeScreen(@StringRes int id, final Class<?> cls) {
+            Preference pref = findPreference(id);
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    try {
+                        ((BaseSettingsActivity) getActivity())
+                                .changeFragment((BaseFragment) cls.getConstructor().newInstance());
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+            });
         }
 
         protected void showListSummary(@StringRes int id) {
@@ -96,6 +147,10 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             showTextSummary(id, null);
         }
 
+        protected void showTextSummary(@StringRes int id, @StringRes int suffix) {
+            showTextSummary(id, getString(suffix));
+        }
+
         protected void showTextSummary(@StringRes int id, @Nullable final String suffix) {
             EditTextPreference et = (EditTextPreference) findPreference(id);
             et.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -112,21 +167,21 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             et.getOnPreferenceChangeListener().onPreferenceChange(et, et.getText());
         }
 
-        protected void setUpSwitch(@StringRes int id, final OnSwitchChangedListener listener) {
+        protected void setUpSwitch(@StringRes int id, final OnSwitchChangeListener listener) {
             final SwitchPreference sw = (SwitchPreference) findPreference(id);
             sw.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enabled = (Boolean) newValue;
-                    listener.onChanged(sw, enabled);
+                    listener.onChange(sw, enabled);
                     return true;
                 }
             });
             sw.getOnPreferenceChangeListener().onPreferenceChange(sw, sw.isChecked());
         }
 
-        protected interface OnSwitchChangedListener {
-            void onChanged(SwitchPreference sw, boolean enabled);
+        protected interface OnSwitchChangeListener {
+            void onChange(SwitchPreference sw, boolean enabled);
         }
 
         protected void openActivity(@StringRes int id, final Class<?> cls) {

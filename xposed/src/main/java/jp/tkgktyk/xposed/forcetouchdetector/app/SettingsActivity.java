@@ -26,9 +26,12 @@ import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.StringRes;
 
+import com.google.common.base.Objects;
+
 import java.net.URISyntaxException;
 
 import jp.tkgktyk.lib.BaseSettingsActivity;
+import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 
@@ -36,21 +39,22 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
 public class SettingsActivity extends BaseSettingsActivity {
 
     @Override
-    protected BaseFragment newFragment() {
-        return new SettingsFragment();
+    protected BaseFragment newRootFragment() {
+        return new HeaderFragment();
     }
 
-    public static class SettingsFragment extends BaseFragment {
-
+    public static abstract class XposedFragment extends BaseFragment {
         private final SharedPreferences.OnSharedPreferenceChangeListener mChangeListener
                 = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 FTD.sendSettingsChanged(getActivity(), sharedPreferences);
+                onSettingsChanged(sharedPreferences, key);
             }
         };
 
-        private static final int REQUEST_ACTION = 1;
+        public XposedFragment() {
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -58,25 +62,6 @@ public class SettingsActivity extends BaseSettingsActivity {
             getPreferenceManager().setSharedPreferencesMode(MODE_WORLD_READABLE);
             getPreferenceManager().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(mChangeListener);
-            addPreferencesFromResource(R.xml.pref_settings);
-
-            // Setting
-            setUpSwitch(R.string.key_enabled, new OnSwitchChangedListener() {
-                @Override
-                public void onChanged(SwitchPreference sw, boolean enabled) {
-                    EmergencyService.startStop(sw.getContext(), enabled);
-                }
-            });
-            openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
-            showTextSummary(R.string.key_detection_area, getString(R.string.unit_detection_area));
-            // Action
-            pickAction(R.string.key_action_tap);
-            pickAction(R.string.key_action_double_tap);
-            pickAction(R.string.key_action_long_press);
-            pickAction(R.string.key_action_flick_left);
-            pickAction(R.string.key_action_flick_right);
-            pickAction(R.string.key_action_flick_up);
-            pickAction(R.string.key_action_flick_down);
         }
 
         @Override
@@ -86,7 +71,85 @@ public class SettingsActivity extends BaseSettingsActivity {
                     .unregisterOnSharedPreferenceChangeListener(mChangeListener);
         }
 
-        private void pickAction(@StringRes int id) {
+        protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
+        }
+    }
+
+    public static class HeaderFragment extends XposedFragment {
+        public HeaderFragment() {
+        }
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.app_name);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_header_settings);
+
+            changeScreen(R.string.key_header_general, GeneralSettingsFragment.class);
+            changeScreen(R.string.key_header_pressure, PressureSettingsFragment.class);
+            changeScreen(R.string.key_header_size, SizeSettingsFragment.class);
+
+            updateState(R.string.key_header_pressure, R.string.key_pressure_enabled);
+            updateState(R.string.key_header_size, R.string.key_size_enabled);
+
+            // Information
+            Preference about = findPreference(R.string.key_about);
+            about.setSummary(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME);
+        }
+
+        @Override
+        protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
+            if (Objects.equal(key, getString(R.string.key_pressure_enabled))) {
+                updateState(R.string.key_header_pressure, key);
+            } else if (Objects.equal(key, getString(R.string.key_size_enabled))) {
+                updateState(R.string.key_header_size, key);
+            }
+        }
+
+        private void updateState(@StringRes int targetKey, @StringRes int valueKey) {
+            updateState(targetKey, getString(valueKey));
+        }
+
+        private void updateState(@StringRes int targetKey, String valueKey) {
+            Preference pref = findPreference(targetKey);
+            if (pref.getSharedPreferences().getBoolean(valueKey, false)) {
+                pref.setSummary(getString(R.string.state_running));
+            } else {
+                pref.setSummary(getString(R.string.state_disabled));
+            }
+        }
+    }
+
+    public static class GeneralSettingsFragment extends XposedFragment {
+        public GeneralSettingsFragment() {
+        }
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_general);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_general_settings);
+
+            showTextSummary(R.string.key_detection_area, R.string.unit_detection_area);
+        }
+    }
+
+    public static abstract class SettingsFragment extends XposedFragment {
+
+        private static final int REQUEST_ACTION = 1;
+
+        public SettingsFragment() {
+        }
+
+        protected void pickAction(@StringRes int id) {
             String key = getString(id);
             final Preference pref = findPreference(key);
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -165,6 +228,76 @@ public class SettingsActivity extends BaseSettingsActivity {
                 MyApp.logE(e);
             }
             return null;
+        }
+    }
+
+    public static class PressureSettingsFragment extends SettingsFragment {
+
+        public PressureSettingsFragment() {
+        }
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_pressure);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_pressure_settings);
+
+            // Setting
+            setUpSwitch(R.string.key_pressure_enabled, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    EmergencyService.startStop(sw.getContext(), enabled || settings.size.enabled);
+                }
+            });
+            openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
+            // Action
+            pickAction(R.string.key_pressure_action_tap);
+            pickAction(R.string.key_pressure_action_double_tap);
+            pickAction(R.string.key_pressure_action_long_press);
+            pickAction(R.string.key_pressure_action_flick_left);
+            pickAction(R.string.key_pressure_action_flick_right);
+            pickAction(R.string.key_pressure_action_flick_up);
+            pickAction(R.string.key_pressure_action_flick_down);
+        }
+    }
+
+    public static class SizeSettingsFragment extends SettingsFragment {
+
+        public SizeSettingsFragment() {
+        }
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_size);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_size_settings);
+
+            // Setting
+            setUpSwitch(R.string.key_size_enabled, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    EmergencyService.startStop(sw.getContext(), enabled || settings.pressure.enabled);
+                }
+            });
+            openActivity(R.string.key_size_threshold, SizeThresholdActivity.class);
+            // Action
+            pickAction(R.string.key_size_action_tap);
+            pickAction(R.string.key_size_action_double_tap);
+            pickAction(R.string.key_size_action_long_press);
+            pickAction(R.string.key_size_action_flick_left);
+            pickAction(R.string.key_size_action_flick_right);
+            pickAction(R.string.key_size_action_flick_up);
+            pickAction(R.string.key_size_action_flick_down);
         }
     }
 }
