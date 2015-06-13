@@ -175,7 +175,7 @@ public class FTD {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
         MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
-                base.getX(), base.getY(), 0);
+                base.getX(), base.getY(), 0.0f, 0.0f, 0, 1.0f, 1.0f, 0, 0);
         container.dispatchTouchEvent(event);
         event.recycle();
     }
