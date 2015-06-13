@@ -47,18 +47,26 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
 
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                updateTitle();
+            }
+        });
         if (savedInstanceState == null) {
-            getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-                @Override
-                public void onBackStackChanged() {
-                    setTitle(((BaseFragment)getFragmentManager().findFragmentById(R.id.container)).getTitle());
-                }
-            });
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, newRootFragment())
                     .commit();
+        } else {
+            updateTitle();
         }
+    }
+
+    private void updateTitle() {
+        BaseFragment fragment = (BaseFragment) getFragmentManager()
+                .findFragmentById(R.id.container);
+        mToolbar.setTitle(fragment.getTitle());
     }
 
     protected void changeFragment(BaseFragment fragment) {

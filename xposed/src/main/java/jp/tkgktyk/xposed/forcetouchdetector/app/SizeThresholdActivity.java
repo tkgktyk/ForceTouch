@@ -55,6 +55,6 @@ public class SizeThresholdActivity extends PressureThresholdActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPressureThreshold.setHint(R.string.hint_size_threshold);
+        mPressureThresholdContainer.setHint(getString(R.string.hint_size_threshold));
     }
 }

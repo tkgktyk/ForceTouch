@@ -19,6 +19,7 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
@@ -63,6 +64,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
     PressureButton mForceTouchButton;
     @InjectView(R.id.pressure_threshold)
     EditText mPressureThreshold;
+    @InjectView(R.id.pressure_threshold_container)
+    TextInputLayout mPressureThresholdContainer;
     @InjectView(R.id.learn_more_button)
     Button mLearnMoreButton;
 
