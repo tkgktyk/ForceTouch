@@ -176,6 +176,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_EXPAND_QUICK_SETTINGS,
                 FTD.ACTION_DOUBLE_TAP,
                 FTD.ACTION_LONG_PRESS,
+                FTD.ACTION_LONG_PRESS_FULL,
         };
 
         @Override

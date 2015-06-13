@@ -25,6 +25,7 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -53,6 +54,7 @@ public class FTD {
 
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_LONG_PRESS_FULL = PREFIX_ACTION + "LONG_PRESS_FULL" + SUFFIX_TOUCH_ACTION;
 
     public static final IntentFilter LOCAL_ACTION_FILTER;
 
@@ -86,6 +88,8 @@ public class FTD {
             return context.getString(R.string.action_double_tap);
         } else if (action.equals(ACTION_LONG_PRESS)) {
             return context.getString(R.string.action_long_press);
+        } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
+            return context.getString(R.string.action_long_press_full);
         }
         return "";
     }
@@ -154,6 +158,15 @@ public class FTD {
             // TODO: use input command?
             injectMotionEvent2(container, event, MotionEvent.ACTION_DOWN);
             injectMotionEvent(container, event, MotionEvent.ACTION_CANCEL);
+        } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
+            // TODO: use input command?
+            injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
+            container.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    injectMotionEvent(container, event, MotionEvent.ACTION_UP);
+                }
+            }, ViewConfiguration.getLongPressTimeout() + ViewConfiguration.getTapTimeout());
         }
     }
 

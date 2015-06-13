@@ -42,8 +42,9 @@
     <string name="action_recents">Recents</string>
     <string name="action_expand_notifications">Expand Notifications</string>
     <string name="action_expand_quick_settings">Expand Quick Settings</string>
-    <string name="action_double_tap">Double Tap (not work)</string>
-    <string name="action_long_press">Long Press (works partially)</string>
+    <string name="action_double_tap">Double Tap</string>
+    <string name="action_long_press">Long Press</string>
+    <string name="action_long_press_full">Long Press (Fully Simulated)</string>
 
     <string name="not_found">Not found</string>
 
