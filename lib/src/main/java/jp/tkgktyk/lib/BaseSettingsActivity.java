@@ -26,8 +26,10 @@ import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.google.common.base.Strings;
 
@@ -37,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
  * Created by tkgktyk on 2015/04/27.
  */
 public abstract class BaseSettingsActivity extends AppCompatActivity {
+
     private Toolbar mToolbar;
 
     @Override
@@ -64,17 +67,33 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
     }
 
     private void updateTitle() {
-        BaseFragment fragment = (BaseFragment) getFragmentManager()
-                .findFragmentById(R.id.container);
-        mToolbar.setTitle(fragment.getTitle());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            FragmentManager fm = getFragmentManager();
+            BaseFragment fragment = (BaseFragment) fm.findFragmentById(R.id.container);
+            actionBar.setTitle(fragment.getTitle());
+            actionBar.setDisplayHomeAsUpEnabled(fm.getBackStackEntryCount() > 0);
+        }
     }
 
     protected void changeFragment(BaseFragment fragment) {
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, fragment)
-                .addToBackStack(fragment.getTag())
+                .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override

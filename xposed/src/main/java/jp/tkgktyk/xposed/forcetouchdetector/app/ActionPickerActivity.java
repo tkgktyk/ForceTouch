@@ -69,7 +69,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, new ToolPickerFragment())
-                .addToBackStack("tool")
+                .addToBackStack(null)
                 .commit();
     }
 

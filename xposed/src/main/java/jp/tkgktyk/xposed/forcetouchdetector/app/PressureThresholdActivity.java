@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
@@ -132,6 +133,7 @@ public class PressureThresholdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pressure_threshold);
         ButterKnife.inject(this);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
         mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
@@ -151,6 +153,18 @@ public class PressureThresholdActivity extends AppCompatActivity {
 
         mPressureThreshold.setText(FTD.getSharedPreferences(this)
                 .getString(getThresholdKey(), ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override
