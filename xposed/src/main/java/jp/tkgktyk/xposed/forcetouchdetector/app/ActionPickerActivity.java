@@ -24,9 +24,9 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
  * Created by tkgktyk on 2015/06/07.
  */
 public class ActionPickerActivity extends AppCompatActivity {
-    private static final String EXTRA_TITLE = FTD.PREFIX_EXTRA + "title";
-    public static final String EXTRA_KEY = FTD.PREFIX_EXTRA + "key";
-    public static final String EXTRA_INTENT = FTD.PREFIX_EXTRA + "intent";
+    private static final String EXTRA_TITLE = FTD.PREFIX_EXTRA + "TITLE";
+    public static final String EXTRA_KEY = FTD.PREFIX_EXTRA + "KEY";
+    public static final String EXTRA_INTENT = FTD.PREFIX_EXTRA + "INTENT";
 
     public static void putExtras(Intent intent, CharSequence title, String key) {
         intent.putExtra(EXTRA_TITLE, title);

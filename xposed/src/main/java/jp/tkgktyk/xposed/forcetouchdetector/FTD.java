@@ -21,10 +21,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Point;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.google.common.base.Strings;
 
@@ -43,14 +45,14 @@ public class FTD {
     public static final String PREFIX_EXTRA = PACKAGE_NAME + ".intent.extra.";
     public static final String SUFFIX_TOUCH_ACTION = ".touch";
 
-    public static final String ACTION_BACK = PREFIX_ACTION + "back";
-    public static final String ACTION_HOME = PREFIX_ACTION + "home";
-    public static final String ACTION_RECENTS = PREFIX_ACTION + "recents";
-    public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "expand_notifications";
-    public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "expand_quick_settings";
+    public static final String ACTION_BACK = PREFIX_ACTION + "BACK";
+    public static final String ACTION_HOME = PREFIX_ACTION + "HOME";
+    public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
+    public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "EXPAND_NOTIFICATIONS";
+    public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "EXPAND_QUICK_SETTINGS";
 
-    public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "double_tap" + SUFFIX_TOUCH_ACTION;
-    public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "long_press" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
 
     public static final IntentFilter LOCAL_ACTION_FILTER;
 
@@ -65,6 +67,9 @@ public class FTD {
         LOCAL_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
         LOCAL_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
     }
+
+    public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
+    public static final String EXTRA_FRACTION_Y = PREFIX_EXTRA + "FRACTION_Y";
 
     public static String getActionName(Context context, String action) {
         if (action.equals(ACTION_BACK)) {
@@ -88,7 +93,7 @@ public class FTD {
     public static boolean performAction(@NonNull ViewGroup container, String uri,
                                         MotionEvent event) {
         XposedModule.logD(uri);
-        Intent intent = loadIntent(uri);
+        Intent intent = loadIntent(container.getContext(), uri, event);
         if (intent == null) {
             return false;
         }
@@ -103,9 +108,15 @@ public class FTD {
         return true;
     }
 
-    private static Intent loadIntent(String uri) {
+    private static Intent loadIntent(Context context, String uri, MotionEvent event) {
         try {
-            return Intent.parseUri(uri, 0);
+            Intent intent = Intent.parseUri(uri, 0);
+            Point displaySize = new Point();
+            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getRealSize(displaySize);
+            intent.putExtra(EXTRA_FRACTION_X, event.getX() / displaySize.x);
+            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / displaySize.y);
+            return intent;
         } catch (URISyntaxException e) {
             XposedModule.logE(e);
         }
@@ -130,54 +141,40 @@ public class FTD {
         }
     }
 
-    private static void performTouchAction(@NonNull ViewGroup container, @NonNull String action,
-                                           @NonNull MotionEvent event) {
+    private static void performTouchAction(@NonNull final ViewGroup container,
+                                           @NonNull String action,
+                                           @NonNull final MotionEvent event) {
         if (action.equals(ACTION_DOUBLE_TAP)) {
-            // TODO: implement. use input command?
+            // TODO: use input command?
+            injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
+            injectMotionEvent(container, event, MotionEvent.ACTION_UP);
+            injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
+            injectMotionEvent(container, event, MotionEvent.ACTION_UP);
         } else if (action.equals(ACTION_LONG_PRESS)) {
-            // TODO: this works partially. use input command?
-            View view = findViewOnPoint(container, event.getX(), event.getY(), true);
-            if (view == null) {
-                XposedModule.logD("view was not found");
-                return;
-            }
-            XposedModule.logD(view.toString());
-            view.performLongClick();
+            // TODO: use input command?
+            injectMotionEvent2(container, event, MotionEvent.ACTION_DOWN);
+            injectMotionEvent(container, event, MotionEvent.ACTION_CANCEL);
         }
     }
 
-    private static View findViewOnPoint(ViewGroup container, float x, float y,
-                                        boolean longClickable) {
-        int location[] = new int[2];
+    private static void injectMotionEvent(@NonNull ViewGroup container, @NonNull MotionEvent base,
+                                          int action) {
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
+                base.getX(), base.getY(), 0);
+        container.dispatchTouchEvent(event);
+        event.recycle();
+    }
 
-        int count = container.getChildCount();
-        for (int i = count - 1; i >= 0; --i) {
-            View child = container.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                View view = findViewOnPoint((ViewGroup) child, x, y, longClickable);
-                if (view != null) {
-                    return view;
-                }
-            } else {
-                child.getLocationOnScreen(location);
-                int viewX = location[0];
-                int viewY = location[1];
-                // point is inside view bounds
-                if ((x > viewX && x < (viewX + child.getWidth())) &&
-                        (y > viewY && y < (viewY + child.getHeight()))) {
-                    if (longClickable) {
-                        if (child.isLongClickable()) {
-                            return child;
-                        }
-                    } else {
-                        if (child.isClickable()) {
-                            return child;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    private static void injectMotionEvent2(@NonNull ViewGroup container, @NonNull MotionEvent base,
+                                          int action) {
+        long downTime = SystemClock.uptimeMillis() - 1000;
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
+                base.getX(), base.getY(), 0.0f, 0.0f, 0, 1.0f, 1.0f, -1, 0);
+        container.dispatchTouchEvent(event);
+        event.recycle();
     }
 
     public static final String ACTION_SETTINGS_CHANGED = PREFIX_ACTION + "SETTINGS_CHANGED";

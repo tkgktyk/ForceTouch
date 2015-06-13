@@ -183,7 +183,7 @@ public class ModActivity extends XposedModule {
 
         private void multiplyIntField(String fieldName, int n) {
             int value = XposedHelpers.getIntField(mGestureDetector, fieldName);
-            XposedModule.logD(fieldName + " = " + value);
+//            XposedModule.logD(fieldName + " = " + value);
             XposedHelpers.setIntField(mGestureDetector, fieldName, value * n);
         }
 
@@ -242,11 +242,10 @@ public class ModActivity extends XposedModule {
 
         public boolean onTouchEvent(MotionEvent event) {
             boolean gesture = false;
-            int action = event.getAction() & MotionEvent.ACTION_MASK;
-            if (mIsForceTouch && action == MotionEvent.ACTION_MOVE) {
+            if (mIsForceTouch && event.getActionMasked() == MotionEvent.ACTION_MOVE) {
                 gesture = true;
             } else {
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
                         if (!mSettings.isEnabled()) {
                             break;
