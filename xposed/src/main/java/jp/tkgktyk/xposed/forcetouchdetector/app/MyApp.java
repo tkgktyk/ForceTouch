@@ -45,7 +45,7 @@ public class MyApp extends BaseApplication {
 
     @Override
     protected void onVersionUpdated(MyVersion next, MyVersion old) {
-        if (old.isOlderThan("0.1.4")) {
+        if (old.isOlderThan("0.2.0")) {
             SharedPreferences prefs = getDefaultSharedPreferences();
             prefs.edit()
                     .putBoolean(getString(R.string.key_pressure_enabled),
@@ -62,6 +62,13 @@ public class MyApp extends BaseApplication {
                             prefs.getString("key_action_flick_right", ""))
                     .putString(getString(R.string.key_pressure_action_flick_up),
                             prefs.getString("key_action_flick_up", ""))
+                    .putString(getString(R.string.key_pressure_action_flick_down),
+                            prefs.getString("key_action_flick_down", ""))
+                    .apply();
+        }
+        if (old.isOlderThan("0.2.1")) {
+            SharedPreferences prefs = getDefaultSharedPreferences();
+            prefs.edit()
                     .putString(getString(R.string.key_pressure_action_flick_down),
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
