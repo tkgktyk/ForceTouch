@@ -25,18 +25,14 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
  */
 public class ActionPickerActivity extends AppCompatActivity {
     private static final String EXTRA_TITLE = FTD.PREFIX_EXTRA + "TITLE";
-    public static final String EXTRA_KEY = FTD.PREFIX_EXTRA + "KEY";
     public static final String EXTRA_INTENT = FTD.PREFIX_EXTRA + "INTENT";
 
-    public static void putExtras(Intent intent, CharSequence title, String key) {
+    public static void putExtras(Intent intent, CharSequence title) {
         intent.putExtra(EXTRA_TITLE, title);
-        intent.putExtra(EXTRA_KEY, key);
     }
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-
-    private String mKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +42,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         setSupportActionBar(mToolbar);
-
-        setTitle(getIntent().getStringExtra(EXTRA_TITLE));
-        mKey = getIntent().getStringExtra(EXTRA_KEY);
+        getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_TITLE));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
