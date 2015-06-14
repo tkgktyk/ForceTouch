@@ -39,7 +39,7 @@ import de.robv.android.xposed.XposedHelpers;
 /**
  * Created by tkgktyk on 2015/02/12.
  */
-public class ModActivity extends XposedModule {
+public class ModForceTouch extends XposedModule {
     private static final String CLASS_DECOR_VIEW = "com.android.internal.policy.impl.PhoneWindow$DecorView";
     private static final String FIELD_FORCE_TOUCH_DETECTOR = FTD.NAME + "_forceTouchDetector";
     private static final String FIELD_SETTINGS_CHANGED_RECEIVER = FTD.NAME + "_settingsChangedReceiver";
@@ -62,12 +62,13 @@ public class ModActivity extends XposedModule {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     FrameLayout decorView = (FrameLayout) param.thisObject;
-                    Context context = decorView.getContext();
-                    if (context.getPackageName().equals(FTD.PACKAGE_NAME)) {
+                    FTD.Settings settings =  newSettings(mPrefs);
+                    settings.blacklist.add(FTD.PACKAGE_NAME);
+                    if (settings.blacklist.contains(decorView.getContext().getPackageName())) {
                         // blacklist
                         return;
                     }
-                    ForceTouchDetector ftd = new ForceTouchDetector(decorView, newSettings(mPrefs));
+                    ForceTouchDetector ftd = new ForceTouchDetector(decorView, settings);
                     XposedHelpers.setAdditionalInstanceField(decorView,
                             FIELD_FORCE_TOUCH_DETECTOR, ftd);
                 } catch (Throwable t) {
@@ -161,7 +162,7 @@ public class ModActivity extends XposedModule {
 
         // ripple
         private static final int RIPPLE_SIZE = 5;
-        private static final float START_SCALE = 1.0f / RIPPLE_SIZE;
+        private static final float START_SCALE = 0.0f;
         private static final float START_ALPHA = 0.7f;
         private View mRippleView;
         private int mRippleSize;

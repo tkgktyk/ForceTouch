@@ -48,6 +48,9 @@
 
     <string name="not_found">Not found</string>
 
+    <!-- App Select Activity -->
+    <string name="only_selected">Only selected</string>
+
     <!-- Header -->
     <!-- Setting -->
     <string name="category_setting">Setting</string>
@@ -63,6 +66,7 @@
     <!-- General -->
     <string name="title_detection_area">Detection Area</string>
     <string name="unit_detection_area">% from bottom of screen</string>
+    <string name="title_blacklist">Blacklist</string>
 
     <!-- Setting -->
     <string name="title_enabled">Master Switch</string>

@@ -24,5 +24,9 @@
         android:inputType="number"
         android:key="@string/key_detection_area"
         android:title="@string/title_detection_area"/>
-
+    <!-- Blacklist -->
+    <Preference
+        android:icon="@null"
+        android:key="@string/key_blacklist"
+        android:title="@string/title_blacklist"/>
 </PreferenceScreen>

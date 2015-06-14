@@ -42,6 +42,8 @@
         <service android:name=".app.EmergencyService"/>
 
         <activity
+            android:name=".app.AppSelectActivity"/>
+        <activity
             android:name=".app.ActionPickerActivity"
             android:theme="@style/DialogTheme"/>
         <activity

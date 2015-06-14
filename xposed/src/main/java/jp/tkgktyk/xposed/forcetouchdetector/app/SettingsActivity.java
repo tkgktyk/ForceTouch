@@ -29,6 +29,8 @@ import android.support.annotation.StringRes;
 import com.google.common.base.Objects;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Set;
 
 import jp.tkgktyk.lib.BaseSettingsActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
@@ -125,6 +127,10 @@ public class SettingsActivity extends BaseSettingsActivity {
     }
 
     public static class GeneralSettingsFragment extends XposedFragment {
+        private static final int REQUEST_BLACKLIST = 1;
+
+        private String mPrefKey;
+
         public GeneralSettingsFragment() {
         }
 
@@ -139,6 +145,35 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_general_settings);
 
             showTextSummary(R.string.key_detection_area, R.string.unit_detection_area);
+            openActivityForResult(R.string.key_blacklist, AppSelectActivity.class,
+                    REQUEST_BLACKLIST, new ExtraPutter() {
+                        @Override
+                        public void putExtras(Preference preference, Intent activityIntent) {
+                            mPrefKey = preference.getKey();
+                            Set<String> blacklist = preference.getSharedPreferences()
+                                    .getStringSet(mPrefKey, Collections.<String>emptySet());
+                            AppSelectActivity.putExtras(activityIntent,
+                                    preference.getTitle(), blacklist);
+                        }
+                    });
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (requestCode) {
+                case REQUEST_BLACKLIST:
+                    if (resultCode == RESULT_OK) {
+                        Set<String> blacklist = (Set<String>) data.getSerializableExtra(
+                                AppSelectActivity.EXTRA_SELECTED_HASH_SET);
+                        getPreferenceManager().getSharedPreferences()
+                                .edit()
+                                .putStringSet(mPrefKey, blacklist)
+                                .apply();
+                    }
+                    break;
+                default:
+                    super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
@@ -146,22 +181,22 @@ public class SettingsActivity extends BaseSettingsActivity {
 
         private static final int REQUEST_ACTION = 1;
 
+        private String mPrefKey;
+
         public SettingsFragment() {
         }
 
         protected void pickAction(@StringRes int id) {
-            String key = getString(id);
-            final Preference pref = findPreference(key);
-            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            openActivityForResult(id, ActionPickerActivity.class, REQUEST_ACTION, new ExtraPutter() {
                 @Override
-                public boolean onPreferenceClick(Preference preference) {
+                public void putExtras(Preference preference, Intent activityIntent) {
+                    mPrefKey = preference.getKey();
                     Intent intent = new Intent(preference.getContext(), ActionPickerActivity.class);
-                    ActionPickerActivity.putExtras(intent, pref.getTitle(), pref.getKey());
-                    startActivityForResult(intent, REQUEST_ACTION);
-                    return true;
+                    ActionPickerActivity.putExtras(intent, preference.getTitle());
                 }
             });
-            updateActionSummary(pref, pref.getSharedPreferences().getString(key, ""));
+            Preference pref = findPreference(id);
+            updateActionSummary(pref, pref.getSharedPreferences().getString(pref.getKey(), ""));
         }
 
         private void updateActionSummary(Preference preference, String uri) {
@@ -198,16 +233,15 @@ public class SettingsActivity extends BaseSettingsActivity {
             switch (requestCode) {
                 case REQUEST_ACTION:
                     if (resultCode == RESULT_OK) {
-                        String key = data.getStringExtra(ActionPickerActivity.EXTRA_KEY);
                         Intent intent = data.getParcelableExtra(ActionPickerActivity.EXTRA_INTENT);
                         String uri = getUri(intent);
                         MyApp.logD("picked intent: " + intent);
                         MyApp.logD("picked uri: " + uri);
                         // save
-                        Preference pref = findPreference(key);
+                        Preference pref = findPreference(mPrefKey);
                         pref.getSharedPreferences()
                                 .edit()
-                                .putString(key, uri)
+                                .putString(mPrefKey, uri)
                                 .apply();
                         updateActionSummary(pref, intent);
                     }

@@ -215,14 +215,14 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             openActivity(id, cls, null);
         }
 
-        protected void openActivity(@StringRes int id, final Class<?> cls, final ExtendsPutter putter) {
+        protected void openActivity(@StringRes int id, final Class<?> cls, final ExtraPutter putter) {
             Preference pref = findPreference(id);
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Intent activity = new Intent(preference.getContext(), cls);
                     if (putter != null) {
-                        putter.putExtends(activity);
+                        putter.putExtras(preference, activity);
                     }
                     startActivity(activity);
                     return true;
@@ -230,8 +230,29 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             });
         }
 
-        protected interface ExtendsPutter {
-            void putExtends(Intent activityIntent);
+        protected void openActivityForResult(@StringRes int id, final Class<?> cls,
+                                             int requestCode) {
+            openActivityForResult(id, cls, requestCode, null);
+        }
+
+        protected void openActivityForResult(@StringRes int id, final Class<?> cls,
+                                             final int requestCode, final ExtraPutter putter) {
+            Preference pref = findPreference(id);
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent activity = new Intent(preference.getContext(), cls);
+                    if (putter != null) {
+                        putter.putExtras(preference, activity);
+                    }
+                    startActivityForResult(activity, requestCode);
+                    return true;
+                }
+            });
+        }
+
+        protected interface ExtraPutter {
+            void putExtras(Preference preference, Intent activityIntent);
         }
     }
 }

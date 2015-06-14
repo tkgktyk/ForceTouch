@@ -11,6 +11,7 @@
 
     <!-- General -->
     <string name="key_detection_area" translatable="false">key_detection_area</string>
+    <string name="key_blacklist" translatable="false">key_blacklist</string>
 
     <!-- Pressure -->
     <!-- Setting -->
