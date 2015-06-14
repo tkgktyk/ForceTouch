@@ -216,6 +216,10 @@ public class ModForceTouch extends XposedModule {
             mRippleAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
+                    mRippleView.setScaleX(START_SCALE);
+                    mRippleView.setScaleY(START_SCALE);
+                    mRippleView.setAlpha(START_ALPHA);
+
                     mTargetView.addView(mRippleView);
                 }
 
@@ -291,10 +295,6 @@ public class ModForceTouch extends XposedModule {
         }
 
         private void startRipple(MotionEvent event) {
-            mRippleView.setScaleX(START_SCALE);
-            mRippleView.setScaleY(START_SCALE);
-            mRippleView.setAlpha(START_ALPHA);
-
             float x = event.getX();
             float y = event.getY();
             mRippleView.setTranslationX(x - mRippleSize / 2.0f);
