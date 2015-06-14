@@ -30,9 +30,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.app.MyApp;
 
@@ -234,6 +236,7 @@ public class FTD {
 
         // General
         public final float forceTouchArea;
+        public final Set<String> blacklist;
 
         // Pressure
         public final Holder pressure = new Holder();
@@ -244,11 +247,12 @@ public class FTD {
         public Settings(SharedPreferences prefs) {
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
+            blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
 
             // Pressure
             pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);
             pressure.threshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
-                    ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
             pressure.actionTap = prefs.getString("key_pressure_action_tap", "");
             pressure.actionDoubleTap = prefs.getString("key_pressure_action_double_tap", "");
@@ -261,7 +265,7 @@ public class FTD {
             // Size
             size.enabled = prefs.getBoolean("key_size_enabled", false);
             size.threshold = Float.parseFloat(getStringToParse(prefs, "key_size_threshold",
-                    ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
             size.actionTap = prefs.getString("key_size_action_tap", "");
             size.actionDoubleTap = prefs.getString("key_size_action_double_tap", "");
