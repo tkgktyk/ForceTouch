@@ -33,7 +33,7 @@ public class Mod implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         mPrefs.makeWorldReadable();
 
         ModPhoneStatusBar.initZygote(mPrefs);
-        ModActivity.initZygote(mPrefs);
+        ModForceTouch.initZygote(mPrefs);
         ModLongPress.initZygote(mPrefs);
     }
 

@@ -47,11 +47,11 @@ public class ModLongPress extends XposedModule {
                 try {
                     View view = (View) methodHookParam.thisObject;
                     MotionEvent event = (MotionEvent) methodHookParam.args[0];
-                    logD(view.toString() + event.toString());
+//                    logD(view.toString() + event.toString());
                     if (event.getActionMasked() == MotionEvent.ACTION_DOWN &&
                             event.getDeviceId() == -1 &&
                             view.isLongClickable()) {
-                        logD();
+//                        logD();
                         if (view.performLongClick()) {
                             return true;
                         }
@@ -74,11 +74,11 @@ public class ModLongPress extends XposedModule {
                         try {
                             GestureDetector detector = (GestureDetector) methodHookParam.thisObject;
                             MotionEvent event = (MotionEvent) methodHookParam.args[0];
-                            logD(detector.toString() + event.toString());
+//                            logD(detector.toString() + event.toString());
                             if (event.getActionMasked() == MotionEvent.ACTION_DOWN &&
                                     event.getDeviceId() == -1 &&
                                     detector.isLongpressEnabled()) {
-                                logD();
+//                                logD();
                                 GestureDetector.OnGestureListener listener
                                         = (GestureDetector.OnGestureListener) XposedHelpers
                                         .getObjectField(detector, "mListener");

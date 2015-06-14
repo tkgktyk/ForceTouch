@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
-import jp.tkgktyk.xposed.forcetouchdetector.ModActivity;
+import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton;
 
@@ -152,7 +152,7 @@ public class PressureThresholdActivity extends AppCompatActivity {
         });
 
         mPressureThreshold.setText(FTD.getSharedPreferences(this)
-                .getString(getThresholdKey(), ModActivity.ForceTouchDetector.DEFAULT_THRESHOLD));
+                .getString(getThresholdKey(), ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
     }
 
     @Override
