@@ -64,8 +64,10 @@ public class ModForceTouch extends XposedModule {
                     FrameLayout decorView = (FrameLayout) param.thisObject;
                     FTD.Settings settings =  newSettings(mPrefs);
                     settings.blacklist.add(FTD.PACKAGE_NAME);
-                    if (settings.blacklist.contains(decorView.getContext().getPackageName())) {
+                    String packageName = decorView.getContext().getPackageName();
+                    if (settings.blacklist.contains(packageName)) {
                         // blacklist
+                        log("ignore: " + packageName);
                         return;
                     }
                     ForceTouchDetector ftd = new ForceTouchDetector(decorView, settings);

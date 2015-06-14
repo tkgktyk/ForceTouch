@@ -196,6 +196,7 @@ public class FTD {
     public static final String EXTRA_SETTINGS = PREFIX_EXTRA + "SETTINGS";
     public static final IntentFilter SETTINGS_CHANGED_FILTER = new IntentFilter(ACTION_SETTINGS_CHANGED);
 
+    // called by SettingsActivity
     public static void sendSettingsChanged(Context context, SharedPreferences prefs) {
         MyApp.logD("send settings changed");
         FTD.Settings settings = new FTD.Settings(prefs);
