@@ -21,13 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -58,22 +56,27 @@ public class FTD {
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS_FULL = PREFIX_ACTION + "LONG_PRESS_FULL" + SUFFIX_TOUCH_ACTION;
 
-    public static final IntentFilter LOCAL_ACTION_FILTER;
+    public static final String ACTION_FLOATING_NAVIGATION = PREFIX_ACTION + "FLOATING_NAVIGATION";
+
+    public static final IntentFilter SYSTEM_ACTION_FILTER;
+    public static final IntentFilter APP_ACTION_FILTER;
 
     /**
      * IntentFilters initialization
      */
     static {
-        LOCAL_ACTION_FILTER = new IntentFilter();
-        LOCAL_ACTION_FILTER.addAction(ACTION_BACK);
-        LOCAL_ACTION_FILTER.addAction(ACTION_HOME);
-        LOCAL_ACTION_FILTER.addAction(ACTION_RECENTS);
-        LOCAL_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
-        LOCAL_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        SYSTEM_ACTION_FILTER = new IntentFilter();
+        SYSTEM_ACTION_FILTER.addAction(ACTION_BACK);
+        SYSTEM_ACTION_FILTER.addAction(ACTION_HOME);
+        SYSTEM_ACTION_FILTER.addAction(ACTION_RECENTS);
+        SYSTEM_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
+        SYSTEM_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        APP_ACTION_FILTER = new IntentFilter();
+        APP_ACTION_FILTER.addAction(ACTION_FLOATING_NAVIGATION);
     }
 
-    public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
-    public static final String EXTRA_FRACTION_Y = PREFIX_EXTRA + "FRACTION_Y";
+    public static final String EXTRA_X_FLOAT = PREFIX_EXTRA + "X_FLOAT";
+    public static final String EXTRA_Y_FLOAT = PREFIX_EXTRA + "Y_FLOAT";
 
     public static String getActionName(Context context, String action) {
         if (action.equals(ACTION_BACK)) {
@@ -92,6 +95,8 @@ public class FTD {
             return context.getString(R.string.action_long_press);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             return context.getString(R.string.action_long_press_full);
+        } else if (action.equals(ACTION_FLOATING_NAVIGATION)) {
+            return context.getString(R.string.action_floating_navigation);
         }
         return "";
     }
@@ -99,7 +104,7 @@ public class FTD {
     public static boolean performAction(@NonNull ViewGroup container, String uri,
                                         MotionEvent event) {
         XposedModule.logD(uri);
-        Intent intent = loadIntent(container.getContext(), uri, event);
+        Intent intent = loadIntent(uri, event);
         if (intent == null) {
             return false;
         }
@@ -114,14 +119,11 @@ public class FTD {
         return true;
     }
 
-    private static Intent loadIntent(Context context, String uri, MotionEvent event) {
+    private static Intent loadIntent(String uri, MotionEvent event) {
         try {
             Intent intent = Intent.parseUri(uri, 0);
-            Point displaySize = new Point();
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay().getRealSize(displaySize);
-            intent.putExtra(EXTRA_FRACTION_X, event.getX() / displaySize.x);
-            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / displaySize.y);
+            intent.putExtra(EXTRA_X_FLOAT, event.getX());
+            intent.putExtra(EXTRA_Y_FLOAT, event.getY());
             return intent;
         } catch (URISyntaxException e) {
             XposedModule.logE(e);
@@ -183,7 +185,7 @@ public class FTD {
     }
 
     private static void injectMotionEvent2(@NonNull ViewGroup container, @NonNull MotionEvent base,
-                                          int action) {
+                                           int action) {
         long downTime = SystemClock.uptimeMillis() - 1000;
         long eventTime = SystemClock.uptimeMillis() + 100;
         MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,

@@ -45,6 +45,7 @@
     <string name="action_double_tap">Double Tap</string>
     <string name="action_long_press">Long Press</string>
     <string name="action_long_press_full">Long Press (Fully Simulated)</string>
+    <string name="action_floating_navigation">Floating Navigation</string>
 
     <string name="not_found">Not found</string>
 

@@ -42,6 +42,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         setSupportActionBar(mToolbar);
+        MyApp.logD(getIntent().getStringExtra(EXTRA_TITLE));
         getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_TITLE));
 
         if (savedInstanceState == null) {
@@ -171,6 +172,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_DOUBLE_TAP,
                 FTD.ACTION_LONG_PRESS,
                 FTD.ACTION_LONG_PRESS_FULL,
+                FTD.ACTION_FLOATING_NAVIGATION,
         };
 
         @Override

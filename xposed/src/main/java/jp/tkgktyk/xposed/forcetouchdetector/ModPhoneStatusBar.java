@@ -97,7 +97,7 @@ public class ModPhoneStatusBar extends XposedModule {
 //                    mPhoneStatusBar = param.thisObject;
 //                    Context context = (Context) XposedHelpers.getObjectField(mPhoneStatusBar, "mContext");
 //
-//                    context.registerReceiver(mActionReceiver, FTD.LOCAL_ACTION_FILTER);
+//                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_ACTION_FILTER);
 //                } catch (Throwable t) {
 //                    logE(t);
 //                }
@@ -110,7 +110,7 @@ public class ModPhoneStatusBar extends XposedModule {
                     mPhoneStatusBar = param.thisObject;
                     Context context = (Context) XposedHelpers.getObjectField(mPhoneStatusBar, "mContext");
 
-                    context.registerReceiver(mActionReceiver, FTD.LOCAL_ACTION_FILTER);
+                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_ACTION_FILTER);
                 } catch (Throwable t) {
                     logE(t);
                 }
