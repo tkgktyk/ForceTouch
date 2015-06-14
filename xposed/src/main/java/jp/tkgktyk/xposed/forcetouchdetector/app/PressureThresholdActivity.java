@@ -67,8 +67,6 @@ public class PressureThresholdActivity extends AppCompatActivity {
     EditText mPressureThreshold;
     @InjectView(R.id.pressure_threshold_container)
     TextInputLayout mPressureThresholdContainer;
-    @InjectView(R.id.learn_more_button)
-    Button mLearnMoreButton;
 
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
