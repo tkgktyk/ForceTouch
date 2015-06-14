@@ -28,5 +28,6 @@
     <Preference
         android:icon="@null"
         android:key="@string/key_blacklist"
+        android:summary="@string/summary_blacklist"
         android:title="@string/title_blacklist"/>
 </PreferenceScreen>

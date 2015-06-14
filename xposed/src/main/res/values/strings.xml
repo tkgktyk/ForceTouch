@@ -68,6 +68,7 @@
     <string name="title_detection_area">Detection Area</string>
     <string name="unit_detection_area">% from bottom of screen</string>
     <string name="title_blacklist">Blacklist</string>
+    <string name="summary_blacklist">Stop app process for changes to take effect</string>
 
     <!-- Setting -->
     <string name="title_enabled">Master Switch</string>
