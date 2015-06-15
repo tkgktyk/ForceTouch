@@ -123,7 +123,7 @@ public class CircleLayoutForFAB extends FrameLayout {
 
             mShowAnimation = ObjectAnimator.ofPropertyValuesHolder(this,
                     holderScaleX, holderScaleY);
-            mShowAnimation.setDuration(300); // default
+            mShowAnimation.setDuration(300); // default 300
         }
         { // hide
             PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f, 0.0f);
@@ -131,7 +131,7 @@ public class CircleLayoutForFAB extends FrameLayout {
 
             mHideAnimation = ObjectAnimator.ofPropertyValuesHolder(this,
                     holderScaleX, holderScaleY);
-            mHideAnimation.setDuration(300); // default
+            mHideAnimation.setDuration(300); // default 300
         }
     }
 
