@@ -30,12 +30,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 /**
  * Created by tkgktyk on 2015/02/13.
  */
-public class ModPhoneStatusBar extends XposedModule {
+public class ModSystemUI extends XposedModule {
     private static final String CLASS_PHONE_STATUS_BAR = "com.android.systemui.statusbar.phone.PhoneStatusBar";
 
     private static XSharedPreferences mPrefs;
 
     private static Object mPhoneStatusBar;
+
     private static final BroadcastReceiver mActionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -97,7 +98,7 @@ public class ModPhoneStatusBar extends XposedModule {
 //                    mPhoneStatusBar = param.thisObject;
 //                    Context context = (Context) XposedHelpers.getObjectField(mPhoneStatusBar, "mContext");
 //
-//                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_ACTION_FILTER);
+//                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_UI_ACTION_FILTER);
 //                } catch (Throwable t) {
 //                    logE(t);
 //                }
@@ -110,7 +111,7 @@ public class ModPhoneStatusBar extends XposedModule {
                     mPhoneStatusBar = param.thisObject;
                     Context context = (Context) XposedHelpers.getObjectField(mPhoneStatusBar, "mContext");
 
-                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_ACTION_FILTER);
+                    context.registerReceiver(mActionReceiver, FTD.SYSTEM_UI_ACTION_FILTER);
                 } catch (Throwable t) {
                     logE(t);
                 }
