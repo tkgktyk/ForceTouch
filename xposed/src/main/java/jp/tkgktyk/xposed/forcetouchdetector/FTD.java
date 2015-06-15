@@ -17,6 +17,7 @@
 package jp.tkgktyk.xposed.forcetouchdetector;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +27,7 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -121,7 +123,13 @@ public class FTD {
         if (intent.getComponent() == null) {
             return false;
         }
-        container.getContext().startActivity(intent);
+        Context context = container.getContext();
+        Context mod = getModContext(context);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
+        }
         return true;
     }
 
