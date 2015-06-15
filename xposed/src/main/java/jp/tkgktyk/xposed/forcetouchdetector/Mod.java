@@ -32,13 +32,14 @@ public class Mod implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         mPrefs = new XSharedPreferences(FTD.PACKAGE_NAME);
         mPrefs.makeWorldReadable();
 
-        ModPhoneStatusBar.initZygote(mPrefs);
+        ModSystemUI.initZygote(mPrefs);
+        ModInternal.initZygote(mPrefs);
         ModForceTouch.initZygote(mPrefs);
         ModLongPress.initZygote(mPrefs);
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        ModPhoneStatusBar.handleLoadPackage(loadPackageParam);
+        ModSystemUI.handleLoadPackage(loadPackageParam);
     }
 }

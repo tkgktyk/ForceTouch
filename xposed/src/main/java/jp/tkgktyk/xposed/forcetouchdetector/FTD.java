@@ -51,6 +51,7 @@ public class FTD {
     public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
     public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "EXPAND_NOTIFICATIONS";
     public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "EXPAND_QUICK_SETTINGS";
+    public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
 
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
@@ -58,19 +59,22 @@ public class FTD {
 
     public static final String ACTION_FLOATING_NAVIGATION = PREFIX_ACTION + "FLOATING_NAVIGATION";
 
-    public static final IntentFilter SYSTEM_ACTION_FILTER;
+    public static final IntentFilter SYSTEM_UI_ACTION_FILTER;
+    public static final IntentFilter INTERNAL_ACTION_FILTER;
     public static final IntentFilter APP_ACTION_FILTER;
 
     /**
      * IntentFilters initialization
      */
     static {
-        SYSTEM_ACTION_FILTER = new IntentFilter();
-        SYSTEM_ACTION_FILTER.addAction(ACTION_BACK);
-        SYSTEM_ACTION_FILTER.addAction(ACTION_HOME);
-        SYSTEM_ACTION_FILTER.addAction(ACTION_RECENTS);
-        SYSTEM_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
-        SYSTEM_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        SYSTEM_UI_ACTION_FILTER = new IntentFilter();
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_BACK);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_HOME);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_RECENTS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        INTERNAL_ACTION_FILTER = new IntentFilter();
+        INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
         APP_ACTION_FILTER = new IntentFilter();
         APP_ACTION_FILTER.addAction(ACTION_FLOATING_NAVIGATION);
     }
@@ -89,6 +93,8 @@ public class FTD {
             return context.getString(R.string.action_expand_notifications);
         } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
             return context.getString(R.string.action_expand_quick_settings);
+        } else if (action.equals(ACTION_KILL)) {
+            return context.getString(R.string.action_kill);
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
             return context.getString(R.string.action_double_tap);
         } else if (action.equals(ACTION_LONG_PRESS)) {

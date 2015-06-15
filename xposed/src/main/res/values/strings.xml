@@ -42,6 +42,7 @@
     <string name="action_recents">Recents</string>
     <string name="action_expand_notifications">Expand Notifications</string>
     <string name="action_expand_quick_settings">Expand Quick Settings</string>
+    <string name="action_kill">Kill Foreground App</string>
     <string name="action_double_tap">Double Tap</string>
     <string name="action_long_press">Long Press</string>
     <string name="action_long_press_full">Long Press (Fully Simulated)</string>
