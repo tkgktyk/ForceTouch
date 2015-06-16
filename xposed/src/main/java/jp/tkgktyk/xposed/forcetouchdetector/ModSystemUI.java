@@ -52,7 +52,8 @@ public class ModSystemUI extends XposedModule {
 //                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                    context.startActivity(home);
                 } else if (action.equals(FTD.ACTION_RECENTS)) {
-                    XposedHelpers.callMethod(mPhoneStatusBar, "toggleRecents");
+                    sendKeyEvent(KeyEvent.KEYCODE_APP_SWITCH);
+//                    XposedHelpers.callMethod(mPhoneStatusBar, "toggleRecents");
                 } else if (action.equals(FTD.ACTION_EXPAND_NOTIFICATIONS)) {
                     XposedHelpers.callMethod(mPhoneStatusBar, "animateExpandNotificationsPanel");
                 } else if (action.equals(FTD.ACTION_EXPAND_QUICK_SETTINGS)) {
