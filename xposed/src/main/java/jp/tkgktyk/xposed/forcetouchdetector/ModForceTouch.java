@@ -416,24 +416,26 @@ public class ModForceTouch extends XposedModule {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             FTD.Settings.Holder holder = judgeForceTouch(e1);
-            if (Math.abs(velocityX) > Math.abs(velocityY)) {
-                if (velocityX > 0) {
+            float x = e2.getX() - e1.getX();
+            float y = e2.getY() - e1.getY();
+            if (Math.abs(x) > Math.abs(y)) {
+                if (x > 0) {
                     if (!FTD.performAction(mTargetView, holder.actionFlickRight, e2)) {
-                        showToast("force fling x: " + velocityX);
+                        showToast("force fling x: " + x);
                     }
                 } else {
                     if (!FTD.performAction(mTargetView, holder.actionFlickLeft, e2)) {
-                        showToast("force fling x: " + velocityX);
+                        showToast("force fling x: " + x);
                     }
                 }
             } else {
-                if (velocityY > 0) {
+                if (y > 0) {
                     if (!FTD.performAction(mTargetView, holder.actionFlickDown, e2)) {
-                        showToast("force fling y: " + velocityY);
+                        showToast("force fling y: " + y);
                     }
                 } else {
                     if (!FTD.performAction(mTargetView, holder.actionFlickUp, e2)) {
-                        showToast("force fling y: " + velocityY);
+                        showToast("force fling y: " + y);
                     }
                 }
             }
