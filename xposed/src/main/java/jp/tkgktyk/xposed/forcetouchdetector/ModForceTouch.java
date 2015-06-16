@@ -62,7 +62,7 @@ public class ModForceTouch extends XposedModule {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     FrameLayout decorView = (FrameLayout) param.thisObject;
-                    FTD.Settings settings =  newSettings(mPrefs);
+                    FTD.Settings settings = newSettings(mPrefs);
                     settings.blacklist.add(FTD.PACKAGE_NAME);
                     String packageName = decorView.getContext().getPackageName();
                     if (settings.blacklist.contains(packageName)) {
@@ -154,12 +154,15 @@ public class ModForceTouch extends XposedModule {
 
     public static class ForceTouchDetector implements GestureDetector.OnGestureListener,
             GestureDetector.OnDoubleTapListener {
+        private static final int INVALIDE_POINTER_ID = -1;
+
         public static final String DEFAULT_THRESHOLD = "1.0";
 
         private final ViewGroup mTargetView;
         private FTD.Settings mSettings;
         private final GestureDetector mGestureDetector;
-        private boolean mIsForceTouch;
+        private int mActivePointerId = INVALIDE_POINTER_ID;
+        private long mDownTime;
         private Toast mToast;
 
         // ripple
@@ -186,7 +189,7 @@ public class ModForceTouch extends XposedModule {
 
         private void multiplyIntField(String fieldName, int n) {
             int value = XposedHelpers.getIntField(mGestureDetector, fieldName);
-//            XposedModule.logD(fieldName + " = " + value);
+//            logD(fieldName + " = " + value);
             XposedHelpers.setIntField(mGestureDetector, fieldName, value * n);
         }
 
@@ -248,55 +251,110 @@ public class ModForceTouch extends XposedModule {
         }
 
         public boolean onTouchEvent(MotionEvent event) {
-            boolean gesture = false;
-            if (mIsForceTouch && event.getActionMasked() == MotionEvent.ACTION_MOVE) {
-                gesture = true;
-            } else {
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (!mSettings.isEnabled()) {
-                            break;
-                        }
+            if (!mSettings.isEnabled()) {
+                return false;
+            }
 
-                        float y = event.getY();
-                        if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
-                            FTD.Settings.Holder holder = judgeForceTouch(event);
-                            if (holder != null) {
-                                mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                                mIsForceTouch = true;
-                                gesture = true;
-                                startRipple(event);
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                    case MotionEvent.ACTION_UP:
-                        mIsForceTouch = false;
-                        gesture = true;
-                        break;
+            logD(event.toString());
+            boolean consumed = false;
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN: {
+                    if (judgeAndStartForceTouch(event)) {
+                        logD(event.toString());
+                        mGestureDetector.onTouchEvent(event);
+                        consumed = true;
+                    }
+                    break;
                 }
+                case MotionEvent.ACTION_MOVE:
+                    // cannot get ActivePointer when ACTION_MODE
+//                    logD("getActionIndex = " + event.getActionIndex());
+//                    logD("getAction = " + ((event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+//                            MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+//                    if (isActivePointer(event)) {
+                    consumeTouchEvent(MotionEvent.ACTION_MOVE, event);
+//                        consumed = true;
+//                    }
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    if (mActivePointerId != INVALIDE_POINTER_ID) {
+                        mActivePointerId = INVALIDE_POINTER_ID;
+                        mGestureDetector.onTouchEvent(event);
+                        consumed = true;
+                    }
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    if (mActivePointerId == INVALIDE_POINTER_ID) {
+                        if (judgeAndStartForceTouch(event)) {
+                            consumeTouchEvent(MotionEvent.ACTION_DOWN, event);
+                            consumed = true;
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+                            MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                    int pointerId = event.getPointerId(pointerIndex);
+                    if (pointerId == mActivePointerId) {
+                        consumeTouchEvent(MotionEvent.ACTION_UP, event);
+                        mActivePointerId = INVALIDE_POINTER_ID;
+                        consumed = true;
+                    }
+                    break;
             }
 
-            if (gesture) {
-                mGestureDetector.onTouchEvent(event);
+            return consumed;
+        }
+
+        private void consumeTouchEvent(int action, MotionEvent base) {
+            if (action == MotionEvent.ACTION_DOWN) {
+                mDownTime = base.getEventTime();
             }
-            return mIsForceTouch;
+            int index = base.findPointerIndex(mActivePointerId);
+            MotionEvent event = MotionEvent
+                    .obtain(mDownTime, base.getEventTime(), action,
+                            base.getX(index), base.getY(index),
+                            base.getPressure(index), base.getSize(index), base.getMetaState(),
+                            base.getXPrecision(), base.getYPrecision(), base.getDeviceId(),
+                            base.getEdgeFlags());
+            logD(event.toString());
+            mGestureDetector.onTouchEvent(event);
+            event.recycle();
         }
 
         private FTD.Settings.Holder judgeForceTouch(MotionEvent event) {
-            if (mSettings.pressure.enabled &&
-                    event.getPressure() > mSettings.pressure.threshold) {
-                return mSettings.pressure;
-            } else if (mSettings.size.enabled &&
-                    event.getSize() > mSettings.size.threshold) {
-                return mSettings.size;
+            int index = event.getActionIndex();
+            float y = event.getY(index);
+            // touch area
+            if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
+                // pressure and size
+                if (mSettings.pressure.enabled &&
+                        event.getPressure(index) > mSettings.pressure.threshold) {
+                    return mSettings.pressure;
+                } else if (mSettings.size.enabled &&
+                        event.getSize(index) > mSettings.size.threshold) {
+                    return mSettings.size;
+                }
             }
             return null;
         }
 
-        private void startRipple(MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
+        private boolean judgeAndStartForceTouch(MotionEvent event) {
+            int index = event.getActionIndex();
+            FTD.Settings.Holder holder = judgeForceTouch(event);
+            if (holder != null) {
+                mActivePointerId = event.getPointerId(index);
+                mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                startRipple(event, index);
+                return true;
+            }
+            return false;
+        }
+
+        private void startRipple(MotionEvent event, int index) {
+            float x = event.getX(index);
+            float y = event.getY(index);
             mRippleView.setTranslationX(x - mRippleSize / 2.0f);
             mRippleView.setTranslationY(y - mRippleSize / 2.0f);
 
