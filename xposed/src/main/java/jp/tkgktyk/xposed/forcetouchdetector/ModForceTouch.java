@@ -88,7 +88,7 @@ public class ModForceTouch extends XposedModule {
                             MotionEvent event = (MotionEvent) methodHookParam.args[0];
                             ForceTouchDetector ftd = getForceTouchDetector(decorView);
                             if (ftd != null) {
-                                handled = ftd.onTouchEvent(event);
+                                handled = ftd.dispatchTouchEvent(event, methodHookParam);
                             }
                         } catch (Throwable t) {
                             logE(t);
@@ -163,6 +163,8 @@ public class ModForceTouch extends XposedModule {
         private final GestureDetector mGestureDetector;
         private int mActivePointerId = INVALIDE_POINTER_ID;
         private long mDownTime;
+        private boolean mIntercepted;
+
         private Toast mToast;
 
         // ripple
@@ -250,15 +252,20 @@ public class ModForceTouch extends XposedModule {
             mToast.show();
         }
 
-        public boolean onTouchEvent(MotionEvent event) {
+        public boolean dispatchTouchEvent(MotionEvent event, XC_MethodHook.MethodHookParam methodHookParam) {
             if (!mSettings.isEnabled()) {
                 return false;
             }
 
-            boolean consumed = false;
+            boolean consumed = mIntercepted;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
                     if (judgeAndStartForceTouch(event)) {
+                        cancelOriginalTouchEvent(event, methodHookParam);
+                        // start force touch, intercept touch events
+                        mIntercepted = true;
+                        int index = event.getActionIndex();
+                        mActivePointerId = event.getPointerId(index);
                         consumeTouchEvent(MotionEvent.ACTION_DOWN, event);
                         consumed = true;
                     }
@@ -270,21 +277,31 @@ public class ModForceTouch extends XposedModule {
 //                    logD("getAction = " + ((event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
 //                            MotionEvent.ACTION_POINTER_INDEX_SHIFT));
 //                    if (isActivePointer(event)) {
-                    consumeTouchEvent(MotionEvent.ACTION_MOVE, event);
+                    if (mIntercepted) {
+                        consumeTouchEvent(MotionEvent.ACTION_MOVE, event);
+                    }
 //                        consumed = true;
 //                    }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     if (mActivePointerId != INVALIDE_POINTER_ID) {
+                        // stop force touch
                         consumeTouchEvent(MotionEvent.ACTION_UP, event);
                         consumed = true;
                         mActivePointerId = INVALIDE_POINTER_ID;
                     }
+                    // finalize this (multi-)touch stroke
+                    mIntercepted = false;
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
                     if (mActivePointerId == INVALIDE_POINTER_ID) {
                         if (judgeAndStartForceTouch(event)) {
+                            cancelOriginalTouchEvent(event, methodHookParam);
+                            // start force touch, intercept touch events
+                            mIntercepted = true;
+                            int index = event.getActionIndex();
+                            mActivePointerId = event.getPointerId(index);
                             consumeTouchEvent(MotionEvent.ACTION_DOWN, event);
                             consumed = true;
                         }
@@ -295,6 +312,7 @@ public class ModForceTouch extends XposedModule {
                             MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                     int pointerId = event.getPointerId(pointerIndex);
                     if (pointerId == mActivePointerId) {
+                        // stop force touch
                         consumeTouchEvent(MotionEvent.ACTION_UP, event);
                         consumed = true;
                         mActivePointerId = INVALIDE_POINTER_ID;
@@ -302,7 +320,9 @@ public class ModForceTouch extends XposedModule {
                     break;
             }
 
-            return consumed;
+            // intercept ACTION_UP and ACTION_CANCEL too when intercepted
+            // because already send ACTION_CANCEL to target view when force touch is started.
+            return consumed || mIntercepted;
         }
 
         private void consumeTouchEvent(int action, MotionEvent base) {
@@ -347,7 +367,7 @@ public class ModForceTouch extends XposedModule {
             int index = event.getActionIndex();
             FTD.Settings.Holder holder = judgeForceTouch(event);
             if (holder != null) {
-                mActivePointerId = event.getPointerId(index);
+                // feedback
                 mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 startRipple(event, index);
                 return true;
@@ -362,6 +382,22 @@ public class ModForceTouch extends XposedModule {
             mRippleView.setTranslationY(y - mRippleSize / 2.0f);
 
             mRippleAnimator.start();
+        }
+
+        private void cancelOriginalTouchEvent(MotionEvent event,
+                                              XC_MethodHook.MethodHookParam methodHookParam) {
+            // cancel other touch events
+            MotionEvent event2 = MotionEvent.obtain(event);
+            event2.setAction(MotionEvent.ACTION_CANCEL);
+            Object backup = methodHookParam.args[0];
+            methodHookParam.args[0] = event2;
+            try {
+                invokeOriginalMethod(methodHookParam);
+            } catch (Throwable t) {
+                logE(t);
+            }
+            methodHookParam.args[0] = backup;
+            event2.recycle();
         }
 
         @Override
