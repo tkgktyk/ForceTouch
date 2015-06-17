@@ -260,8 +260,7 @@ public class ModForceTouch extends XposedModule {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
                     if (judgeAndStartForceTouch(event)) {
-                        logD(event.toString());
-                        mGestureDetector.onTouchEvent(event);
+                        consumeTouchEvent(MotionEvent.ACTION_DOWN, event);
                         consumed = true;
                     }
                     break;
@@ -279,9 +278,9 @@ public class ModForceTouch extends XposedModule {
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     if (mActivePointerId != INVALIDE_POINTER_ID) {
-                        mActivePointerId = INVALIDE_POINTER_ID;
-                        mGestureDetector.onTouchEvent(event);
+                        consumeTouchEvent(MotionEvent.ACTION_UP, event);
                         consumed = true;
+                        mActivePointerId = INVALIDE_POINTER_ID;
                     }
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
@@ -298,8 +297,8 @@ public class ModForceTouch extends XposedModule {
                     int pointerId = event.getPointerId(pointerIndex);
                     if (pointerId == mActivePointerId) {
                         consumeTouchEvent(MotionEvent.ACTION_UP, event);
-                        mActivePointerId = INVALIDE_POINTER_ID;
                         consumed = true;
+                        mActivePointerId = INVALIDE_POINTER_ID;
                     }
                     break;
             }
@@ -312,6 +311,11 @@ public class ModForceTouch extends XposedModule {
                 mDownTime = base.getEventTime();
             }
             int index = base.findPointerIndex(mActivePointerId);
+            logD("mActivePointerId=" + mActivePointerId);
+            logD("index=" + index);
+            if (index == -1) {
+                return;
+            }
             MotionEvent event = MotionEvent
                     .obtain(mDownTime, base.getEventTime(), action,
                             base.getX(index), base.getY(index),
