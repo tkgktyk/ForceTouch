@@ -255,7 +255,6 @@ public class ModForceTouch extends XposedModule {
                 return false;
             }
 
-            logD(event.toString());
             boolean consumed = false;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
@@ -425,21 +424,21 @@ public class ModForceTouch extends XposedModule {
             if (Math.abs(x) > Math.abs(y)) {
                 if (x > 0) {
                     if (!FTD.performAction(mTargetView, holder.actionFlickRight, e2)) {
-                        showToast("force fling x: " + x);
+                        showToast("force flick right");
                     }
                 } else {
                     if (!FTD.performAction(mTargetView, holder.actionFlickLeft, e2)) {
-                        showToast("force fling x: " + x);
+                        showToast("force flick left");
                     }
                 }
             } else {
                 if (y > 0) {
                     if (!FTD.performAction(mTargetView, holder.actionFlickDown, e2)) {
-                        showToast("force fling y: " + y);
+                        showToast("force flick down");
                     }
                 } else {
                     if (!FTD.performAction(mTargetView, holder.actionFlickUp, e2)) {
-                        showToast("force fling y: " + y);
+                        showToast("force flick up");
                     }
                 }
             }
