@@ -36,8 +36,6 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.Set;
 
-import jp.tkgktyk.xposed.forcetouchdetector.app.MyApp;
-
 /**
  * Created by tkgktyk on 2015/06/03.
  */
@@ -85,34 +83,35 @@ public class FTD {
     public static final String EXTRA_Y_FLOAT = PREFIX_EXTRA + "Y_FLOAT";
 
     public static String getActionName(Context context, String action) {
+        Context mod = getModContext(context);
         if (action.equals(ACTION_BACK)) {
-            return context.getString(R.string.action_back);
+            return mod.getString(R.string.action_back);
         } else if (action.equals(ACTION_HOME)) {
-            return context.getString(R.string.action_home);
+            return mod.getString(R.string.action_home);
         } else if (action.equals(ACTION_RECENTS)) {
-            return context.getString(R.string.action_recents);
+            return mod.getString(R.string.action_recents);
         } else if (action.equals(ACTION_EXPAND_NOTIFICATIONS)) {
-            return context.getString(R.string.action_expand_notifications);
+            return mod.getString(R.string.action_expand_notifications);
         } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
-            return context.getString(R.string.action_expand_quick_settings);
+            return mod.getString(R.string.action_expand_quick_settings);
         } else if (action.equals(ACTION_KILL)) {
-            return context.getString(R.string.action_kill);
+            return mod.getString(R.string.action_kill);
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
-            return context.getString(R.string.action_double_tap);
+            return mod.getString(R.string.action_double_tap);
         } else if (action.equals(ACTION_LONG_PRESS)) {
-            return context.getString(R.string.action_long_press);
+            return mod.getString(R.string.action_long_press);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
-            return context.getString(R.string.action_long_press_full);
+            return mod.getString(R.string.action_long_press_full);
         } else if (action.equals(ACTION_FLOATING_NAVIGATION)) {
-            return context.getString(R.string.action_floating_navigation);
+            return mod.getString(R.string.action_floating_navigation);
         }
         return "";
     }
 
     public static boolean performAction(@NonNull ViewGroup container, String uri,
                                         MotionEvent event) {
-        XposedModule.logD(uri);
-        Intent intent = loadIntent(uri, event);
+        Context context = container.getContext();
+        Intent intent = loadIntent(context, uri, event);
         if (intent == null) {
             return false;
         }
@@ -123,7 +122,6 @@ public class FTD {
         if (intent.getComponent() == null) {
             return false;
         }
-        Context context = container.getContext();
         Context mod = getModContext(context);
         try {
             context.startActivity(intent);
@@ -133,27 +131,30 @@ public class FTD {
         return true;
     }
 
-    private static Intent loadIntent(String uri, MotionEvent event) {
+    private static Intent loadIntent(Context context, String uri, MotionEvent event) {
         try {
             Intent intent = Intent.parseUri(uri, 0);
             intent.putExtra(EXTRA_X_FLOAT, event.getX());
             intent.putExtra(EXTRA_Y_FLOAT, event.getY());
             return intent;
         } catch (URISyntaxException e) {
-            XposedModule.logE(e);
+            Context mod = getModContext(context);
+            Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
         }
         return null;
     }
 
     public static boolean isLocalAction(@NonNull Intent intent) {
-        String action = intent.getAction();
+        return isLocalAction(intent.getAction());
+    }
+
+    public static boolean isLocalAction(String action) {
         return !Strings.isNullOrEmpty(action) && action.startsWith(PREFIX_ACTION);
     }
 
     private static void performLocalAction(@NonNull ViewGroup container, @NonNull Intent intent,
                                            MotionEvent event) {
         String action = intent.getAction();
-        XposedModule.logD(action);
         if (action.endsWith(SUFFIX_TOUCH_ACTION)) {
             if (event != null) {
                 performTouchAction(container, action, event);
@@ -214,7 +215,6 @@ public class FTD {
 
     // called by SettingsActivity
     public static void sendSettingsChanged(Context context, SharedPreferences prefs) {
-        MyApp.logD("send settings changed");
         FTD.Settings settings = new FTD.Settings(prefs);
         Intent intent = new Intent(FTD.ACTION_SETTINGS_CHANGED);
         intent.putExtra(FTD.EXTRA_SETTINGS, settings);
@@ -243,7 +243,6 @@ public class FTD {
                         FTD.PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
             }
         } catch (Throwable t) {
-            XposedModule.logE(t);
         }
         return modContext;
     }
@@ -254,6 +253,8 @@ public class FTD {
         // General
         public final float forceTouchArea;
         public final Set<String> blacklist;
+        public final boolean showDisabledActionToast;
+        public final boolean showEnabledActionToast;
 
         // Pressure
         public final Holder pressure = new Holder();
@@ -265,6 +266,8 @@ public class FTD {
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
+            showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
+            showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
 
             // Pressure
             pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);

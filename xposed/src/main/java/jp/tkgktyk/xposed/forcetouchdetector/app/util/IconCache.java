@@ -80,6 +80,33 @@ public class IconCache {
         new BitmapWorkerTask(context).execute(packageName);
     }
 
+    public Bitmap loadSync(Context context, String packageName) {
+        Drawable drawable = null;
+        try {
+            drawable = context.getPackageManager().getApplicationIcon(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            Bitmap bitmap = resize(((BitmapDrawable) drawable).getBitmap());
+            put(packageName, bitmap);
+            return bitmap;
+        }
+        return null;
+    }
+
+    private Bitmap resize(Bitmap bitmap) {
+        int size = Math.max(bitmap.getHeight(), bitmap.getWidth());
+        if (size <= mIconSize) {
+            return bitmap;
+        }
+        float downScale = ((float) mIconSize) / size;
+        Matrix matrix = new Matrix();
+        matrix.postScale(downScale, downScale);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+    }
+
     public void evict() {
         mMemoryCache.evictAll();
     }
@@ -94,28 +121,8 @@ public class IconCache {
         @Override
         protected Void doInBackground(String... params) {
             String packageName = params[0];
-            Drawable drawable = null;
-            try {
-                drawable = mContext.getPackageManager().getApplicationIcon(packageName);
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            if (drawable != null && drawable instanceof BitmapDrawable) {
-                put(packageName, resize(((BitmapDrawable) drawable).getBitmap()));
-            }
+            loadSync(mContext, packageName);
             return null;
-        }
-
-        private Bitmap resize(Bitmap bitmap) {
-            int size = Math.max(bitmap.getHeight(), bitmap.getWidth());
-            if (size <= mIconSize) {
-                return bitmap;
-            }
-            float downScale = ((float) mIconSize) / size;
-            Matrix matrix = new Matrix();
-            matrix.postScale(downScale, downScale);
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                    bitmap.getHeight(), matrix, true);
         }
 
         @Override

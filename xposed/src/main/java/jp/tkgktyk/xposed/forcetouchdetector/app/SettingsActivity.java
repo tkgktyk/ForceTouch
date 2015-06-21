@@ -16,11 +16,8 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
@@ -28,7 +25,6 @@ import android.support.annotation.StringRes;
 
 import com.google.common.base.Objects;
 
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -36,6 +32,7 @@ import jp.tkgktyk.lib.BaseSettingsActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionIntent;
 
 
 public class SettingsActivity extends BaseSettingsActivity {
@@ -182,6 +179,7 @@ public class SettingsActivity extends BaseSettingsActivity {
         private static final int REQUEST_ACTION = 1;
 
         private String mPrefKey;
+        private String mPrefNameKey;
 
         public SettingsFragment() {
         }
@@ -195,36 +193,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 }
             });
             Preference pref = findPreference(id);
-            updateActionSummary(pref, pref.getSharedPreferences().getString(pref.getKey(), ""));
-        }
-
-        private void updateActionSummary(Preference preference, String uri) {
-            updateActionSummary(preference, getIntent(uri));
-        }
-
-        private void updateActionSummary(Preference preference, Intent intent) {
-            Context context = preference.getContext();
-            String name;
-            if (intent == null) {
-                name = getString(R.string.none);
-            } else if (FTD.isLocalAction(intent)) {
-                name = FTD.getActionName(context, intent.getAction());
-            } else if (intent.getComponent() == null) {
-                name = getString(R.string.none);
-            } else {
-                PackageManager pm = context.getPackageManager();
-                ApplicationInfo ai = null;
-                try {
-                    ai = pm.getApplicationInfo(intent.getComponent().getPackageName(), 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                }
-                if (ai != null) {
-                    name = pm.getApplicationLabel(ai).toString();
-                } else {
-                    name = getString(R.string.not_found);
-                }
-            }
-            preference.setSummary(name);
+            pref.setSummary(ActionIntent.getAppName(pref.getContext(),
+                    pref.getSharedPreferences().getString(pref.getKey(), "")));
         }
 
         @Override
@@ -233,7 +203,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 case REQUEST_ACTION:
                     if (resultCode == RESULT_OK) {
                         Intent intent = data.getParcelableExtra(ActionPickerActivity.EXTRA_INTENT);
-                        String uri = getUri(intent);
+                        String uri = ActionIntent.getUri(intent);
                         MyApp.logD("picked intent: " + intent);
                         MyApp.logD("picked uri: " + uri);
                         // save
@@ -242,7 +212,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                                 .edit()
                                 .putString(mPrefKey, uri)
                                 .apply();
-                        updateActionSummary(pref, intent);
+                        pref.setSummary(ActionIntent.getAppName(getActivity(), intent));
                     }
                     break;
                 default:
@@ -250,18 +220,6 @@ public class SettingsActivity extends BaseSettingsActivity {
             }
         }
 
-        private String getUri(Intent intent) {
-            return intent.toUri(0);
-        }
-
-        private Intent getIntent(String uri) {
-            try {
-                return Intent.parseUri(uri, 0);
-            } catch (URISyntaxException e) {
-                MyApp.logE(e);
-            }
-            return null;
-        }
     }
 
     public static class PressureSettingsFragment extends SettingsFragment {

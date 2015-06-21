@@ -30,11 +30,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionIntent;
 
 /**
  * Created by tkgktyk on 2015/02/12.
@@ -106,7 +109,7 @@ public class ModForceTouch extends XposedModule {
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         try {
                             final FrameLayout decorView = (FrameLayout) param.thisObject;
-                            BroadcastReceiver settingsLoadedReceiver = new BroadcastReceiver() {
+                            BroadcastReceiver settingsChangedReceiver = new BroadcastReceiver() {
                                 @Override
                                 public void onReceive(Context context, Intent intent) {
                                     ForceTouchDetector ftd = getForceTouchDetector(decorView);
@@ -120,8 +123,8 @@ public class ModForceTouch extends XposedModule {
                                 }
                             };
                             XposedHelpers.setAdditionalInstanceField(decorView,
-                                    FIELD_SETTINGS_CHANGED_RECEIVER, settingsLoadedReceiver);
-                            decorView.getContext().registerReceiver(settingsLoadedReceiver,
+                                    FIELD_SETTINGS_CHANGED_RECEIVER, settingsChangedReceiver);
+                            decorView.getContext().registerReceiver(settingsChangedReceiver,
                                     FTD.SETTINGS_CHANGED_FILTER);
                         } catch (Throwable t) {
                             logE(t);
@@ -134,11 +137,11 @@ public class ModForceTouch extends XposedModule {
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         try {
                             FrameLayout decorView = (FrameLayout) param.thisObject;
-                            BroadcastReceiver settingsLoadedReceiver =
+                            BroadcastReceiver settingsChangedReceiver =
                                     (BroadcastReceiver) XposedHelpers.getAdditionalInstanceField(decorView,
                                             FIELD_SETTINGS_CHANGED_RECEIVER);
-                            if (settingsLoadedReceiver != null) {
-                                decorView.getContext().unregisterReceiver(settingsLoadedReceiver);
+                            if (settingsChangedReceiver != null) {
+                                decorView.getContext().unregisterReceiver(settingsChangedReceiver);
                             }
                         } catch (Throwable t) {
                             logE(t);
@@ -330,8 +333,8 @@ public class ModForceTouch extends XposedModule {
                 mDownTime = base.getEventTime();
             }
             int index = base.findPointerIndex(mActivePointerId);
-            logD("mActivePointerId=" + mActivePointerId);
-            logD("index=" + index);
+//            logD("mActivePointerId=" + mActivePointerId);
+//            logD("index=" + index);
             if (index == -1) {
                 return;
             }
@@ -341,7 +344,7 @@ public class ModForceTouch extends XposedModule {
                             base.getPressure(index), base.getSize(index), base.getMetaState(),
                             base.getXPrecision(), base.getYPrecision(), base.getDeviceId(),
                             base.getEdgeFlags());
-            logD(event.toString());
+//            logD(event.toString());
             mGestureDetector.onTouchEvent(event);
             event.recycle();
         }
@@ -400,21 +403,31 @@ public class ModForceTouch extends XposedModule {
             event2.recycle();
         }
 
+        private void performAction(String actionUri, MotionEvent event, String disabledText) {
+            if (FTD.performAction(mTargetView, actionUri, event)) {
+                String action = ActionIntent.getAction(actionUri);
+                if (mSettings.showEnabledActionToast && FTD.isLocalAction(action)) {
+                    String name = FTD.getActionName(getContext(), action);
+                    if (!Strings.isNullOrEmpty(name)) {
+                        showToast(name);
+                    }
+                }
+            } else if (mSettings.showDisabledActionToast) {
+                showToast(disabledText);
+            }
+        }
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (!FTD.performAction(mTargetView, holder.actionTap, e)) {
-                showToast("force tap");
-            }
+            performAction(holder.actionTap, e, "force tap");
             return true;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (!FTD.performAction(mTargetView, holder.actionDoubleTap, e)) {
-                showToast("force double tap");
-            }
+            performAction(holder.actionDoubleTap, e, "force double tap");
             return true;
         }
 
@@ -438,7 +451,8 @@ public class ModForceTouch extends XposedModule {
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                                float distanceY) {
             return false;
         }
 
@@ -446,9 +460,7 @@ public class ModForceTouch extends XposedModule {
         public void onLongPress(MotionEvent e) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (!FTD.performAction(mTargetView, holder.actionLongPress, e)) {
-                showToast("force long press");
-            }
+            performAction(holder.actionLongPress, e, "force long press");
         }
 
         @Override
@@ -459,23 +471,15 @@ public class ModForceTouch extends XposedModule {
             float y = e2.getY() - e1.getY();
             if (Math.abs(x) > Math.abs(y)) {
                 if (x > 0) {
-                    if (!FTD.performAction(mTargetView, holder.actionFlickRight, e2)) {
-                        showToast("force flick right");
-                    }
+                    performAction(holder.actionFlickRight, e2, "force flick right");
                 } else {
-                    if (!FTD.performAction(mTargetView, holder.actionFlickLeft, e2)) {
-                        showToast("force flick left");
-                    }
+                    performAction(holder.actionFlickLeft, e2, "force flick left");
                 }
             } else {
                 if (y > 0) {
-                    if (!FTD.performAction(mTargetView, holder.actionFlickDown, e2)) {
-                        showToast("force flick down");
-                    }
+                    performAction(holder.actionFlickDown, e2, "force flick down");
                 } else {
-                    if (!FTD.performAction(mTargetView, holder.actionFlickUp, e2)) {
-                        showToast("force flick up");
-                    }
+                    performAction(holder.actionFlickUp, e2, "force flick up");
                 }
             }
             return true;

@@ -30,4 +30,15 @@
         android:key="@string/key_blacklist"
         android:summary="@string/summary_blacklist"
         android:title="@string/title_blacklist"/>
+    <!-- Toast -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="true"
+        android:icon="@null"
+        android:key="@string/key_show_disabled_action_toast"
+        android:title="@string/title_show_disabled_action_toast"/>
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="true"
+        android:icon="@null"
+        android:key="@string/key_show_enabled_action_toast"
+        android:title="@string/title_show_enabled_action_toast"/>
 </PreferenceScreen>
