@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -46,24 +47,16 @@ public class FloatingNavigation {
     private final WindowManager.LayoutParams mLayoutParams;
     private final CircleLayoutForFAB mCircleLayout;
 
+    private final PointF mFraction = new PointF();
+
     private boolean mNavigationShown;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            float x = intent.getFloatExtra(FTD.EXTRA_X_FLOAT, 0.0f);
-            float y = intent.getFloatExtra(FTD.EXTRA_Y_FLOAT, 0.0f);
-            float rotation;
-            if (x / mDisplaySize.x > 0.5) {
-                x = mDisplaySize.x;
-                rotation = 180.0f;
-                mCircleLayout.setReverseDirection(true);
-            } else {
-                x = 0.0f;
-                rotation = 0.0f;
-                mCircleLayout.setReverseDirection(false);
-            }
-            show(x, y, rotation);
+            mFraction.x = intent.getFloatExtra(FTD.EXTRA_FRACTION_X, 0.0f);
+            mFraction.y = intent.getFloatExtra(FTD.EXTRA_FRACTION_Y, 0.0f);
+            show();
         }
     };
 
@@ -117,8 +110,20 @@ public class FloatingNavigation {
         service.registerReceiver(mBroadcastReceiver, FTD.APP_ACTION_FILTER);
     }
 
-    private void show(float x, float y, float rotation) {
+    private void show() {
         hide();
+        float x;
+        float y = mFraction.y * mDisplaySize.y;
+        float rotation;
+        if (mFraction.x > 0.5) {
+            x = mDisplaySize.x;
+            rotation = 180.0f;
+            mCircleLayout.setReverseDirection(true);
+        } else {
+            x = 0.0f;
+            rotation = 0.0f;
+            mCircleLayout.setReverseDirection(false);
+        }
         mNavigationShown = true;
         mCircleLayout.setVisibility(View.INVISIBLE);
         mWindowManager.addView(mCircleLayout, mLayoutParams);
@@ -135,6 +140,9 @@ public class FloatingNavigation {
 
     public void onConfigurationChanged(Configuration newConfig) {
         mWindowManager.getDefaultDisplay().getRealSize(mDisplaySize);
+        if (mNavigationShown) {
+            show();
+        }
     }
 
     public void onDestroy(Service context) {

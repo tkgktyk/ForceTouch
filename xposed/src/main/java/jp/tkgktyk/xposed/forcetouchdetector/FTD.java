@@ -22,11 +22,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
@@ -79,8 +81,10 @@ public class FTD {
         APP_ACTION_FILTER.addAction(ACTION_FLOATING_NAVIGATION);
     }
 
-    public static final String EXTRA_X_FLOAT = PREFIX_EXTRA + "X_FLOAT";
-    public static final String EXTRA_Y_FLOAT = PREFIX_EXTRA + "Y_FLOAT";
+    public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
+    public static final String EXTRA_FRACTION_Y = PREFIX_EXTRA + "FRACTION_Y";
+
+    private static final Point mDisplaySize = new Point();
 
     public static String getActionName(Context context, String action) {
         Context mod = getModContext(context);
@@ -134,8 +138,10 @@ public class FTD {
     private static Intent loadIntent(Context context, String uri, MotionEvent event) {
         try {
             Intent intent = Intent.parseUri(uri, 0);
-            intent.putExtra(EXTRA_X_FLOAT, event.getX());
-            intent.putExtra(EXTRA_Y_FLOAT, event.getY());
+            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getRealSize(mDisplaySize);
+            intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
+            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
             return intent;
         } catch (URISyntaxException e) {
             Context mod = getModContext(context);
