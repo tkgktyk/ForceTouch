@@ -19,7 +19,71 @@
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3240">
+      <feFlood
+         flood-opacity="0.2"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3242" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3244" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="4"
+         result="blur"
+         id="feGaussianBlur3246" />
+      <feOffset
+         dx="0"
+         dy="4"
+         result="offset"
+         id="feOffset3248" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3250" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       inkscape:label="Drop Shadow"
+       id="filter3240-1">
+      <feFlood
+         flood-opacity="0.2"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3242-7" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3244-5" />
+      <feGaussianBlur
+         stdDeviation="4"
+         result="blur"
+         id="feGaussianBlur3246-0" />
+      <feOffset
+         dx="0"
+         dy="4"
+         result="offset"
+         id="feOffset3248-1" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3250-6" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,8 +92,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1191406"
-     inkscape:cx="256"
-     inkscape:cy="220.25829"
+     inkscape:cx="256.00001"
+     inkscape:cy="256.00001"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -45,8 +109,8 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       spacingx="32px"
-       spacingy="32px" />
+       spacingx="16px"
+       spacingy="16px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -66,15 +130,15 @@
      id="layer1"
      transform="translate(0,-540.36218)">
     <rect
-       style="fill:#cfd8dc;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       style="fill:#cfd8dc;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter3240)"
        id="rect3829"
-       width="512"
-       height="512"
-       x="0"
-       y="0"
-       transform="translate(0,540.36218)"
-       rx="64"
-       ry="64" />
+       width="480"
+       height="480"
+       x="16"
+       y="16"
+       rx="32"
+       ry="32"
+       transform="translate(0,540.36218)" />
     <path
        sodipodi:type="arc"
        style="fill:#ff5252;stroke:#000000;stroke-width:16;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
@@ -83,14 +147,14 @@
        sodipodi:cy="256"
        sodipodi:rx="128"
        sodipodi:ry="128"
-       d="m 383.99997,256.08024 a 128,128 0 1 1 3e-5,-0.0624"
+       d="M 383.99997,256.08024 C 383.95566,326.77267 326.6122,384.04429 255.91976,383.99997 185.22733,383.95566 127.95571,326.6122 128.00003,255.91976 128.04434,185.22733 185.3878,127.95571 256.08024,128.00003 326.74831,128.04432 384.00986,185.34978 384,256.01787"
        transform="translate(0,540.36218)"
        sodipodi:start="0.00062683775"
        sodipodi:end="6.2833249"
        sodipodi:open="true" />
     <path
        style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 0,256 192,0"
+       d="m 16,256 176,0"
        id="path3755"
        inkscape:connector-curvature="0"
        transform="translate(0,540.36218)"
@@ -104,25 +168,25 @@
        sodipodi:cy="256"
        sodipodi:rx="192"
        sodipodi:ry="192"
-       d="M 447.99996,256.12035 A 192,192 0 1 1 448,256.0268"
+       d="M 447.99996,256.12035 C 447.93349,362.159 361.9183,448.06643 255.87965,447.99996 149.841,447.93349 63.933569,361.9183 64.000038,255.87965 64.066507,149.841 150.0817,63.933569 256.12035,64.000038 362.12247,64.066484 448.0148,150.02466 448,256.0268"
        sodipodi:start="0.00062683775"
        sodipodi:end="6.2833249"
        sodipodi:open="true" />
     <path
        style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 320,796.36218 192,0"
+       d="m 320,796.36218 176,0"
        id="path3755-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 256,732.36218 0,-192"
+       d="m 256,732.36218 0,-176"
        id="path3755-3-5"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 256,1052.3622 0,-192.00002"
+       d="m 256,1036.3622 0,-176.00002"
        id="path3755-3-5-2"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
