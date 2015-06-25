@@ -19,71 +19,7 @@
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
-     id="defs4">
-    <filter
-       style="color-interpolation-filters:sRGB;"
-       inkscape:label="Drop Shadow"
-       id="filter3240">
-      <feFlood
-         flood-opacity="0.2"
-         flood-color="rgb(0,0,0)"
-         result="flood"
-         id="feFlood3242" />
-      <feComposite
-         in="flood"
-         in2="SourceGraphic"
-         operator="in"
-         result="composite1"
-         id="feComposite3244" />
-      <feGaussianBlur
-         in="composite"
-         stdDeviation="4"
-         result="blur"
-         id="feGaussianBlur3246" />
-      <feOffset
-         dx="0"
-         dy="4"
-         result="offset"
-         id="feOffset3248" />
-      <feComposite
-         in="SourceGraphic"
-         in2="offset"
-         operator="over"
-         result="composite2"
-         id="feComposite3250" />
-    </filter>
-    <filter
-       color-interpolation-filters="sRGB"
-       inkscape:label="Drop Shadow"
-       id="filter3240-1">
-      <feFlood
-         flood-opacity="0.2"
-         flood-color="rgb(0,0,0)"
-         result="flood"
-         id="feFlood3242-7" />
-      <feComposite
-         in="flood"
-         in2="SourceGraphic"
-         operator="in"
-         result="composite1"
-         id="feComposite3244-5" />
-      <feGaussianBlur
-         stdDeviation="4"
-         result="blur"
-         id="feGaussianBlur3246-0" />
-      <feOffset
-         dx="0"
-         dy="4"
-         result="offset"
-         id="feOffset3248-1" />
-      <feComposite
-         in="SourceGraphic"
-         in2="offset"
-         operator="over"
-         result="composite2"
-         id="feComposite3250-6" />
-    </filter>
-  </defs>
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -120,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -130,7 +66,7 @@
      id="layer1"
      transform="translate(0,-540.36218)">
     <rect
-       style="fill:#cfd8dc;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter3240)"
+       style="fill:#cfd8dc;fill-opacity:1;fill-rule:nonzero;stroke:none;"
        id="rect3829"
        width="480"
        height="480"
