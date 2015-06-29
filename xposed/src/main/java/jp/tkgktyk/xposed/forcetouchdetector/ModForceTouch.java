@@ -79,7 +79,9 @@ public class ModForceTouch extends XposedModule {
                     }
                     ForceTouchDetector ftd = settings.detectionWindow == 0 ?
                             new SimpleForceTouchDetector(decorView, settings) :
-                            new LazyForceTouchDetector(decorView, settings);
+                            settings.detectionWindow > 0 ?
+                                    new TransparentForceTouchDetector(decorView, settings) :
+                                    new LazyForceTouchDetector(decorView, settings);
                     XposedHelpers.setAdditionalInstanceField(decorView,
                             FIELD_FORCE_TOUCH_DETECTOR, ftd);
                 } catch (Throwable t) {
@@ -496,8 +498,8 @@ public class ModForceTouch extends XposedModule {
             mRippleAnimator.start();
         }
 
-        private void cancelOriginalTouchEvent(MotionEvent event,
-                                              XC_MethodHook.MethodHookParam methodHookParam) {
+        protected void cancelOriginalTouchEvent(MotionEvent event,
+                                                XC_MethodHook.MethodHookParam methodHookParam) {
             // cancel other touch events
             MotionEvent event2 = MotionEvent.obtain(event);
             event2.setAction(MotionEvent.ACTION_CANCEL);
@@ -552,9 +554,9 @@ public class ModForceTouch extends XposedModule {
             }
             boolean consumed = mIntercepted;
             synchronized (mMotionEventList) {
+                mMethodHookParam = methodHookParam;
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN: {
-                        mMethodHookParam = methodHookParam;
                         mHandler.postDelayed(mStopDetector, mSettings.detectionWindow);
                         mIsDetectionWindowOpened = true;
                         break;
@@ -655,6 +657,116 @@ public class ModForceTouch extends XposedModule {
                             break;
                     }
                 }
+            }
+            // intercept ACTION_UP and ACTION_CANCEL too when intercepted
+            // because already send ACTION_CANCEL to target view when force touch is started.
+            return consumed || mIntercepted;
+        }
+    }
+
+    public static class TransparentForceTouchDetector extends SimpleForceTouchDetector {
+
+        public TransparentForceTouchDetector(ViewGroup targetView, FTD.Settings settings) {
+            super(targetView, settings);
+        }
+
+        private Handler mHandler = new Handler();
+        private boolean mIsDetectionWindowOpened;
+        private Runnable mStopDetector = new Runnable() {
+            @Override
+            public void run() {
+                mIsDetectionWindowOpened = false;
+            }
+        };
+
+        public boolean dispatchTouchEvent(MotionEvent event, XC_MethodHook.MethodHookParam methodHookParam) {
+            if (!mSettings.isEnabled()) {
+                return false;
+            }
+            boolean consumed = mIntercepted;
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN: {
+                    mHandler.postDelayed(mStopDetector, Math.abs(mSettings.detectionWindow));
+                    mIsDetectionWindowOpened = true;
+                    break;
+                }
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    mHandler.removeCallbacks(mStopDetector);
+                    mIsDetectionWindowOpened = false;
+                    break;
+            }
+            if (mIsDetectionWindowOpened) {
+                int count = event.getPointerCount();
+                FTD.Settings.Holder holder = null;
+                int index = 0;
+                for (; index < count; ++index) {
+                    float y = event.getY(index);
+                    // touch area
+                    if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
+                        // pressure and size
+                        if (mSettings.pressure.enabled &&
+                                event.getPressure(index) > mSettings.pressure.threshold) {
+                            holder = mSettings.pressure;
+                            break;
+                        } else if (mSettings.size.enabled &&
+                                event.getSize(index) > mSettings.size.threshold) {
+                            holder = mSettings.size;
+                            break;
+                        }
+                    }
+                }
+                if (holder != null) {
+                    mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                    startRipple(event, index);
+
+                    mHandler.removeCallbacks(mStopDetector);
+                    mIsDetectionWindowOpened = false;
+
+                    cancelOriginalTouchEvent(event, methodHookParam);
+                    // start force touch, intercept touch events
+                    mIntercepted = true;
+                    mActivePointerId = event.getPointerId(index);
+                    consumeTouchEvent(MotionEvent.ACTION_DOWN, event);
+                    consumed = true;
+                }
+            }
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_MOVE:
+                    // cannot get ActivePointer when ACTION_MODE
+//                    logD("getActionIndex = " + event.getActionIndex());
+//                    logD("getAction = " + ((event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+//                            MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+//                    if (isActivePointer(event)) {
+                    if (mIntercepted) {
+                        consumeTouchEvent(MotionEvent.ACTION_MOVE, event);
+                    }
+//                        consumed = true;
+//                    }
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    if (mActivePointerId != INVALIDE_POINTER_ID) {
+                        // stop force touch
+                        consumeTouchEvent(MotionEvent.ACTION_UP, event);
+                        consumed = true;
+                        mActivePointerId = INVALIDE_POINTER_ID;
+                    }
+                    // finalize this (multi-)touch stroke
+                    mIntercepted = false;
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+                            MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                    int pointerId = event.getPointerId(pointerIndex);
+                    if (pointerId == mActivePointerId) {
+                        // stop force touch
+                        consumeTouchEvent(MotionEvent.ACTION_UP, event);
+                        consumed = true;
+                        mActivePointerId = INVALIDE_POINTER_ID;
+                    }
+                    break;
             }
             // intercept ACTION_UP and ACTION_CANCEL too when intercepted
             // because already send ACTION_CANCEL to target view when force touch is started.

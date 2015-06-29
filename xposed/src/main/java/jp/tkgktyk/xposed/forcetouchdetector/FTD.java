@@ -277,7 +277,7 @@ public class FTD {
             showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
-            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "100"));
+            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "200"));
 
             // Pressure
             pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);

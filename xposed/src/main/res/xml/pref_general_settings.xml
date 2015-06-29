@@ -41,18 +41,21 @@
         android:icon="@null"
         android:key="@string/key_show_enabled_action_toast"
         android:title="@string/title_show_enabled_action_toast"/>
-    <!-- Detector Parameter -->
-    <EditTextPreference
-        android:defaultValue="7"
-        android:icon="@null"
-        android:inputType="number"
-        android:key="@string/key_detection_sensitivity"
-        android:title="@string/title_detection_sensitivity"/>
-    <EditTextPreference
-        android:defaultValue="100"
-        android:dialogMessage="@string/unit_detection_window"
-        android:icon="@null"
-        android:inputType="number"
-        android:key="@string/key_detection_window"
-        android:title="@string/title_detection_window"/>
+    <PreferenceCategory
+        android:title="@string/category_experimental">
+        <!-- Detector Parameter -->
+        <EditTextPreference
+            android:defaultValue="7"
+            android:icon="@null"
+            android:inputType="number"
+            android:key="@string/key_detection_sensitivity"
+            android:title="@string/title_detection_sensitivity"/>
+        <EditTextPreference
+            android:defaultValue="200"
+            android:dialogMessage="@string/unit_detection_window"
+            android:icon="@null"
+            android:inputType="numberSigned"
+            android:key="@string/key_detection_window"
+            android:title="@string/title_detection_window"/>
+    </PreferenceCategory>
 </PreferenceScreen>
