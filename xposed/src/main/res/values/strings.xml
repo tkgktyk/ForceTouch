@@ -72,6 +72,9 @@
     <string name="summary_blacklist">Stop app process for changes to take effect</string>
     <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
+    <string name="title_detection_sensitivity">Detection Sensitivity</string>
+    <string name="title_detection_window">Detection Window</string>
+    <string name="unit_detection_window">msec</string>
 
     <!-- Setting -->
     <string name="title_enabled">Master Switch</string>

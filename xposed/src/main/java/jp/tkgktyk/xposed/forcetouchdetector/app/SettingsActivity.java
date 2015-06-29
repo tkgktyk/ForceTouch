@@ -153,6 +153,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                                     preference.getTitle(), blacklist);
                         }
                     });
+            showTextSummary(R.string.key_detection_sensitivity);
+            showTextSummary(R.string.key_detection_window, R.string.unit_detection_window);
         }
 
         @Override

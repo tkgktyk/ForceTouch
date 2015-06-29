@@ -261,6 +261,8 @@ public class FTD {
         public final Set<String> blacklist;
         public final boolean showDisabledActionToast;
         public final boolean showEnabledActionToast;
+        public final int detectionSensitivity;
+        public final int detectionWindow;
 
         // Pressure
         public final Holder pressure = new Holder();
@@ -274,6 +276,8 @@ public class FTD {
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
             showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
+            detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
+            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "100"));
 
             // Pressure
             pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);
