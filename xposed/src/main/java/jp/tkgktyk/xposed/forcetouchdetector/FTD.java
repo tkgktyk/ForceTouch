@@ -126,10 +126,10 @@ public class FTD {
         if (intent.getComponent() == null) {
             return false;
         }
-        Context mod = getModContext(context);
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
+            Context mod = getModContext(context);
             Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
         }
         return true;

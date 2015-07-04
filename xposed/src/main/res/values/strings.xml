@@ -36,6 +36,7 @@
     <string name="tools">Tools</string>
     <string name="apps">Apps</string>
     <string name="shortcuts">Shortcuts</string>
+    <string name="none">None</string>
     <!-- Tool -->
     <string name="action_back">Back</string>
     <string name="action_home">Home</string>

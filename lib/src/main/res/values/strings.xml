@@ -2,5 +2,4 @@
     <!-- BaseSettings -->
     <string name="current_s1">Current: %1$s</string>
     <string name="not_selected">Not selected</string>
-    <string name="none">None</string>
 </resources>

@@ -69,10 +69,9 @@ public class ActionPickerActivity extends AppCompatActivity {
     }
 
     public static class ActionPickerFragment extends ListFragment {
-        private static final int REQUEST_PICK_TOOL = 1;
-        private static final int REQUEST_PICK_APP = 2;
-        private static final int REQUEST_PICK_SHORTCUT = 3;
-        private static final int REQUEST_CREATE_SHORTCUT = 4;
+        private static final int REQUEST_PICK_APP = 1;
+        private static final int REQUEST_PICK_SHORTCUT = 2;
+        private static final int REQUEST_CREATE_SHORTCUT = 3;
 
         private static final int[] TITLE_ID_LIST = {
                 R.string.tools,
@@ -147,11 +146,6 @@ public class ActionPickerActivity extends AppCompatActivity {
                     }
                     break;
                 case REQUEST_PICK_APP:
-                    if (RESULT_OK == resultCode) {
-                        activity.returnActivity(data);
-                    }
-                    break;
-                case REQUEST_PICK_TOOL:
                     if (RESULT_OK == resultCode) {
                         activity.returnActivity(data);
                     }
