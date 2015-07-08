@@ -166,6 +166,8 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_RECENTS,
                 FTD.ACTION_EXPAND_NOTIFICATIONS,
                 FTD.ACTION_EXPAND_QUICK_SETTINGS,
+                FTD.ACTION_SCROLL_UP,
+//                FTD.ACTION_SCROLL_DOWN,
                 FTD.ACTION_KILL,
                 FTD.ACTION_DOUBLE_TAP,
                 FTD.ACTION_LONG_PRESS,

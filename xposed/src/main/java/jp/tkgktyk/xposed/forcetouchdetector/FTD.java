@@ -26,10 +26,14 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
@@ -56,11 +60,14 @@ public class FTD {
     public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
     public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "EXPAND_NOTIFICATIONS";
     public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "EXPAND_QUICK_SETTINGS";
+
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
 
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS_FULL = PREFIX_ACTION + "LONG_PRESS_FULL" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_SCROLL_UP = PREFIX_ACTION + "SCROLL_UP" + SUFFIX_TOUCH_ACTION;
+    public static final String ACTION_SCROLL_DOWN = PREFIX_ACTION + "SCROLL_DOWN" + SUFFIX_TOUCH_ACTION;
 
     public static final String ACTION_FLOATING_ACTION = PREFIX_ACTION + "FLOATING_ACTION";
 
@@ -76,7 +83,8 @@ public class FTD {
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_HOME);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_RECENTS);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
-        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_UP);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_DOWN);
         INTERNAL_ACTION_FILTER = new IntentFilter();
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
     }
@@ -107,6 +115,10 @@ public class FTD {
             return mod.getString(R.string.action_long_press);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             return mod.getString(R.string.action_long_press_full);
+        } else if (action.equals(ACTION_SCROLL_UP)) {
+            return mod.getString(R.string.action_scroll_up);
+        } else if (action.equals(ACTION_SCROLL_DOWN)) {
+            return mod.getString(R.string.action_scroll_down);
         } else if (action.equals(ACTION_FLOATING_ACTION)) {
             return mod.getString(R.string.action_floating_action);
         }
@@ -132,6 +144,10 @@ public class FTD {
         } else if (action.equals(ACTION_LONG_PRESS)) {
             return 0;
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
+            return 0;
+        } else if (action.equals(ACTION_SCROLL_UP)) {
+            return 0;
+        } else if (action.equals(ACTION_SCROLL_DOWN)) {
             return 0;
         } else if (action.equals(ACTION_FLOATING_ACTION)) {
             return R.drawable.ic_floating_action;
@@ -211,7 +227,7 @@ public class FTD {
             injectMotionEvent(container, event, MotionEvent.ACTION_UP);
         } else if (action.equals(ACTION_LONG_PRESS)) {
             // TODO: use input command?
-            injectMotionEvent2(container, event, MotionEvent.ACTION_DOWN);
+            injectMotionEventForLongPress(container, event, MotionEvent.ACTION_DOWN);
             injectMotionEvent(container, event, MotionEvent.ACTION_CANCEL);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             // TODO: use input command?
@@ -222,6 +238,49 @@ public class FTD {
                     injectMotionEvent(container, event, MotionEvent.ACTION_UP);
                 }
             }, ViewConfiguration.getLongPressTimeout() + ViewConfiguration.getTapTimeout());
+        } else if (action.equals(ACTION_SCROLL_UP)) {
+            View view = findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
+                    new OnViewFoundListener() {
+                        @Override
+                        public boolean onViewFound(View view) {
+                            if (view.canScrollVertically(-1)) {
+                                if (view instanceof AbsListView) {
+                                    ((AbsListView) view).smoothScrollToPosition(0);
+                                } else if (view instanceof RecyclerView) {
+                                    ((RecyclerView) view).smoothScrollToPosition(0);
+                                } else if (view instanceof ScrollView) {
+                                    ((ScrollView) view).fullScroll(View.FOCUS_UP);
+                                } else {
+                                    view.scrollTo(view.getScrollX(), 0);
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+        } else if (action.equals(ACTION_SCROLL_DOWN)) {
+            View view = findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
+                    new OnViewFoundListener() {
+                        @Override
+                        public boolean onViewFound(View view) {
+                            // TODO: doesn't work...
+                            if (view.canScrollVertically(1)) {
+                                if (view instanceof AbsListView) {
+                                    ((AbsListView) view).smoothScrollToPosition(
+                                            ((AbsListView) view).getChildCount() - 1);
+                                } else if (view instanceof RecyclerView) {
+                                    ((RecyclerView) view).smoothScrollToPosition(
+                                            ((RecyclerView) view).getChildCount() - 1);
+                                } else if (view instanceof ScrollView) {
+                                    ((ScrollView) view).fullScroll(View.FOCUS_DOWN);
+                                } else {
+                                    view.scrollTo(view.getScrollX(), view.getBottom());
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
         }
     }
 
@@ -235,14 +294,61 @@ public class FTD {
         event.recycle();
     }
 
-    private static void injectMotionEvent2(@NonNull ViewGroup container, @NonNull MotionEvent base,
-                                           int action) {
+    private static void injectMotionEventForLongPress(@NonNull ViewGroup container, @NonNull MotionEvent base,
+                                                      int action) {
         long downTime = SystemClock.uptimeMillis() - 1000;
         long eventTime = SystemClock.uptimeMillis() + 100;
         MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
                 base.getX(), base.getY(), 0.0f, 0.0f, 0, 1.0f, 1.0f, -1, 0);
         container.dispatchTouchEvent(event);
         event.recycle();
+    }
+
+    private interface OnViewFoundListener {
+        boolean onViewFound(View view);
+    }
+
+    private static View findViewAtPosition(@NonNull final ViewGroup container, int x, int y,
+                                           OnViewFoundListener listener) {
+        int count = container.getChildCount();
+        for (int i = count; i > 0; --i) {
+            View child = container.getChildAt(i - 1);
+            if (isPointInsideView(x, y, child)) {
+                if (child instanceof ViewGroup) {
+                    View v = findViewAtPosition((ViewGroup) child, x, y, listener);
+                    if (v != null) {
+                        return v;
+                    }
+                }
+                if (listener.onViewFound(child)) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Determines if given points are inside view
+     *
+     * @param x    - x coordinate of point
+     * @param y    - y coordinate of point
+     * @param view - view object to compare
+     * @return true if the points are within view bounds, false otherwise
+     */
+    public static boolean isPointInsideView(float x, float y, View view) {
+        int location[] = new int[2];
+        view.getLocationOnScreen(location);
+        int viewX = location[0];
+        int viewY = location[1];
+
+        //point is inside view bounds
+        if ((x > viewX && x < (viewX + view.getWidth())) &&
+                (y > viewY && y < (viewY + view.getHeight()))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static final String ACTION_SETTINGS_CHANGED = PREFIX_ACTION + "SETTINGS_CHANGED";
@@ -350,7 +456,7 @@ public class FTD {
             }
             return str;
         }
-        
+
         private ActionInfo.Record getActionRecord(SharedPreferences prefs, String key) {
             return ActionInfo.Record.fromPreference(prefs.getString(key, ""));
         }
