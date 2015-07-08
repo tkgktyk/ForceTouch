@@ -22,8 +22,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.StringRes;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,7 +35,7 @@ import jp.tkgktyk.lib.BaseSettingsActivity;
 import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
-import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionIntent;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 
 public class SettingsActivity extends BaseSettingsActivity {
@@ -40,6 +43,24 @@ public class SettingsActivity extends BaseSettingsActivity {
     @Override
     protected BaseFragment newRootFragment() {
         return new HeaderFragment();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_floating_action, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_floating_action:
+                FloatingAction.show(this);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     public static abstract class XposedFragment extends BaseFragment {
@@ -91,9 +112,11 @@ public class SettingsActivity extends BaseSettingsActivity {
             changeScreen(R.string.key_header_general, GeneralSettingsFragment.class);
             changeScreen(R.string.key_header_pressure, PressureSettingsFragment.class);
             changeScreen(R.string.key_header_size, SizeSettingsFragment.class);
+            changeScreen(R.string.key_header_floating_action, FloatingActionSettingsFragment.class);
 
             updateState(R.string.key_header_pressure, R.string.key_pressure_enabled);
             updateState(R.string.key_header_size, R.string.key_size_enabled);
+            updateState(R.string.key_header_floating_action, R.string.key_floating_action_enabled);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -106,6 +129,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 updateState(R.string.key_header_pressure, key);
             } else if (Objects.equal(key, getString(R.string.key_size_enabled))) {
                 updateState(R.string.key_header_size, key);
+            } else if (Objects.equal(key, getString(R.string.key_floating_action_enabled))) {
+                updateState(R.string.key_header_floating_action, key);
             }
         }
 
@@ -116,7 +141,7 @@ public class SettingsActivity extends BaseSettingsActivity {
         private void updateState(@StringRes int targetKey, String valueKey) {
             Preference pref = findPreference(targetKey);
             if (pref.getSharedPreferences().getBoolean(valueKey, false)) {
-                pref.setSummary(getString(R.string.state_running));
+                pref.setSummary(getString(R.string.state_enabled));
             } else {
                 pref.setSummary(getString(R.string.state_disabled));
             }
@@ -153,6 +178,14 @@ public class SettingsActivity extends BaseSettingsActivity {
                                     preference.getTitle(), blacklist);
                         }
                     });
+            setUpSwitch(R.string.key_show_notification, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
+                            settings.size.enabled, settings.floatingActionEnabled, enabled);
+                }
+            });
             showTextSummary(R.string.key_detection_sensitivity);
             showTextSummary(R.string.key_detection_window, R.string.unit_detection_window);
         }
@@ -181,7 +214,6 @@ public class SettingsActivity extends BaseSettingsActivity {
         private static final int REQUEST_ACTION = 1;
 
         private String mPrefKey;
-        private String mPrefNameKey;
 
         public SettingsFragment() {
         }
@@ -195,8 +227,25 @@ public class SettingsActivity extends BaseSettingsActivity {
                 }
             });
             Preference pref = findPreference(id);
-            pref.setSummary(ActionIntent.getAppName(pref.getContext(),
-                    pref.getSharedPreferences().getString(pref.getKey(), "")));
+            ActionInfo.Record record = ActionInfo.Record
+                    .fromPreference(pref.getSharedPreferences().getString(pref.getKey(), ""));
+            updateActionSummary(pref, record);
+        }
+
+        private void updateActionSummary(Preference pref, ActionInfo.Record record) {
+            ActionInfo info = new ActionInfo(record);
+            // name
+            if (Strings.isNullOrEmpty(info.getName())) {
+                if (record.type == ActionInfo.TYPE_NONE) {
+                    pref.setSummary(getString(R.string.none));
+                } else {
+                    pref.setSummary(getString(R.string.not_found));
+                }
+            } else {
+                pref.setSummary(info.getName());
+            }
+            // icon
+            pref.setIcon(info.newIconDrawable(pref.getContext()));
         }
 
         @Override
@@ -204,17 +253,16 @@ public class SettingsActivity extends BaseSettingsActivity {
             switch (requestCode) {
                 case REQUEST_ACTION:
                     if (resultCode == RESULT_OK) {
-                        Intent intent = data.getParcelableExtra(ActionPickerActivity.EXTRA_INTENT);
-                        String uri = ActionIntent.getUri(intent);
-                        MyApp.logD("picked intent: " + intent);
-                        MyApp.logD("picked uri: " + uri);
+                        ActionInfo.Record record = (ActionInfo.Record) data
+                                .getSerializableExtra(ActionPickerActivity.EXTRA_ACTION_RECORD);
+                        MyApp.logD("picked intent: " + record.intentUri);
                         // save
                         Preference pref = findPreference(mPrefKey);
                         pref.getSharedPreferences()
                                 .edit()
-                                .putString(mPrefKey, uri)
+                                .putString(mPrefKey, record.toStringForPreference())
                                 .apply();
-                        pref.setSummary(ActionIntent.getAppName(getActivity(), intent));
+                        updateActionSummary(pref, record);
                     }
                     break;
                 default:
@@ -244,7 +292,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    EmergencyService.startStop(sw.getContext(), enabled || settings.size.enabled);
+                    MyApp.updateService(sw.getContext(), enabled, settings.size.enabled,
+                            settings.floatingActionEnabled, settings.showNotification);
                 }
             });
             openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
@@ -279,7 +328,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    EmergencyService.startStop(sw.getContext(), enabled || settings.pressure.enabled);
+                    MyApp.updateService(sw.getContext(), settings.pressure.enabled, enabled,
+                            settings.floatingActionEnabled, settings.showNotification);
                 }
             });
             openActivity(R.string.key_size_threshold, SizeThresholdActivity.class);
@@ -291,6 +341,30 @@ public class SettingsActivity extends BaseSettingsActivity {
             pickAction(R.string.key_size_action_flick_right);
             pickAction(R.string.key_size_action_flick_up);
             pickAction(R.string.key_size_action_flick_down);
+        }
+    }
+
+    public static class FloatingActionSettingsFragment extends XposedFragment {
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_floating_action);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_floating_action_settings);
+
+            setUpSwitch(R.string.key_floating_action_enabled, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
+                            settings.size.enabled, enabled, settings.showNotification);
+                }
+            });
+            openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
         }
     }
 }

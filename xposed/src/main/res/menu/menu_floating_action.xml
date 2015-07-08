@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2015 Takagi Katsuyuki
   ~
@@ -15,15 +14,13 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/floating_action_dim">
-
-    <jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB
-        android:id="@+id/circle_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</FrameLayout>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+    <item
+        android:id="@+id/action_floating_action"
+        android:icon="@drawable/ic_floating_action"
+        android:title="@string/action_floating_action"
+        app:showAsAction="ifRoom"/>
+</menu>

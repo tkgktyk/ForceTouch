@@ -15,15 +15,7 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/floating_action_dim">
-
-    <jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB
-        android:id="@+id/circle_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</FrameLayout>
+<resources>
+    <!-- Blue Grey 300 -->
+    <color name="floating_action_dim">#4090A4AE</color>
+</resources>

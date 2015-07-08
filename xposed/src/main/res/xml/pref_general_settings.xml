@@ -41,6 +41,12 @@
         android:icon="@null"
         android:key="@string/key_show_enabled_action_toast"
         android:title="@string/title_show_enabled_action_toast"/>
+    <!-- Show Notification -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="true"
+        android:icon="@null"
+        android:key="@string/key_show_notification"
+        android:title="@string/title_show_notification"/>
     <PreferenceCategory
         android:title="@string/category_experimental">
         <!-- Detector Parameter -->

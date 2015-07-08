@@ -6,6 +6,7 @@
     <string name="key_header_general" translatable="false">key_header_general</string>
     <string name="key_header_pressure" translatable="false">key_header_pressure</string>
     <string name="key_header_size" translatable="false">key_header_size</string>
+    <string name="key_header_floating_action" translatable="false">key_header_floating_action</string>
     <string name="key_about" translatable="false">key_about</string>
     <string name="key_support" translatable="false">key_support</string>
 
@@ -14,6 +15,7 @@
     <string name="key_blacklist" translatable="false">key_blacklist</string>
     <string name="key_show_disabled_action_toast" translatable="false">key_show_disabled_action_toast</string>
     <string name="key_show_enabled_action_toast" translatable="false">key_show_enabled_action_toast</string>
+    <string name="key_show_notification" translatable="false">key_show_notification</string>
     <string name="key_detection_sensitivity" translatable="false">key_detection_sensitivity</string>
     <string name="key_detection_window" translatable="false">key_detection_window</string>
 
@@ -42,4 +44,8 @@
     <string name="key_size_action_flick_right" translatable="false">key_size_action_flick_right</string>
     <string name="key_size_action_flick_up" translatable="false">key_size_action_flick_up</string>
     <string name="key_size_action_flick_down" translatable="false">key_size_action_flick_down</string>
+
+    <!-- Floating Action -->
+    <string name="key_floating_action_enabled" translatable="false">key_floating_action_enabled</string>
+    <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
 </resources>

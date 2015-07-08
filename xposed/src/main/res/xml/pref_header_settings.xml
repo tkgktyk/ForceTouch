@@ -34,6 +34,11 @@
             android:icon="@null"
             android:key="@string/key_header_size"
             android:title="@string/header_size"/>
+        <!-- Floating Action -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_header_floating_action"
+            android:title="@string/header_floating_action"/>
     </PreferenceCategory>
 
     <!-- Information -->

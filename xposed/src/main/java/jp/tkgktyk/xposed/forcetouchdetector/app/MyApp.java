@@ -16,18 +16,29 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import jp.tkgktyk.lib.BaseApplication;
 import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
  * Created by tkgktyk on 2015/06/06.
  */
 public class MyApp extends BaseApplication {
 
+    /**
+     * for version name
+     *
+     * @return
+     */
     @Override
     protected SharedPreferences getDefaultSharedPreferences() {
         return FTD.getSharedPreferences(this);
@@ -72,6 +83,62 @@ public class MyApp extends BaseApplication {
                     .putString(getString(R.string.key_pressure_action_flick_down),
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
+        }
+        if (old.isOlderThan("0.2.4")) {
+            SharedPreferences prefs = getDefaultSharedPreferences();
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_tap));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_double_tap));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_long_press));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_left));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_right));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_up));
+            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_down));
+            convertUriToAction(prefs, getString(R.string.key_size_action_tap));
+            convertUriToAction(prefs, getString(R.string.key_size_action_double_tap));
+            convertUriToAction(prefs, getString(R.string.key_size_action_long_press));
+            convertUriToAction(prefs, getString(R.string.key_size_action_flick_left));
+            convertUriToAction(prefs, getString(R.string.key_size_action_flick_right));
+            convertUriToAction(prefs, getString(R.string.key_size_action_flick_up));
+            convertUriToAction(prefs, getString(R.string.key_size_action_flick_down));
+        }
+    }
+
+    private void convertUriToAction(SharedPreferences prefs, String key) {
+        ActionInfo.Record record = new ActionInfo.Record();
+        record.intentUri = prefs.getString(key, "");
+        ActionInfo info = new ActionInfo(record);
+        Intent intent = info.getIntent();
+        if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "FLOATING_NAVIGATION")) {
+            intent.setAction(FTD.ACTION_FLOATING_ACTION);
+        }
+        if (Strings.isNullOrEmpty(record.intentUri)) {
+            info = new ActionInfo(this, intent, ActionInfo.TYPE_NONE);
+        } else if (FTD.isLocalAction(intent)) {
+            info = new ActionInfo(this, intent, ActionInfo.TYPE_TOOL);
+        } else {
+            info = new ActionInfo(this, intent, ActionInfo.TYPE_APP);
+        }
+        prefs.edit()
+                .putString(key, info.toStringForPreference())
+                .apply();
+    }
+
+    public static void updateService(Context context, boolean pressure, boolean size,
+                                     boolean floatingAction, boolean showNotification) {
+        Intent em = new Intent(context, EmergencyService.class);
+        Intent fa = new Intent(context, FloatingActionService.class);
+        boolean ftdEnable = pressure || size;
+        if (showNotification && ftdEnable) {
+            if (floatingAction) {
+                context.stopService(em);
+                context.startService(fa);
+            } else {
+                context.stopService(fa);
+                context.startService(em);
+            }
+        } else {
+            context.stopService(em);
+            context.stopService(fa);
         }
     }
 }

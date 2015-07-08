@@ -16,8 +16,6 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app.util;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -34,7 +32,8 @@ import java.util.ArrayList;
  */
 public class CircleLayoutForFAB extends FrameLayout {
 
-    private static final int INVALID_POINTER = -1;
+    private static final int BASE_ITEM_COUNT = 5;
+    private static final int ITEM_COUNT_EXTRA_STEP = 2;
 
     private final PointF mCircleOrigin = new PointF();
     private float mCircleRadius;
@@ -48,9 +47,6 @@ public class CircleLayoutForFAB extends FrameLayout {
 
     private final Rect mChildrenRect = new Rect();
     private final ArrayList<Rect> mChildRects = Lists.newArrayList();
-
-    private ObjectAnimator mShowAnimation;
-    private ObjectAnimator mHideAnimation;
 
     public CircleLayoutForFAB(Context context) {
         super(context);
@@ -84,8 +80,6 @@ public class CircleLayoutForFAB extends FrameLayout {
                 updateCircleParameters();
             }
         });
-
-        setUpAnimator();
     }
 
     private void updateCircleParameters() {
@@ -105,7 +99,15 @@ public class CircleLayoutForFAB extends FrameLayout {
     }
 
     private int calcLevel(int index) {
-        return 0;
+        int level = 0;
+        while (true) {
+            index -= BASE_ITEM_COUNT + level * ITEM_COUNT_EXTRA_STEP;
+            if (index < 0) {
+                break;
+            }
+            ++level;
+        }
+        return level;
     }
 
     private int calcPosition(int index) {
@@ -113,42 +115,10 @@ public class CircleLayoutForFAB extends FrameLayout {
     }
 
     private int calcPosition(int index, int level) {
+        for (int i = 0; i < level; ++i) {
+            index -= BASE_ITEM_COUNT + i * ITEM_COUNT_EXTRA_STEP;
+        }
         return index;
-    }
-
-    private void setUpAnimator() {
-        { // show
-            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", 0.0f, 1.0f);
-            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", 0.0f, 1.0f);
-
-            mShowAnimation = ObjectAnimator.ofPropertyValuesHolder(this,
-                    holderScaleX, holderScaleY);
-            mShowAnimation.setDuration(300); // default 300
-        }
-        { // hide
-            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f, 0.0f);
-            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", 1.0f, 0.0f);
-
-            mHideAnimation = ObjectAnimator.ofPropertyValuesHolder(this,
-                    holderScaleX, holderScaleY);
-            mHideAnimation.setDuration(300); // default 300
-        }
-    }
-
-    public void show(float x, float y, float rotation) {
-        setCircleOrigin(x, y);
-        setRotation(rotation);
-        show();
-    }
-
-    public void show() {
-        mHideAnimation.cancel();
-        mShowAnimation.start();
-    }
-
-    public void hide() {
-        mShowAnimation.cancel();
-        mHideAnimation.start();
     }
 
     public void setCircleOrigin(float x, float y) {
@@ -213,6 +183,6 @@ public class CircleLayoutForFAB extends FrameLayout {
     }
 
     private float calcFirstAngle() {
-        return -mItemRadians.get(0) * (getChildCount() - 1) / 2;
+        return -mItemRadians.get(0) * (Math.min(getChildCount(), BASE_ITEM_COUNT) - 1) / 2;
     }
 }

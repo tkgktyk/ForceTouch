@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.Button;
@@ -154,10 +155,19 @@ public class PressureThresholdActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_floating_action, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
+            case R.id.action_floating_action:
+                FloatingAction.show(this);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -180,4 +190,5 @@ public class PressureThresholdActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_readme)));
         startActivity(intent);
     }
+
 }

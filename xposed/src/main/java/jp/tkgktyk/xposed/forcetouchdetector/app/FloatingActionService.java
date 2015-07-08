@@ -18,6 +18,7 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.IBinder;
 
 import jp.tkgktyk.lib.ServiceNotification;
@@ -26,8 +27,10 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
 /**
  * Created by tkgktyk on 2015/06/09.
  */
-public class EmergencyService extends Service {
+public class FloatingActionService extends Service {
     private ServiceNotification mServiceNotification;
+
+    private FloatingAction mFloatingAction;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -38,9 +41,11 @@ public class EmergencyService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        mServiceNotification = new ServiceNotification(this, R.drawable.ic_stat_emergency,
+        mServiceNotification = new ServiceNotification(this, R.drawable.ic_stat_floating_action,
                 R.string.app_name, SettingsActivity.class);
-        mServiceNotification.update(R.string.state_running);
+        mServiceNotification.update(R.string.state_floating_action);
+
+        mFloatingAction = new FloatingAction(this);
     }
 
     @Override
@@ -50,9 +55,18 @@ public class EmergencyService extends Service {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mFloatingAction.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         mServiceNotification.stop();
+
+        mFloatingAction.onDestroy(this);
     }
 }

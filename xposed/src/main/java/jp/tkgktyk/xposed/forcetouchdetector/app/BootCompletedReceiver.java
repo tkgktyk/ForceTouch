@@ -28,7 +28,8 @@ import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        boolean enabled = new FTD.Settings(FTD.getSharedPreferences(context)).isEnabled();
-        EmergencyService.startStop(context, enabled);
+        FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
+        MyApp.updateService(context, settings.pressure.enabled, settings.size.enabled,
+                settings.floatingActionEnabled, settings.showNotification);
     }
 }

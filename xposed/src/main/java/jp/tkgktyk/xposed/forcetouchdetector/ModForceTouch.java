@@ -22,6 +22,7 @@ import android.animation.PropertyValuesHolder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -41,7 +42,7 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionIntent;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
  * Created by tkgktyk on 2015/02/12.
@@ -133,7 +134,7 @@ public class ModForceTouch extends XposedModule {
                             XposedHelpers.setAdditionalInstanceField(decorView,
                                     FIELD_SETTINGS_CHANGED_RECEIVER, settingsChangedReceiver);
                             decorView.getContext().registerReceiver(settingsChangedReceiver,
-                                    FTD.SETTINGS_CHANGED_FILTER);
+                                    new IntentFilter(FTD.ACTION_SETTINGS_CHANGED));
                         } catch (Throwable t) {
                             logE(t);
                         }
@@ -241,13 +242,11 @@ public class ModForceTouch extends XposedModule {
         public abstract boolean dispatchTouchEvent(MotionEvent event,
                                                    XC_MethodHook.MethodHookParam methodHookParam);
 
-        protected void performAction(String actionUri, MotionEvent event, String disabledText) {
-            if (FTD.performAction(mTargetView, actionUri, event)) {
-                String action = ActionIntent.getAction(actionUri);
-                if (mSettings.showEnabledActionToast && FTD.isLocalAction(action)) {
-                    String name = FTD.getActionName(getContext(), action);
-                    if (!Strings.isNullOrEmpty(name)) {
-                        showToast(name);
+        protected void performAction(ActionInfo.Record record, MotionEvent event, String disabledText) {
+            if (FTD.performAction(mTargetView, record, event)) {
+                if (mSettings.showEnabledActionToast) {
+                    if (!Strings.isNullOrEmpty(record.name)) {
+                        showToast(record.name);
                     }
                 }
             } else if (mSettings.showDisabledActionToast) {
@@ -461,8 +460,8 @@ public class ModForceTouch extends XposedModule {
                 mDownTime = base.getEventTime();
             }
             int index = base.findPointerIndex(mActivePointerId);
-            logD("mActivePointerId=" + mActivePointerId);
-            logD("index=" + index);
+//            logD("mActivePointerId=" + mActivePointerId);
+//            logD("index=" + index);
             if (index == -1) {
                 return;
             }
@@ -472,7 +471,7 @@ public class ModForceTouch extends XposedModule {
                             base.getPressure(index), base.getSize(index), base.getMetaState(),
                             base.getXPrecision(), base.getYPrecision(), base.getDeviceId(),
                             base.getEdgeFlags());
-            logD(event.toString());
+//            logD(event.toString());
             mGestureDetector.onTouchEvent(event);
             event.recycle();
         }

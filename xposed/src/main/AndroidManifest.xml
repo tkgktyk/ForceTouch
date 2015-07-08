@@ -41,6 +41,7 @@
         </activity>
 
         <service android:name=".app.EmergencyService"/>
+        <service android:name=".app.FloatingActionService"/>
 
         <activity
             android:name=".app.AppSelectActivity"/>
@@ -53,6 +54,9 @@
         <activity
             android:name=".app.SizeThresholdActivity"
             android:label="@string/label_size_threshold"/>
+        <activity
+            android:name=".app.FloatingActionActivity"
+            android:label="@string/label_floating_action"/>
     </application>
 
 </manifest>

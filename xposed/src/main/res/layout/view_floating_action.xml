@@ -15,15 +15,12 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout
+<android.support.design.widget.FloatingActionButton
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/floating_action_dim">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:backgroundTint="@android:color/black"
+    app:fabSize="normal">
 
-    <jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB
-        android:id="@+id/circle_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</FrameLayout>
+</android.support.design.widget.FloatingActionButton>

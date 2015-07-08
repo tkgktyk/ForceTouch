@@ -15,15 +15,16 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/floating_action_dim">
-
-    <jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB
-        android:id="@+id/circle_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</FrameLayout>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Floating Action -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="false"
+        android:icon="@null"
+        android:key="@string/key_floating_action_enabled"
+        android:title="@string/title_enabled"/>
+    <Preference
+        android:dependency="@string/key_floating_action_enabled"
+        android:icon="@null"
+        android:key="@string/key_floating_action_list"
+        android:title="@string/title_floating_action_list"/>
+</PreferenceScreen>

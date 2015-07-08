@@ -19,13 +19,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
  * Created by tkgktyk on 2015/06/07.
  */
 public class ActionPickerActivity extends AppCompatActivity {
     private static final String EXTRA_TITLE = FTD.PREFIX_EXTRA + "TITLE";
-    public static final String EXTRA_INTENT = FTD.PREFIX_EXTRA + "INTENT";
+    public static final String EXTRA_ACTION_RECORD = FTD.PREFIX_EXTRA + "ACTION_RECORD";
 
     public static void putExtras(Intent intent, CharSequence title) {
         intent.putExtra(EXTRA_TITLE, title);
@@ -42,7 +43,6 @@ public class ActionPickerActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         setSupportActionBar(mToolbar);
-        MyApp.logD(getIntent().getStringExtra(EXTRA_TITLE));
         getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_TITLE));
 
         if (savedInstanceState == null) {
@@ -53,9 +53,9 @@ public class ActionPickerActivity extends AppCompatActivity {
         }
     }
 
-    public void returnActivity(Intent picked) {
+    public void returnActivity(ActionInfo actionInfo) {
         Intent intent = getIntent();
-        intent.putExtra(EXTRA_INTENT, picked);
+        intent.putExtra(EXTRA_ACTION_RECORD, actionInfo.toRecord());
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -123,8 +123,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                     break;
                 }
                 case R.string.none: {
-                    activity.returnActivity(new Intent());
-                    activity.finish();
+                    activity.returnActivity(new ActionInfo());
                     break;
                 }
             }
@@ -142,12 +141,16 @@ public class ActionPickerActivity extends AppCompatActivity {
                     break;
                 case REQUEST_CREATE_SHORTCUT:
                     if (RESULT_OK == resultCode) {
-                        activity.returnActivity((Intent) data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT));
+                        ActionInfo actionInfo = new ActionInfo(getActivity(), data,
+                                ActionInfo.TYPE_SHORTCUT);
+                        activity.returnActivity(actionInfo);
                     }
                     break;
                 case REQUEST_PICK_APP:
                     if (RESULT_OK == resultCode) {
-                        activity.returnActivity(data);
+                        ActionInfo actionInfo = new ActionInfo(getActivity(), data,
+                                ActionInfo.TYPE_APP);
+                        activity.returnActivity(actionInfo);
                     }
                     break;
                 default:
@@ -167,7 +170,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_DOUBLE_TAP,
                 FTD.ACTION_LONG_PRESS,
                 FTD.ACTION_LONG_PRESS_FULL,
-                FTD.ACTION_FLOATING_NAVIGATION,
+                FTD.ACTION_FLOATING_ACTION,
         };
 
         @Override
@@ -188,7 +191,9 @@ public class ActionPickerActivity extends AppCompatActivity {
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
             ActionPickerActivity activity = (ActionPickerActivity) getActivity();
-            activity.returnActivity(new Intent(ACTION_LIST[position]));
+            ActionInfo actionInfo = new ActionInfo(activity, new Intent(ACTION_LIST[position]),
+                    ActionInfo.TYPE_TOOL);
+            activity.returnActivity(actionInfo);
         }
     }
 }

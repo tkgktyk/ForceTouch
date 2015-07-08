@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
@@ -37,6 +38,8 @@ import com.google.common.collect.Sets;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.Set;
+
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
  * Created by tkgktyk on 2015/06/03.
@@ -59,11 +62,10 @@ public class FTD {
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS_FULL = PREFIX_ACTION + "LONG_PRESS_FULL" + SUFFIX_TOUCH_ACTION;
 
-    public static final String ACTION_FLOATING_NAVIGATION = PREFIX_ACTION + "FLOATING_NAVIGATION";
+    public static final String ACTION_FLOATING_ACTION = PREFIX_ACTION + "FLOATING_ACTION";
 
     public static final IntentFilter SYSTEM_UI_ACTION_FILTER;
     public static final IntentFilter INTERNAL_ACTION_FILTER;
-    public static final IntentFilter APP_ACTION_FILTER;
 
     /**
      * IntentFilters initialization
@@ -77,8 +79,6 @@ public class FTD {
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
         INTERNAL_ACTION_FILTER = new IntentFilter();
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
-        APP_ACTION_FILTER = new IntentFilter();
-        APP_ACTION_FILTER.addAction(ACTION_FLOATING_NAVIGATION);
     }
 
     public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
@@ -86,6 +86,7 @@ public class FTD {
 
     private static final Point mDisplaySize = new Point();
 
+    @NonNull
     public static String getActionName(Context context, String action) {
         Context mod = getModContext(context);
         if (action.equals(ACTION_BACK)) {
@@ -106,16 +107,42 @@ public class FTD {
             return mod.getString(R.string.action_long_press);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             return mod.getString(R.string.action_long_press_full);
-        } else if (action.equals(ACTION_FLOATING_NAVIGATION)) {
-            return mod.getString(R.string.action_floating_navigation);
+        } else if (action.equals(ACTION_FLOATING_ACTION)) {
+            return mod.getString(R.string.action_floating_action);
         }
         return "";
     }
 
-    public static boolean performAction(@NonNull ViewGroup container, String uri,
+    @DrawableRes
+    public static int getActionIconResource(String action) {
+        if (action.equals(ACTION_BACK)) {
+            return R.drawable.ic_sysbar_back;
+        } else if (action.equals(ACTION_HOME)) {
+            return R.drawable.ic_sysbar_home;
+        } else if (action.equals(ACTION_RECENTS)) {
+            return R.drawable.ic_sysbar_recent;
+        } else if (action.equals(ACTION_EXPAND_NOTIFICATIONS)) {
+            return R.drawable.ic_notifications_none_white_24dp;
+        } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
+            return R.drawable.ic_settings_white_24dp;
+        } else if (action.equals(ACTION_KILL)) {
+            return R.drawable.ic_close_white_24dp;
+        } else if (action.equals(ACTION_DOUBLE_TAP)) {
+            return 0;
+        } else if (action.equals(ACTION_LONG_PRESS)) {
+            return 0;
+        } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
+            return 0;
+        } else if (action.equals(ACTION_FLOATING_ACTION)) {
+            return R.drawable.ic_floating_action;
+        }
+        return 0;
+    }
+
+    public static boolean performAction(@NonNull ViewGroup container, ActionInfo.Record record,
                                         MotionEvent event) {
         Context context = container.getContext();
-        Intent intent = loadIntent(context, uri, event);
+        Intent intent = loadIntent(context, record.intentUri, event);
         if (intent == null) {
             return false;
         }
@@ -136,18 +163,20 @@ public class FTD {
     }
 
     private static Intent loadIntent(Context context, String uri, MotionEvent event) {
+        Intent intent = null;
         try {
-            Intent intent = Intent.parseUri(uri, 0);
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay().getRealSize(mDisplaySize);
-            intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
-            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
-            return intent;
+            intent = Intent.parseUri(uri, 0);
         } catch (URISyntaxException e) {
             Context mod = getModContext(context);
             Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
         }
-        return null;
+        if (intent != null) {
+            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getRealSize(mDisplaySize);
+            intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
+            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
+        }
+        return intent;
     }
 
     public static boolean isLocalAction(@NonNull Intent intent) {
@@ -217,7 +246,6 @@ public class FTD {
 
     public static final String ACTION_SETTINGS_CHANGED = PREFIX_ACTION + "SETTINGS_CHANGED";
     public static final String EXTRA_SETTINGS = PREFIX_EXTRA + "SETTINGS";
-    public static final IntentFilter SETTINGS_CHANGED_FILTER = new IntentFilter(ACTION_SETTINGS_CHANGED);
 
     // called by SettingsActivity
     public static void sendSettingsChanged(Context context, SharedPreferences prefs) {
@@ -261,6 +289,7 @@ public class FTD {
         public final Set<String> blacklist;
         public final boolean showDisabledActionToast;
         public final boolean showEnabledActionToast;
+        public final boolean showNotification;
         public final int detectionSensitivity;
         public final int detectionWindow;
 
@@ -270,12 +299,16 @@ public class FTD {
         // Size
         public final Holder size = new Holder();
 
+        // Floating Action
+        public final boolean floatingActionEnabled;
+
         public Settings(SharedPreferences prefs) {
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
             forceTouchArea = (100.0f - area) / 100.0f;
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
             showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
+            showNotification = prefs.getBoolean("key_show_notification", true);
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
             detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "200"));
 
@@ -284,26 +317,29 @@ public class FTD {
             pressure.threshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
-            pressure.actionTap = prefs.getString("key_pressure_action_tap", "");
-            pressure.actionDoubleTap = prefs.getString("key_pressure_action_double_tap", "");
-            pressure.actionLongPress = prefs.getString("key_pressure_action_long_press", "");
-            pressure.actionFlickLeft = prefs.getString("key_pressure_action_flick_left", "");
-            pressure.actionFlickRight = prefs.getString("key_pressure_action_flick_right", "");
-            pressure.actionFlickUp = prefs.getString("key_pressure_action_flick_up", "");
-            pressure.actionFlickDown = prefs.getString("key_pressure_action_flick_down", "");
+            pressure.actionTap = getActionRecord(prefs, "key_pressure_action_tap");
+            pressure.actionDoubleTap = getActionRecord(prefs, "key_pressure_action_double_tap");
+            pressure.actionLongPress = getActionRecord(prefs, "key_pressure_action_long_press");
+            pressure.actionFlickLeft = getActionRecord(prefs, "key_pressure_action_flick_left");
+            pressure.actionFlickRight = getActionRecord(prefs, "key_pressure_action_flick_right");
+            pressure.actionFlickUp = getActionRecord(prefs, "key_pressure_action_flick_up");
+            pressure.actionFlickDown = getActionRecord(prefs, "key_pressure_action_flick_down");
 
             // Size
             size.enabled = prefs.getBoolean("key_size_enabled", false);
             size.threshold = Float.parseFloat(getStringToParse(prefs, "key_size_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
-            size.actionTap = prefs.getString("key_size_action_tap", "");
-            size.actionDoubleTap = prefs.getString("key_size_action_double_tap", "");
-            size.actionLongPress = prefs.getString("key_size_action_long_press", "");
-            size.actionFlickLeft = prefs.getString("key_size_action_flick_left", "");
-            size.actionFlickRight = prefs.getString("key_size_action_flick_right", "");
-            size.actionFlickUp = prefs.getString("key_size_action_flick_up", "");
-            size.actionFlickDown = prefs.getString("key_size_action_flick_down", "");
+            size.actionTap = getActionRecord(prefs, "key_size_action_tap");
+            size.actionDoubleTap = getActionRecord(prefs, "key_size_action_double_tap");
+            size.actionLongPress = getActionRecord(prefs, "key_size_action_long_press");
+            size.actionFlickLeft = getActionRecord(prefs, "key_size_action_flick_left");
+            size.actionFlickRight = getActionRecord(prefs, "key_size_action_flick_right");
+            size.actionFlickUp = getActionRecord(prefs, "key_size_action_flick_up");
+            size.actionFlickDown = getActionRecord(prefs, "key_size_action_flick_down");
+
+            // Floating Action
+            floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
@@ -312,6 +348,10 @@ public class FTD {
                 str = defValue;
             }
             return str;
+        }
+        
+        private ActionInfo.Record getActionRecord(SharedPreferences prefs, String key) {
+            return ActionInfo.Record.fromPreference(prefs.getString(key, ""));
         }
 
         public boolean isEnabled() {
@@ -325,13 +365,13 @@ public class FTD {
             public boolean enabled;
             public float threshold;
             // Action
-            public String actionTap;
-            public String actionDoubleTap;
-            public String actionLongPress;
-            public String actionFlickLeft;
-            public String actionFlickRight;
-            public String actionFlickUp;
-            public String actionFlickDown;
+            public ActionInfo.Record actionTap;
+            public ActionInfo.Record actionDoubleTap;
+            public ActionInfo.Record actionLongPress;
+            public ActionInfo.Record actionFlickLeft;
+            public ActionInfo.Record actionFlickRight;
+            public ActionInfo.Record actionFlickUp;
+            public ActionInfo.Record actionFlickDown;
         }
     }
 }
