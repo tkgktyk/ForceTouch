@@ -171,6 +171,7 @@ public class FTD {
             Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
         }
         if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                     .getDefaultDisplay().getRealSize(mDisplaySize);
             intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
