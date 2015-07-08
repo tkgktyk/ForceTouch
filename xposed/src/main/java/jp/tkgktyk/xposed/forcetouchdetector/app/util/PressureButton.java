@@ -17,6 +17,7 @@
 package jp.tkgktyk.xposed.forcetouchdetector.app.util;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Button;
@@ -25,6 +26,20 @@ import android.widget.Button;
  * Created by tkgktyk on 2015/06/09.
  */
 public class PressureButton extends Button {
+
+    private long mDetectionWindow;
+    private Handler mHandler = new Handler();
+    private boolean mIsDetectionWindowOpened;
+    private Runnable mStopDetector = new Runnable() {
+        @Override
+        public void run() {
+            if (mIsDetectionWindowOpened) {
+                mOnPressedListener.onStop();
+            }
+            mIsDetectionWindowOpened = false;
+        }
+    };
+
     public PressureButton(Context context) {
         super(context);
     }
@@ -37,10 +52,29 @@ public class PressureButton extends Button {
         super(context, attrs, defStyleAttr);
     }
 
+    public void setDetectionWindow(long msec) {
+        mDetectionWindow = msec;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            mOnPressedListener.onPressed(event);
+        if (mIsDetectionWindowOpened) {
+            mOnPressedListener.onUpdate(event);
+        }
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                mHandler.postDelayed(mStopDetector, mDetectionWindow);
+                mOnPressedListener.onStart(event);
+                mIsDetectionWindowOpened = true;
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                mHandler.removeCallbacks(mStopDetector);
+                if (mIsDetectionWindowOpened) {
+                    mOnPressedListener.onStop();
+                }
+                mIsDetectionWindowOpened = false;
+                break;
         }
         return super.dispatchTouchEvent(event);
     }
@@ -52,6 +86,8 @@ public class PressureButton extends Button {
     }
 
     public interface OnPressedListener {
-        void onPressed(MotionEvent event);
+        void onStart(MotionEvent event);
+        void onUpdate(MotionEvent event);
+        void onStop();
     }
 }

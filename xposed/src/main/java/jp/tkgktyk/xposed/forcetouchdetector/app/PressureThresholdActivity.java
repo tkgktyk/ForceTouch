@@ -137,16 +137,44 @@ public class PressureThresholdActivity extends AppCompatActivity {
         mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
         mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
 
+        long detectionWindow = Long.parseLong(FTD.getSharedPreferences(this)
+                .getString(getString(R.string.key_detection_window), "0"));
+        mTapButton.setDetectionWindow(detectionWindow);
         mTapButton.setOnPressedListener(new PressureButton.OnPressedListener() {
+            private float mPressure;
+
             @Override
-            public void onPressed(MotionEvent event) {
-                updateTapPressureText(getPressure(event));
+            public void onStart(MotionEvent event) {
+                mPressure = getPressure(event);
+            }
+
+            @Override
+            public void onUpdate(MotionEvent event) {
+                mPressure = Math.max(mPressure, getPressure(event));
+            }
+
+            @Override
+            public void onStop() {
+                updateTapPressureText(mPressure);
             }
         });
+        mForceTouchButton.setDetectionWindow(detectionWindow);
         mForceTouchButton.setOnPressedListener(new PressureButton.OnPressedListener() {
+            private float mPressure;
+
             @Override
-            public void onPressed(MotionEvent event) {
-                updateForceTouchPressureText(getPressure(event));
+            public void onStart(MotionEvent event) {
+                mPressure = getPressure(event);
+            }
+
+            @Override
+            public void onUpdate(MotionEvent event) {
+                mPressure = Math.max(mPressure, getPressure(event));
+            }
+
+            @Override
+            public void onStop() {
+                updateForceTouchPressureText(mPressure);
             }
         });
 

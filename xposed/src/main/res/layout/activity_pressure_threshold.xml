@@ -132,7 +132,7 @@
                 <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
                     android:id="@+id/force_touch_button"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"
+                    android:layout_height="200dp"
                     android:text="@string/please_force_touch_d1"/>
 
                 <Space
