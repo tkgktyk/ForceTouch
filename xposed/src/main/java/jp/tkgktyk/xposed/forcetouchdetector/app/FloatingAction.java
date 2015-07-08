@@ -151,7 +151,6 @@ public class FloatingAction implements View.OnClickListener {
 
     private void loadActions(Context context) {
         mCircleLayout.removeAllViews();
-        // TODO: load actions
         mActionList = ActionInfoList.fromPreference(
                 FTD.getSharedPreferences(context)
                         .getString(context.getString(R.string.key_floating_action_list), ""));
@@ -173,7 +172,6 @@ public class FloatingAction implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO: perform action
         hide();
         ActionInfo action = (ActionInfo) v.getTag();
         switch (action.getType()) {
