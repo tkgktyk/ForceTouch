@@ -84,7 +84,7 @@ public class MyApp extends BaseApplication {
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
         }
-        if (old.isOlderThan("0.2.4")) {
+        if (old.isOlderThan("0.3.0")) {
             SharedPreferences prefs = getDefaultSharedPreferences();
             convertUriToAction(prefs, getString(R.string.key_pressure_action_tap));
             convertUriToAction(prefs, getString(R.string.key_pressure_action_double_tap));
