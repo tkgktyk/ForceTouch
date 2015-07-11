@@ -128,11 +128,11 @@ public class MyApp extends BaseApplication {
         Intent em = new Intent(context, EmergencyService.class);
         Intent fa = new Intent(context, FloatingActionService.class);
         boolean ftdEnable = pressure || size;
-        if (showNotification && ftdEnable) {
+        if (ftdEnable) {
             if (floatingAction) {
                 context.stopService(em);
                 context.startService(fa);
-            } else {
+            } else if (showNotification) {
                 context.stopService(fa);
                 context.startService(em);
             }
