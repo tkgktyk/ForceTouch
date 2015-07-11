@@ -17,6 +17,7 @@
 package jp.tkgktyk.xposed.forcetouchdetector;
 
 import android.annotation.SuppressLint;
+import android.app.Instrumentation;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,8 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.view.ViewCompat;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -239,19 +241,34 @@ public class FTD {
                 }
             }, ViewConfiguration.getLongPressTimeout() + ViewConfiguration.getTapTimeout());
         } else if (action.equals(ACTION_SCROLL_UP)) {
-            View view = findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
+            findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
                     new OnViewFoundListener() {
                         @Override
-                        public boolean onViewFound(View view) {
+                        public boolean onViewFound(final View view) {
                             if (view.canScrollVertically(-1)) {
                                 if (view instanceof AbsListView) {
                                     ((AbsListView) view).smoothScrollToPosition(0);
-                                } else if (view instanceof RecyclerView) {
-                                    ((RecyclerView) view).smoothScrollToPosition(0);
                                 } else if (view instanceof ScrollView) {
-                                    ((ScrollView) view).fullScroll(View.FOCUS_UP);
+                                    final ScrollView scrollView = (ScrollView) view;
+                                    if (!scrollView.fullScroll(View.FOCUS_UP)) {
+                                        scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+                                    }
+////                                } else if (view instanceof RecyclerView) { // doesn't work for support library's class
+////                                    ((RecyclerView) view).smoothScrollToPosition(0);
                                 } else {
-                                    view.scrollTo(view.getScrollX(), 0);
+                                    try {
+                                        view.scrollTo(view.getScrollX(), 0);
+                                    } catch (RuntimeException e) {
+                                        new Thread() {
+                                            @Override
+                                            public void run() {
+                                                Instrumentation instrumentation = new Instrumentation();
+                                                sendKey(instrumentation, KeyEvent.KEYCODE_MOVE_HOME, 2, view);
+                                                sendKey(instrumentation, KeyEvent.KEYCODE_PAGE_UP, 10, view);
+                                                sendKey(instrumentation, KeyEvent.KEYCODE_DPAD_UP, 100, view);
+                                            }
+                                        }.start();
+                                    }
                                 }
                                 return true;
                             }
@@ -259,22 +276,33 @@ public class FTD {
                         }
                     });
         } else if (action.equals(ACTION_SCROLL_DOWN)) {
-            View view = findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
+            findViewAtPosition(container, Math.round(event.getX()), Math.round(event.getY()),
                     new OnViewFoundListener() {
                         @Override
-                        public boolean onViewFound(View view) {
+                        public boolean onViewFound(final View view) {
                             // TODO: doesn't work...
                             if (view.canScrollVertically(1)) {
                                 if (view instanceof AbsListView) {
-                                    ((AbsListView) view).smoothScrollToPosition(
-                                            ((AbsListView) view).getChildCount() - 1);
-                                } else if (view instanceof RecyclerView) {
-                                    ((RecyclerView) view).smoothScrollToPosition(
-                                            ((RecyclerView) view).getChildCount() - 1);
+                                    final AbsListView listView = (AbsListView) view;
+                                    listView.smoothScrollToPosition(
+                                            listView.getAdapter().getCount() - 1);
                                 } else if (view instanceof ScrollView) {
-                                    ((ScrollView) view).fullScroll(View.FOCUS_DOWN);
+                                    final ScrollView scrollView = (ScrollView) view;
+                                    scrollView.fullScroll(View.FOCUS_DOWN);
+//                                } else if (view instanceof RecyclerView) { // doesn't work for support library's class
+//                                    ((RecyclerView) view).smoothScrollToPosition(
+//                                            ((RecyclerView) view).getChildCount() - 1);
                                 } else {
-                                    view.scrollTo(view.getScrollX(), view.getBottom());
+//                                    view.scrollTo(view.getScrollX(), view.getBottom());
+                                    new Thread() {
+                                        @Override
+                                        public void run() {
+                                            Instrumentation instrumentation = new Instrumentation();
+                                            sendKey(instrumentation, KeyEvent.KEYCODE_MOVE_END, 2, view);
+                                            sendKey(instrumentation, KeyEvent.KEYCODE_PAGE_DOWN, 10, view);
+                                            sendKey(instrumentation, KeyEvent.KEYCODE_DPAD_DOWN, 100, view);
+                                        }
+                                    }.start();
                                 }
                                 return true;
                             }
@@ -326,6 +354,22 @@ public class FTD {
             }
         }
         return null;
+    }
+
+    private static void sendKey(Instrumentation instrumentation,
+                                int code, int repeat, View target) {
+        KeyEvent key = new KeyEvent(KeyEvent.ACTION_DOWN, code);
+        for (int i = 0; i < repeat; ++i) {
+            if (!ViewCompat.isAttachedToWindow(target)) {
+                return;
+            }
+            instrumentation.sendKeySync(key);
+        }
+        KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
+        if (!ViewCompat.isAttachedToWindow(target)) {
+            return;
+        }
+        instrumentation.sendKeySync(key);
     }
 
     /**

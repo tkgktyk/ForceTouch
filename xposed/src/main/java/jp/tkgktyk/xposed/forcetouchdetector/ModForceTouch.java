@@ -242,16 +242,23 @@ public class ModForceTouch extends XposedModule {
         public abstract boolean dispatchTouchEvent(MotionEvent event,
                                                    XC_MethodHook.MethodHookParam methodHookParam);
 
-        protected void performAction(ActionInfo.Record record, MotionEvent event, String disabledText) {
-            if (FTD.performAction(mTargetView, record, event)) {
-                if (mSettings.showEnabledActionToast) {
-                    if (!Strings.isNullOrEmpty(record.name)) {
-                        showToast(record.name);
+        protected void performAction(final ActionInfo.Record record, final MotionEvent event,
+                                     final String disabledText) {
+            // force delay for complete ACTION_UP of gesture detector
+            mTargetView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (FTD.performAction(mTargetView, record, event)) {
+                        if (mSettings.showEnabledActionToast) {
+                            if (!Strings.isNullOrEmpty(record.name)) {
+                                showToast(record.name);
+                            }
+                        }
+                    } else if (mSettings.showDisabledActionToast) {
+                        showToast(disabledText);
                     }
                 }
-            } else if (mSettings.showDisabledActionToast) {
-                showToast(disabledText);
-            }
+            }, 1);
         }
 
         @Override
