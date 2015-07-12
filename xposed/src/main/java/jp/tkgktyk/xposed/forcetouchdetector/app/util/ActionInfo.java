@@ -29,7 +29,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.launcher3.Utilities;
 import com.google.common.base.Strings;
@@ -42,6 +41,7 @@ import java.net.URISyntaxException;
 
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
+import jp.tkgktyk.xposed.forcetouchdetector.app.MyApp;
 
 /**
  * Created by tkgktyk on 2015/07/02.
@@ -247,7 +247,7 @@ public class ActionInfo {
                     mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(mIntent);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(context, R.string.not_found, Toast.LENGTH_SHORT).show();
+                    MyApp.showToast(R.string.not_found);
                 }
                 break;
             case TYPE_NONE:

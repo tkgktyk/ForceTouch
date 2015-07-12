@@ -366,6 +366,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                             settings.size.enabled, enabled, settings.showNotification);
                 }
             });
+            openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
             showTextSummary(R.string.key_floating_action_alpha, new OnTextChangeListener() {
                 @Override
                 public boolean onChange(EditTextPreference edit, String text) {
@@ -373,7 +374,6 @@ public class SettingsActivity extends BaseSettingsActivity {
                     return true;
                 }
             });
-            openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
             setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {

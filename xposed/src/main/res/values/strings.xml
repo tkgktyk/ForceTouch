@@ -107,9 +107,9 @@
     <string name="title_action_flick_down">Flick Down</string>
 
     <!-- Floating Action -->
+    <string name="title_floating_action_list">Actions</string>
     <string name="title_floating_action_alpha">Background Alpha</string>
     <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
-    <string name="title_floating_action_list">Actions</string>
     <string name="title_use_local_fab">Another Method</string>
     <string name="summary_use_local_fab">Turn on when you get force close</string>
 </resources>
