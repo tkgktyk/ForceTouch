@@ -42,7 +42,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
@@ -157,45 +156,43 @@ public class FTD {
         return 0;
     }
 
-    public static boolean performAction(@NonNull ViewGroup container, ActionInfo.Record record,
-                                        MotionEvent event) {
+    public static boolean performAction(@NonNull ViewGroup container,
+                                        @NonNull ActionInfo actionInfo,
+                                        @NonNull MotionEvent event) {
         Context context = container.getContext();
-        Intent intent = loadIntent(context, record.intentUri, event);
+        Intent intent = actionInfo.getIntent();
         if (intent == null) {
             return false;
         }
-        if (isLocalAction(intent)) {
-            performLocalAction(container, intent, event);
-            return true;
-        }
-        if (intent.getComponent() == null) {
-            return false;
-        }
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Context mod = getModContext(context);
-            Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
+        // add coordinates
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getRealSize(mDisplaySize);
+        intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
+        intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
+        // launch action like ActionInfo#launch
+        switch (actionInfo.getType()) {
+            case ActionInfo.TYPE_TOOL:
+                String action = intent.getAction();
+                if (action.endsWith(SUFFIX_TOUCH_ACTION)) {
+                    performTouchAction(container, action, event);
+                } else {
+                    context.sendBroadcast(intent);
+                }
+                break;
+            case ActionInfo.TYPE_APP:
+            case ActionInfo.TYPE_SHORTCUT:
+                try {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Context mod = getModContext(context);
+                    Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                return false;
         }
         return true;
-    }
-
-    private static Intent loadIntent(Context context, String uri, MotionEvent event) {
-        Intent intent = null;
-        try {
-            intent = Intent.parseUri(uri, 0);
-        } catch (URISyntaxException e) {
-            Context mod = getModContext(context);
-            Toast.makeText(mod, R.string.not_found, Toast.LENGTH_SHORT).show();
-        }
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay().getRealSize(mDisplaySize);
-            intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
-            intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
-        }
-        return intent;
     }
 
     public static boolean isLocalAction(@NonNull Intent intent) {
@@ -206,33 +203,18 @@ public class FTD {
         return !Strings.isNullOrEmpty(action) && action.startsWith(PREFIX_ACTION);
     }
 
-    private static void performLocalAction(@NonNull ViewGroup container, @NonNull Intent intent,
-                                           MotionEvent event) {
-        String action = intent.getAction();
-        if (action.endsWith(SUFFIX_TOUCH_ACTION)) {
-            if (event != null) {
-                performTouchAction(container, action, event);
-            }
-        } else {
-            container.getContext().sendBroadcast(intent);
-        }
-    }
-
     private static void performTouchAction(@NonNull final ViewGroup container,
                                            @NonNull String action,
                                            @NonNull final MotionEvent event) {
         if (action.equals(ACTION_DOUBLE_TAP)) {
-            // TODO: use input command?
             injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
             injectMotionEvent(container, event, MotionEvent.ACTION_UP);
             injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
             injectMotionEvent(container, event, MotionEvent.ACTION_UP);
         } else if (action.equals(ACTION_LONG_PRESS)) {
-            // TODO: use input command?
             injectMotionEventForLongPress(container, event, MotionEvent.ACTION_DOWN);
             injectMotionEvent(container, event, MotionEvent.ACTION_CANCEL);
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
-            // TODO: use input command?
             injectMotionEvent(container, event, MotionEvent.ACTION_DOWN);
             container.postDelayed(new Runnable() {
                 @Override
@@ -253,8 +235,8 @@ public class FTD {
                                     if (!scrollView.fullScroll(View.FOCUS_UP)) {
                                         scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
                                     }
-////                                } else if (view instanceof RecyclerView) { // doesn't work for support library's class
-////                                    ((RecyclerView) view).smoothScrollToPosition(0);
+//                                } else if (view instanceof RecyclerView) { // doesn't work for support library's class
+//                                    ((RecyclerView) view).smoothScrollToPosition(0);
                                 } else {
                                     try {
                                         view.scrollTo(view.getScrollX(), 0);
@@ -280,7 +262,6 @@ public class FTD {
                     new OnViewFoundListener() {
                         @Override
                         public boolean onViewFound(final View view) {
-                            // TODO: doesn't work...
                             if (view.canScrollVertically(1)) {
                                 if (view instanceof AbsListView) {
                                     final AbsListView listView = (AbsListView) view;
@@ -452,6 +433,7 @@ public class FTD {
 
         // Floating Action
         public final boolean floatingActionEnabled;
+        public final boolean useLocalFAB;
 
         public Settings(SharedPreferences prefs) {
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
@@ -491,6 +473,7 @@ public class FTD {
 
             // Floating Action
             floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
+            useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {

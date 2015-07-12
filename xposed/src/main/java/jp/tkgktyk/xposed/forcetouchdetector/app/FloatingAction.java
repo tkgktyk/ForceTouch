@@ -26,13 +26,13 @@ import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.google.common.base.Objects;
 
@@ -89,7 +89,7 @@ public class FloatingAction implements View.OnClickListener {
     public FloatingAction(Context context) {
         context.setTheme(R.style.AppTheme);
         mContainer = (FrameLayout) LayoutInflater.from(context)
-                .inflate(R.layout.view_floating_navigation, null);
+                .inflate(R.layout.view_floating_action_container, null);
         mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
         mCircleLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -160,9 +160,13 @@ public class FloatingAction implements View.OnClickListener {
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_BACK), ActionInfo.TYPE_TOOL));
         }
         LayoutInflater inflater = LayoutInflater.from(context);
+        FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
         for (ActionInfo action : mActionList) {
-            FloatingActionButton button = (FloatingActionButton) inflater
-                    .inflate(R.layout.view_floating_action, mCircleLayout, false);
+            // FloatingActionButton extends ImageView
+            ImageView button = (ImageView) inflater
+                    .inflate(settings.useLocalFAB ?
+                                    R.layout.view_local_floating_action : R.layout.view_floating_action,
+                            mCircleLayout, false);
             button.setOnClickListener(this);
             button.setTag(action);
             button.setImageBitmap(action.getIcon());
@@ -174,16 +178,7 @@ public class FloatingAction implements View.OnClickListener {
     public void onClick(View v) {
         hide();
         ActionInfo action = (ActionInfo) v.getTag();
-        switch (action.getType()) {
-            case ActionInfo.TYPE_TOOL:
-                v.getContext().sendBroadcast(action.getIntent());
-                break;
-            case ActionInfo.TYPE_APP:
-            case ActionInfo.TYPE_SHORTCUT:
-                v.getContext().startActivity(action.getIntent());
-                break;
-            default:
-        }
+        action.launch(v.getContext());
     }
 
     private void show() {

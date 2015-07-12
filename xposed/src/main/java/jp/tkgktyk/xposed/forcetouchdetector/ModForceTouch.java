@@ -248,7 +248,7 @@ public class ModForceTouch extends XposedModule {
             mTargetView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (FTD.performAction(mTargetView, record, event)) {
+                    if (FTD.performAction(mTargetView, new ActionInfo(record), event)) {
                         if (mSettings.showEnabledActionToast) {
                             if (!Strings.isNullOrEmpty(record.name)) {
                                 showToast(record.name);

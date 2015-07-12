@@ -107,5 +107,7 @@
     <string name="title_action_flick_down">Flick Down</string>
 
     <!-- Floating Action -->
+    <string name="title_use_local_fab">Another Method</string>
+    <string name="summary_use_local_fab">Use only when you get force close</string>
     <string name="title_floating_action_list">Actions</string>
 </resources>

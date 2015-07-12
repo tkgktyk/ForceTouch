@@ -47,5 +47,6 @@
 
     <!-- Floating Action -->
     <string name="key_floating_action_enabled" translatable="false">key_floating_action_enabled</string>
+    <string name="key_use_local_fab" translatable="false">key_use_local_fab</string>
     <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
 </resources>

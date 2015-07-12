@@ -16,6 +16,7 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app.util;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -28,6 +29,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.launcher3.Utilities;
 import com.google.common.base.Strings;
@@ -39,12 +41,14 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
-import jp.tkgktyk.xposed.forcetouchdetector.app.MyApp;
+import jp.tkgktyk.xposed.forcetouchdetector.R;
 
 /**
  * Created by tkgktyk on 2015/07/02.
  */
 public class ActionInfo {
+    private static final String TAG = ActionInfo.class.getSimpleName();
+
     public static final int TYPE_NONE = 0;
     public static final int TYPE_TOOL = 1;
     public static final int TYPE_APP = 2;
@@ -62,7 +66,7 @@ public class ActionInfo {
     public ActionInfo(Context context, Intent intent, int type) {
         if (intent == null) {
             // If the intent is null, we can't construct a valid ShortcutInfo, so we return null
-            MyApp.logE("Can't construct ActionInfo with null intent");
+            Log.e(TAG, "Can't construct ActionInfo with null intent");
             setNone();
             return;
         }
@@ -93,7 +97,7 @@ public class ActionInfo {
             }
             mName = record.name;
         } catch (URISyntaxException e) {
-            MyApp.logE(e);
+            Log.e(TAG, record.intentUri, e);
             setNone();
         }
     }
@@ -227,6 +231,30 @@ public class ActionInfo {
             return null;
         }
         return new BitmapDrawable(context.getResources(), mIcon);
+    }
+
+    public boolean launch(Context context) {
+        if (mIntent == null) {
+            return false;
+        }
+        switch (mType) {
+            case TYPE_TOOL:
+                context.sendBroadcast(mIntent);
+                break;
+            case TYPE_APP:
+            case TYPE_SHORTCUT:
+                try {
+                    mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(mIntent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(context, R.string.not_found, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case TYPE_NONE:
+            default:
+                return false;
+        }
+        return true;
     }
 
     public static class Record implements Serializable {

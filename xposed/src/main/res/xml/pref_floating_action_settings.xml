@@ -22,6 +22,12 @@
         android:icon="@null"
         android:key="@string/key_floating_action_enabled"
         android:title="@string/title_enabled"/>
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="false"
+        android:icon="@null"
+        android:key="@string/key_use_local_fab"
+        android:title="@string/title_use_local_fab"
+        android:summary="@string/summary_use_local_fab"/>
     <Preference
         android:dependency="@string/key_floating_action_enabled"
         android:icon="@null"

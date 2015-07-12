@@ -364,6 +364,16 @@ public class SettingsActivity extends BaseSettingsActivity {
                             settings.size.enabled, enabled, settings.showNotification);
                 }
             });
+            setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    MyApp.updateService(sw.getContext(), false, false, false, false);
+                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
+                            settings.size.enabled, settings.floatingActionEnabled,
+                            settings.showNotification);
+                }
+            });
             openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
         }
     }
