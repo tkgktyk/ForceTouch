@@ -474,7 +474,7 @@ public class FTD {
             // Floating Action
             floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
-            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
+            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "128"));
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
