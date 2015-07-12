@@ -16,9 +16,11 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.StringRes;
@@ -364,17 +366,28 @@ public class SettingsActivity extends BaseSettingsActivity {
                             settings.size.enabled, enabled, settings.showNotification);
                 }
             });
-            setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
+            showTextSummary(R.string.key_floating_action_alpha, new OnTextChangeListener() {
                 @Override
-                public void onChange(SwitchPreference sw, boolean enabled) {
-                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    MyApp.updateService(sw.getContext(), false, false, false, false);
-                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
-                            settings.size.enabled, settings.floatingActionEnabled,
-                            settings.showNotification);
+                public boolean onChange(EditTextPreference edit, String text) {
+                    restartService(edit.getContext(), edit.getSharedPreferences());
+                    return true;
                 }
             });
             openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
+            setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled) {
+                    restartService(sw.getContext(), sw.getSharedPreferences());
+                }
+            });
+        }
+
+        private void restartService(Context context, SharedPreferences prefs) {
+            FTD.Settings settings = new FTD.Settings(prefs);
+            MyApp.updateService(context, false, false, false, false);
+            MyApp.updateService(context, settings.pressure.enabled,
+                    settings.size.enabled, settings.floatingActionEnabled,
+                    settings.showNotification);
         }
     }
 }

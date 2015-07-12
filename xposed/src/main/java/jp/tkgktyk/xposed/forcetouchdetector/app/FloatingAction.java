@@ -81,15 +81,18 @@ public class FloatingAction implements View.OnClickListener {
                 mFraction.y = intent.getFloatExtra(FTD.EXTRA_FRACTION_Y, 0.0f);
                 show();
             } else if (Objects.equal(action, ACTION_LIST_CHANGED)) {
-                loadActions(context);
+                FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
+                loadActions(context, settings);
             }
         }
     };
 
     public FloatingAction(Context context) {
+        FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
         context.setTheme(R.style.AppTheme);
         mContainer = (FrameLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
+        mContainer.getBackground().setAlpha(settings.floatingActionAlpha);
         mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
         mCircleLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -102,7 +105,7 @@ public class FloatingAction implements View.OnClickListener {
         // force hide
         mNavigationShown = true;
         hide();
-        loadActions(context);
+        loadActions(context, settings);
 
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         mDisplaySize = new Point();
@@ -149,7 +152,7 @@ public class FloatingAction implements View.OnClickListener {
         }
     }
 
-    private void loadActions(Context context) {
+    private void loadActions(Context context, FTD.Settings settings) {
         mCircleLayout.removeAllViews();
         mActionList = ActionInfoList.fromPreference(
                 FTD.getSharedPreferences(context)
@@ -160,7 +163,6 @@ public class FloatingAction implements View.OnClickListener {
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_BACK), ActionInfo.TYPE_TOOL));
         }
         LayoutInflater inflater = LayoutInflater.from(context);
-        FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
         for (ActionInfo action : mActionList) {
             // FloatingActionButton extends ImageView
             ImageView button = (ImageView) inflater

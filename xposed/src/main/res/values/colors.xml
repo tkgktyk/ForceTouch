@@ -16,6 +16,5 @@
   -->
 
 <resources>
-    <!-- Blue Grey 300 -->
-    <color name="floating_action_dim">#8090A4AE</color>
+    <color name="floating_action_dim">@color/primary_light</color>
 </resources>

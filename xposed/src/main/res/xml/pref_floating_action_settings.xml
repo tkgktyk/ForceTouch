@@ -22,15 +22,25 @@
         android:icon="@null"
         android:key="@string/key_floating_action_enabled"
         android:title="@string/title_enabled"/>
+    <!-- Aplha -->
+    <EditTextPreference
+        android:defaultValue="64"
+        android:dialogMessage="@string/message_floating_action_alpha"
+        android:icon="@null"
+        android:inputType="number"
+        android:key="@string/key_floating_action_alpha"
+        android:title="@string/title_floating_action_alpha"/>
+    <!-- Actions -->
+    <Preference
+        android:dependency="@string/key_floating_action_enabled"
+        android:icon="@null"
+        android:key="@string/key_floating_action_list"
+        android:title="@string/title_floating_action_list"/>
+    <!-- Use Local FAB -->
     <jp.tkgktyk.lib.SwitchPreference
         android:defaultValue="false"
         android:icon="@null"
         android:key="@string/key_use_local_fab"
         android:title="@string/title_use_local_fab"
         android:summary="@string/summary_use_local_fab"/>
-    <Preference
-        android:dependency="@string/key_floating_action_enabled"
-        android:icon="@null"
-        android:key="@string/key_floating_action_list"
-        android:title="@string/title_floating_action_list"/>
 </PreferenceScreen>

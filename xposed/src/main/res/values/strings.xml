@@ -62,7 +62,7 @@
     <string name="label_floating_action">@string/header_floating_action</string>
     <string name="test">Test</string>
     <string name="note_floating_action">Enable FTD and notification</string>
-    <string name="message_supported">This feature is in return for your support, discussion, donation and so on. This is independent of Xposed framework.</string>
+    <string name="message_supported">This feature, customizing Floating Action, is in return for your support, discussion, donation and so on. This is independent of Xposed framework.</string>
     <string name="back">Back</string>
     <string name="already_supported">Already support</string>
 
@@ -107,7 +107,9 @@
     <string name="title_action_flick_down">Flick Down</string>
 
     <!-- Floating Action -->
-    <string name="title_use_local_fab">Another Method</string>
-    <string name="summary_use_local_fab">Use only when you get force close</string>
+    <string name="title_floating_action_alpha">Background Alpha</string>
+    <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
     <string name="title_floating_action_list">Actions</string>
+    <string name="title_use_local_fab">Another Method</string>
+    <string name="summary_use_local_fab">Turn on when you get force close</string>
 </resources>

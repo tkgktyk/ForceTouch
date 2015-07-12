@@ -171,14 +171,24 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
         }
 
         protected void showTextSummary(@StringRes int id) {
-            showTextSummary(id, null);
+            showTextSummary(id, "", null);
+        }
+
+        protected void showTextSummary(@StringRes int id, OnTextChangeListener listener) {
+            showTextSummary(id, "", listener);
         }
 
         protected void showTextSummary(@StringRes int id, @StringRes int suffix) {
-            showTextSummary(id, getString(suffix));
+            showTextSummary(id, getString(suffix), null);
         }
 
-        protected void showTextSummary(@StringRes int id, @Nullable final String suffix) {
+        protected void showTextSummary(@StringRes int id, @StringRes int suffix,
+                                       OnTextChangeListener listener) {
+            showTextSummary(id, getString(suffix), listener);
+        }
+
+        private void showTextSummary(@StringRes int id, @Nullable final String suffix,
+                                     final OnTextChangeListener listener) {
             EditTextPreference et = (EditTextPreference) findPreference(id);
             et.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -188,19 +198,24 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
                         value += suffix;
                     }
                     preference.setSummary(getString(R.string.current_s1, value));
-                    return true;
+                    return listener == null ||
+                            listener.onChange((EditTextPreference) preference, value);
                 }
             });
             et.getOnPreferenceChangeListener().onPreferenceChange(et, et.getText());
         }
 
+        protected interface OnTextChangeListener {
+            boolean onChange(EditTextPreference edit, String text);
+        }
+
         protected void setUpSwitch(@StringRes int id, final OnSwitchChangeListener listener) {
-            final SwitchPreference sw = (SwitchPreference) findPreference(id);
+            SwitchPreference sw = (SwitchPreference) findPreference(id);
             sw.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enabled = (Boolean) newValue;
-                    listener.onChange(sw, enabled);
+                    listener.onChange((SwitchPreference) preference, enabled);
                     return true;
                 }
             });
