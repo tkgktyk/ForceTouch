@@ -26,14 +26,18 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
  */
 public class ActionPickerActivity extends AppCompatActivity {
     private static final String EXTRA_TITLE = FTD.PREFIX_EXTRA + "TITLE";
+    private static final String EXTRA_FORCE_TOUCH = FTD.PREFIX_EXTRA + "FORCE_TOUCH";
     public static final String EXTRA_ACTION_RECORD = FTD.PREFIX_EXTRA + "ACTION_RECORD";
 
-    public static void putExtras(Intent intent, CharSequence title) {
+    public static void putExtras(Intent intent, CharSequence title, boolean forceTouch) {
         intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(EXTRA_FORCE_TOUCH, forceTouch);
     }
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
+
+    private boolean mForceTouch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,8 @@ public class ActionPickerActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_TITLE));
+
+        mForceTouch = getIntent().getBooleanExtra(EXTRA_FORCE_TOUCH, true);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -63,7 +69,10 @@ public class ActionPickerActivity extends AppCompatActivity {
     public void pickTool() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, new ToolPickerFragment())
+                .replace(R.id.container,
+                        mForceTouch ?
+                                new ForceTouchToolPickerFragment() :
+                                new FloatingActionToolPickerFragment())
                 .addToBackStack(null)
                 .commit();
     }
@@ -159,21 +168,8 @@ public class ActionPickerActivity extends AppCompatActivity {
         }
     }
 
-    public static class ToolPickerFragment extends ListFragment {
-        private static final String[] ACTION_LIST = {
-                FTD.ACTION_BACK,
-                FTD.ACTION_HOME,
-                FTD.ACTION_RECENTS,
-                FTD.ACTION_EXPAND_NOTIFICATIONS,
-                FTD.ACTION_EXPAND_QUICK_SETTINGS,
-                FTD.ACTION_SCROLL_UP,
-                FTD.ACTION_SCROLL_DOWN,
-                FTD.ACTION_KILL,
-                FTD.ACTION_DOUBLE_TAP,
-                FTD.ACTION_LONG_PRESS,
-                FTD.ACTION_LONG_PRESS_FULL,
-                FTD.ACTION_FLOATING_ACTION,
-        };
+    public static abstract class ToolPickerFragment extends ListFragment {
+        protected abstract String[] getActionList();
 
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -182,7 +178,7 @@ public class ActionPickerActivity extends AppCompatActivity {
             Context context = view.getContext();
 
             ArrayList<String> titles = Lists.newArrayList();
-            for (String action : ACTION_LIST) {
+            for (String action : getActionList()) {
                 titles.add(FTD.getActionName(context, action));
             }
             ArrayAdapter adapter = new ArrayAdapter<>(context,
@@ -193,9 +189,61 @@ public class ActionPickerActivity extends AppCompatActivity {
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
             ActionPickerActivity activity = (ActionPickerActivity) getActivity();
-            ActionInfo actionInfo = new ActionInfo(activity, new Intent(ACTION_LIST[position]),
+            ActionInfo actionInfo = new ActionInfo(activity, new Intent(getActionList()[position]),
                     ActionInfo.TYPE_TOOL);
             activity.returnActivity(actionInfo);
+        }
+    }
+
+    public static class ForceTouchToolPickerFragment extends  ToolPickerFragment {
+        private static final String[] ACTION_LIST = {
+                FTD.ACTION_BACK,
+                FTD.ACTION_HOME,
+                FTD.ACTION_RECENTS,
+                FTD.ACTION_EXPAND_NOTIFICATIONS,
+                FTD.ACTION_EXPAND_QUICK_SETTINGS,
+                FTD.ACTION_FORWARD,
+                FTD.ACTION_REFRESH,
+//                FTD.ACTION_SCROLL_UP_GLOBAL,
+//                FTD.ACTION_SCROLL_DOWN_GLOBAL,
+                FTD.ACTION_KILL,
+                FTD.ACTION_DOUBLE_TAP,
+                FTD.ACTION_LONG_PRESS,
+                FTD.ACTION_LONG_PRESS_FULL,
+                FTD.ACTION_SCROLL_UP,
+                FTD.ACTION_SCROLL_DOWN,
+                FTD.ACTION_FLOATING_ACTION,
+        };
+
+        @Override
+        public String[] getActionList() {
+            return ACTION_LIST;
+        }
+    }
+
+    public static class FloatingActionToolPickerFragment extends  ToolPickerFragment {
+        private static final String[] ACTION_LIST = {
+                FTD.ACTION_BACK,
+                FTD.ACTION_HOME,
+                FTD.ACTION_RECENTS,
+                FTD.ACTION_EXPAND_NOTIFICATIONS,
+                FTD.ACTION_EXPAND_QUICK_SETTINGS,
+                FTD.ACTION_FORWARD,
+                FTD.ACTION_REFRESH,
+                FTD.ACTION_SCROLL_UP_GLOBAL,
+                FTD.ACTION_SCROLL_DOWN_GLOBAL,
+                FTD.ACTION_KILL,
+//                FTD.ACTION_DOUBLE_TAP,
+//                FTD.ACTION_LONG_PRESS,
+//                FTD.ACTION_LONG_PRESS_FULL,
+//                FTD.ACTION_SCROLL_UP,
+//                FTD.ACTION_SCROLL_DOWN,
+//                FTD.ACTION_FLOATING_ACTION,
+        };
+
+        @Override
+        public String[] getActionList() {
+            return ACTION_LIST;
         }
     }
 }

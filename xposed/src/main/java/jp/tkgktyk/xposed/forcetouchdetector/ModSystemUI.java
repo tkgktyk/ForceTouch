@@ -20,6 +20,7 @@ import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -58,6 +59,14 @@ public class ModSystemUI extends XposedModule {
                     XposedHelpers.callMethod(mPhoneStatusBar, "animateExpandNotificationsPanel");
                 } else if (action.equals(FTD.ACTION_EXPAND_QUICK_SETTINGS)) {
                     XposedHelpers.callMethod(mPhoneStatusBar, "animateExpandSettingsPanel");
+                } else if (action.equals(FTD.ACTION_FORWARD)) {
+                    sendKeyEventAlt(KeyEvent.KEYCODE_DPAD_RIGHT);
+                } else if (action.equals(FTD.ACTION_REFRESH)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_F5);
+                } else if (action.equals(FTD.ACTION_SCROLL_UP_GLOBAL)) {
+                    scrollUp();
+                } else if (action.equals(FTD.ACTION_SCROLL_DOWN_GLOBAL)) {
+                    scrollDown();
                 }
             } catch (Throwable t) {
                 logE(t);
@@ -73,6 +82,54 @@ public class ModSystemUI extends XposedModule {
                 }
             }.start();
         }
+
+        private void sendKeyEventAlt(int code) {
+            long downTime = SystemClock.uptimeMillis();
+            long eventTime = SystemClock.uptimeMillis() + 100;
+            final KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
+            new Thread() {
+                @Override
+                public void run() {
+                    Instrumentation ist = new Instrumentation();
+                    ist.sendKeySync(key);
+                    ist.sendKeySync(KeyEvent.changeAction(key, KeyEvent.ACTION_UP));
+                }
+            }.start();
+        }
+
+        private void scrollUp() {
+            new Thread() {
+                @Override
+                public void run() {
+                    Instrumentation instrumentation = new Instrumentation();
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_MOVE_HOME, 2);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_PAGE_UP, 10);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_UP, 100);
+                }
+            }.start();
+        }
+
+        private void scrollDown() {
+            new Thread() {
+                @Override
+                public void run() {
+                    Instrumentation instrumentation = new Instrumentation();
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_MOVE_END, 2);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_PAGE_DOWN, 10);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_DOWN, 100);
+                }
+            }.start();
+        }
+
+        private void sendKeyEvent(Instrumentation instrumentation, int code, int repeat) {
+            KeyEvent key = new KeyEvent(KeyEvent.ACTION_DOWN, code);
+            for (int i = 0; i < repeat; ++i) {
+                instrumentation.sendKeySync(key);
+            }
+            KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
+            instrumentation.sendKeySync(key);
+        }
+
     };
 
     public static void initZygote(XSharedPreferences prefs) {

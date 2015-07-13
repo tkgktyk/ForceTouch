@@ -184,7 +184,7 @@ public class FloatingActionActivity extends AppCompatActivity
 
     private void openActionPicker() {
         Intent intent = new Intent(this, ActionPickerActivity.class);
-        ActionPickerActivity.putExtras(intent, getSupportActionBar().getTitle());
+        ActionPickerActivity.putExtras(intent, getSupportActionBar().getTitle(), false);
         startActivityForResult(intent, REQUEST_ACTION);
     }
 

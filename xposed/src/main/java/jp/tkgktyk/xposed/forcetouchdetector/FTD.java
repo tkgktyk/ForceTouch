@@ -61,6 +61,10 @@ public class FTD {
     public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
     public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "EXPAND_NOTIFICATIONS";
     public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "EXPAND_QUICK_SETTINGS";
+    public static final String ACTION_FORWARD = PREFIX_ACTION + "FORWARD";
+    public static final String ACTION_REFRESH = PREFIX_ACTION + "REFRESH";
+    public static final String ACTION_SCROLL_UP_GLOBAL = PREFIX_ACTION + "SCROLL_UP_GLOBAL";
+    public static final String ACTION_SCROLL_DOWN_GLOBAL = PREFIX_ACTION + "SCROLL_DOWN_GLOBAL";
 
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
 
@@ -85,6 +89,10 @@ public class FTD {
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_RECENTS);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_FORWARD);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_REFRESH);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_UP_GLOBAL);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_DOWN_GLOBAL);
         INTERNAL_ACTION_FILTER = new IntentFilter();
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
     }
@@ -107,6 +115,14 @@ public class FTD {
             return mod.getString(R.string.action_expand_notifications);
         } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
             return mod.getString(R.string.action_expand_quick_settings);
+        } else if (action.equals(ACTION_FORWARD)) {
+            return mod.getString(R.string.action_forward);
+        } else if (action.equals(ACTION_REFRESH)) {
+            return mod.getString(R.string.action_refresh);
+        } else if (action.equals(ACTION_SCROLL_UP_GLOBAL)) {
+            return mod.getString(R.string.action_scroll_up);
+        } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
+            return mod.getString(R.string.action_scroll_down);
         } else if (action.equals(ACTION_KILL)) {
             return mod.getString(R.string.action_kill);
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
@@ -137,6 +153,14 @@ public class FTD {
             return R.drawable.ic_notifications_none_white_24dp;
         } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
             return R.drawable.ic_settings_white_24dp;
+        } else if (action.equals(ACTION_FORWARD)) {
+            return R.drawable.ic_arrow_forward_white_24dp;
+        } else if (action.equals(ACTION_REFRESH)) {
+            return R.drawable.ic_refresh_white_24dp;
+        } else if (action.equals(ACTION_SCROLL_UP_GLOBAL)) {
+            return R.drawable.ic_scroll_up_white_48px;
+        } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
+            return R.drawable.ic_scroll_down_white_48px;
         } else if (action.equals(ACTION_KILL)) {
             return R.drawable.ic_close_white_24dp;
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
@@ -146,9 +170,9 @@ public class FTD {
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             return 0;
         } else if (action.equals(ACTION_SCROLL_UP)) {
-            return 0;
+            return R.drawable.ic_scroll_up_white_48px;
         } else if (action.equals(ACTION_SCROLL_DOWN)) {
-            return 0;
+            return R.drawable.ic_scroll_down_white_48px;
         } else if (action.equals(ACTION_FLOATING_ACTION)) {
             return R.drawable.ic_floating_action;
         }

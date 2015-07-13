@@ -225,7 +225,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 @Override
                 public void putExtras(Preference preference, Intent activityIntent) {
                     mPrefKey = preference.getKey();
-                    ActionPickerActivity.putExtras(activityIntent, preference.getTitle());
+                    ActionPickerActivity.putExtras(activityIntent, preference.getTitle(), true);
                 }
             });
             Preference pref = findPreference(id);
