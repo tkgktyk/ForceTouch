@@ -24,7 +24,6 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -33,8 +32,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class ModSystemUI extends XposedModule {
     private static final String CLASS_PHONE_STATUS_BAR = "com.android.systemui.statusbar.phone.PhoneStatusBar";
-
-    private static XSharedPreferences mPrefs;
 
     private static Object mPhoneStatusBar;
 
@@ -135,10 +132,6 @@ public class ModSystemUI extends XposedModule {
         }
 
     };
-
-    public static void initZygote(XSharedPreferences prefs) {
-        mPrefs = prefs;
-    }
 
     public static void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) {
         if (!loadPackageParam.packageName.equals("com.android.systemui")) {

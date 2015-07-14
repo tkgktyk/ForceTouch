@@ -32,7 +32,6 @@ public class Mod implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         mPrefs = new XSharedPreferences(FTD.PACKAGE_NAME);
         mPrefs.makeWorldReadable();
 
-        ModSystemUI.initZygote(mPrefs);
         ModInternal.initZygote(mPrefs);
         ModForceTouch.initZygote(mPrefs);
         ModLongPress.initZygote(mPrefs);
