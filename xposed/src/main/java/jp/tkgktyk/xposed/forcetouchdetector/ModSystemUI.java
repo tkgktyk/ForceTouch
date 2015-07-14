@@ -84,13 +84,13 @@ public class ModSystemUI extends XposedModule {
             }.start();
         }
 
-        private void sendKeyEventAlt(int code) {
-            long downTime = SystemClock.uptimeMillis();
-            long eventTime = SystemClock.uptimeMillis() + 100;
-            final KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
+        private void sendKeyEventAlt(final int code) {
             new Thread() {
                 @Override
                 public void run() {
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+                    KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
                     Instrumentation ist = new Instrumentation();
                     ist.sendKeySync(key);
                     ist.sendKeySync(KeyEvent.changeAction(key, KeyEvent.ACTION_UP));

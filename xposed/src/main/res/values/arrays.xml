@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015 Takagi Katsuyuki
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!-- Boundary Color -->
+    <string-array name="colors_900">
+        <item>@string/red</item>
+        <item>@string/pink</item>
+        <item>@string/purple</item>
+        <item>@string/deep_purple</item>
+        <item>@string/indigo</item>
+        <item>@string/blue</item>
+        <item>@string/light_blue</item>
+        <item>@string/cyan</item>
+        <item>@string/teal</item>
+        <item>@string/green</item>
+        <item>@string/light_green</item>
+        <item>@string/lime</item>
+        <item>@string/yellow</item>
+        <item>@string/amber</item>
+        <item>@string/orange</item>
+        <item>@string/deep_orange</item>
+        <item>@string/brown</item>
+        <item>@string/grey</item>
+        <item>@string/blue_grey</item>
+        <item>@string/black</item>
+    </string-array>
+    <string-array name="color_values_900" translatable="false">
+        <item>#B71C1C</item>
+        <item>#880E4F</item>
+        <item>#4A148C</item>
+        <item>#311B92</item>
+        <item>#1A237E</item>
+        <item>#0D47A1</item>
+        <item>#01579B</item>
+        <item>#006064</item>
+        <item>#004D40</item>
+        <item>#1B5E20</item>
+        <item>#33691E</item>
+        <item>#827717</item>
+        <item>#F57F17</item>
+        <item>#FF6F00</item>
+        <item>#E65100</item>
+        <item>#BF360C</item>
+        <item>#3E2723</item>
+        <item>#212121</item>
+        <item>#263238</item>
+        <item>#000000</item>
+    </string-array>
+    <string name="default_floating_action_color">#000000</string>
+</resources>

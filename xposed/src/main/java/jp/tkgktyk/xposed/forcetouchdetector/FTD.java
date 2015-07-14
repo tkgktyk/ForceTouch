@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
@@ -474,8 +475,9 @@ public class FTD {
 
         // Floating Action
         public final boolean floatingActionEnabled;
-        public final boolean useLocalFAB;
+        public final int floatingActionColor;
         public final int floatingActionAlpha;
+        public final boolean useLocalFAB;
 
         public Settings(SharedPreferences prefs) {
             int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
@@ -515,8 +517,9 @@ public class FTD {
 
             // Floating Action
             floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
-            useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
+            floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
             floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "128"));
+            useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {

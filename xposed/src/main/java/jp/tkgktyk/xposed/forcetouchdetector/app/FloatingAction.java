@@ -22,10 +22,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,6 +43,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButton;
 
 /**
  * Created by tkgktyk on 2015/06/15.
@@ -165,10 +168,19 @@ public class FloatingAction implements View.OnClickListener {
         LayoutInflater inflater = LayoutInflater.from(context);
         for (ActionInfo action : mActionList) {
             // FloatingActionButton extends ImageView
-            ImageView button = (ImageView) inflater
-                    .inflate(settings.useLocalFAB ?
-                                    R.layout.view_local_floating_action : R.layout.view_floating_action,
-                            mCircleLayout, false);
+            ImageView button;
+            // for setBackgroundTintList
+            if (settings.useLocalFAB) {
+                LocalFloatingActionButton fab = (LocalFloatingActionButton) inflater
+                        .inflate(R.layout.view_local_floating_action, mCircleLayout, false);
+                fab.setBackgroundTintList(ColorStateList.valueOf(settings.floatingActionColor));
+                button = fab;
+            } else {
+                FloatingActionButton fab = (FloatingActionButton) inflater
+                        .inflate(R.layout.view_floating_action, mCircleLayout, false);
+                fab.setBackgroundTintList(ColorStateList.valueOf(settings.floatingActionColor));
+                button = fab;
+            }
             button.setOnClickListener(this);
             button.setTag(action);
             button.setImageBitmap(action.getIcon());

@@ -19,6 +19,8 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -367,6 +369,19 @@ public class SettingsActivity extends BaseSettingsActivity {
                 }
             });
             openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
+            showListSummary(R.string.key_floating_action_color, new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int color = Color.parseColor((String) newValue);
+                    GradientDrawable drawable = new GradientDrawable();
+                    drawable.setColor(color);
+                    int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+                    drawable.setSize(size, size);
+                    preference.setIcon(drawable);
+                    restartService(preference.getContext(), preference.getSharedPreferences());
+                    return true;
+                }
+            });
             showTextSummary(R.string.key_floating_action_alpha, new OnTextChangeListener() {
                 @Override
                 public boolean onChange(EditTextPreference edit, String text) {

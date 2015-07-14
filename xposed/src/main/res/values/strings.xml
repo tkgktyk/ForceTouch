@@ -66,7 +66,7 @@
     <!-- Floating Action -->
     <string name="label_floating_action">@string/header_floating_action</string>
     <string name="test">Test</string>
-    <string name="note_floating_action">Enable FTD and notification</string>
+    <string name="note_floating_action">Enable pressure and/or size at first</string>
     <string name="message_supported">This feature, customizing Floating Action, is in return for your support, discussion, donation and so on. This is independent of Xposed framework.</string>
     <string name="back">Back</string>
     <string name="already_supported">Already support</string>
@@ -113,8 +113,31 @@
 
     <!-- Floating Action -->
     <string name="title_floating_action_list">Actions</string>
+    <!-- Color BEGIN -->
+    <string name="title_floating_action_color">Button Color</string>
+    <string name="red">Red</string>
+    <string name="pink">Pink</string>
+    <string name="purple">Purple</string>
+    <string name="deep_purple">Deep Purple</string>
+    <string name="indigo">Indigo</string>
+    <string name="blue">Blue</string>
+    <string name="light_blue">Light Blue</string>
+    <string name="cyan">Cyan</string>
+    <string name="teal">Teal</string>
+    <string name="green">Green</string>
+    <string name="light_green">Light Green</string>
+    <string name="lime">Lime</string>
+    <string name="yellow">Yellow</string>
+    <string name="amber">Amber</string>
+    <string name="orange">Orange</string>
+    <string name="deep_orange">Deep Orange</string>
+    <string name="brown">Brown</string>
+    <string name="grey">Grey</string>
+    <string name="blue_grey">Blue Grey</string>
+    <string name="black">Black</string>
+    <!-- Color END -->
     <string name="title_floating_action_alpha">Background Alpha</string>
     <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
     <string name="title_use_local_fab">Another Method</string>
-    <string name="summary_use_local_fab">Turn on when you get force close</string>
+    <string name="summary_use_local_fab">Turn on if you get force close</string>
 </resources>
