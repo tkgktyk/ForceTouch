@@ -55,9 +55,9 @@ public class ModSystemUI extends XposedModule {
                 } else if (action.equals(FTD.ACTION_RECENTS)) {
                     sendKeyEvent(KeyEvent.KEYCODE_APP_SWITCH);
 //                    XposedHelpers.callMethod(mPhoneStatusBar, "toggleRecents");
-                } else if (action.equals(FTD.ACTION_EXPAND_NOTIFICATIONS)) {
+                } else if (action.equals(FTD.ACTION_NOTIFICATIONS)) {
                     XposedHelpers.callMethod(mPhoneStatusBar, "animateExpandNotificationsPanel");
-                } else if (action.equals(FTD.ACTION_EXPAND_QUICK_SETTINGS)) {
+                } else if (action.equals(FTD.ACTION_QUICK_SETTINGS)) {
                     XposedHelpers.callMethod(mPhoneStatusBar, "animateExpandSettingsPanel");
                 } else if (action.equals(FTD.ACTION_FORWARD)) {
                     sendKeyEventAlt(KeyEvent.KEYCODE_DPAD_RIGHT);
@@ -67,6 +67,10 @@ public class ModSystemUI extends XposedModule {
                     scrollUp();
                 } else if (action.equals(FTD.ACTION_SCROLL_DOWN_GLOBAL)) {
                     scrollDown();
+                } else if (action.equals(FTD.ACTION_VOLUME_UP)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_VOLUME_UP);
+                } else if (action.equals(FTD.ACTION_VOLUME_DOWN)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN);
                 }
             } catch (Throwable t) {
                 logE(t);

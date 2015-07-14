@@ -59,14 +59,17 @@ public class FTD {
     public static final String ACTION_BACK = PREFIX_ACTION + "BACK";
     public static final String ACTION_HOME = PREFIX_ACTION + "HOME";
     public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
-    public static final String ACTION_EXPAND_NOTIFICATIONS = PREFIX_ACTION + "EXPAND_NOTIFICATIONS";
-    public static final String ACTION_EXPAND_QUICK_SETTINGS = PREFIX_ACTION + "EXPAND_QUICK_SETTINGS";
+    public static final String ACTION_NOTIFICATIONS = PREFIX_ACTION + "NOTIFICATIONS";
+    public static final String ACTION_QUICK_SETTINGS = PREFIX_ACTION + "QUICK_SETTINGS";
     public static final String ACTION_FORWARD = PREFIX_ACTION + "FORWARD";
     public static final String ACTION_REFRESH = PREFIX_ACTION + "REFRESH";
     public static final String ACTION_SCROLL_UP_GLOBAL = PREFIX_ACTION + "SCROLL_UP_GLOBAL";
     public static final String ACTION_SCROLL_DOWN_GLOBAL = PREFIX_ACTION + "SCROLL_DOWN_GLOBAL";
+    public static final String ACTION_VOLUME_UP = PREFIX_ACTION + "VOLUME_UP";
+    public static final String ACTION_VOLUME_DOWN = PREFIX_ACTION + "VOLUME_DOWN";
 
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
+    public static final String ACTION_POWER_MENU = PREFIX_ACTION + "POWER_MENU";
 
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
@@ -87,14 +90,17 @@ public class FTD {
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_BACK);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_HOME);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_RECENTS);
-        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_NOTIFICATIONS);
-        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_EXPAND_QUICK_SETTINGS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_NOTIFICATIONS);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_QUICK_SETTINGS);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_FORWARD);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_REFRESH);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_UP_GLOBAL);
         SYSTEM_UI_ACTION_FILTER.addAction(ACTION_SCROLL_DOWN_GLOBAL);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_VOLUME_UP);
+        SYSTEM_UI_ACTION_FILTER.addAction(ACTION_VOLUME_DOWN);
         INTERNAL_ACTION_FILTER = new IntentFilter();
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_POWER_MENU);
     }
 
     public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
@@ -111,10 +117,10 @@ public class FTD {
             return mod.getString(R.string.action_home);
         } else if (action.equals(ACTION_RECENTS)) {
             return mod.getString(R.string.action_recents);
-        } else if (action.equals(ACTION_EXPAND_NOTIFICATIONS)) {
-            return mod.getString(R.string.action_expand_notifications);
-        } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
-            return mod.getString(R.string.action_expand_quick_settings);
+        } else if (action.equals(ACTION_NOTIFICATIONS)) {
+            return mod.getString(R.string.action_notifications);
+        } else if (action.equals(ACTION_QUICK_SETTINGS)) {
+            return mod.getString(R.string.action_quick_settings);
         } else if (action.equals(ACTION_FORWARD)) {
             return mod.getString(R.string.action_forward);
         } else if (action.equals(ACTION_REFRESH)) {
@@ -123,8 +129,14 @@ public class FTD {
             return mod.getString(R.string.action_scroll_up);
         } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
             return mod.getString(R.string.action_scroll_down);
+        } else if (action.equals(ACTION_VOLUME_UP)) {
+            return mod.getString(R.string.action_volume_up);
+        } else if (action.equals(ACTION_VOLUME_DOWN)) {
+            return mod.getString(R.string.action_volume_down);
         } else if (action.equals(ACTION_KILL)) {
             return mod.getString(R.string.action_kill);
+        } else if (action.equals(ACTION_POWER_MENU)) {
+            return mod.getString(R.string.action_power_menu);
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
             return mod.getString(R.string.action_double_tap);
         } else if (action.equals(ACTION_LONG_PRESS)) {
@@ -149,9 +161,9 @@ public class FTD {
             return R.drawable.ic_sysbar_home;
         } else if (action.equals(ACTION_RECENTS)) {
             return R.drawable.ic_sysbar_recent;
-        } else if (action.equals(ACTION_EXPAND_NOTIFICATIONS)) {
+        } else if (action.equals(ACTION_NOTIFICATIONS)) {
             return R.drawable.ic_notifications_none_white_24dp;
-        } else if (action.equals(ACTION_EXPAND_QUICK_SETTINGS)) {
+        } else if (action.equals(ACTION_QUICK_SETTINGS)) {
             return R.drawable.ic_settings_white_24dp;
         } else if (action.equals(ACTION_FORWARD)) {
             return R.drawable.ic_arrow_forward_white_24dp;
@@ -161,8 +173,14 @@ public class FTD {
             return R.drawable.ic_scroll_up_white_48px;
         } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
             return R.drawable.ic_scroll_down_white_48px;
+        } else if (action.equals(ACTION_VOLUME_UP)) {
+            return R.drawable.ic_volume_up_white_24dp;
+        } else if (action.equals(ACTION_VOLUME_DOWN)) {
+            return R.drawable.ic_volume_down_white_24dp;
         } else if (action.equals(ACTION_KILL)) {
             return R.drawable.ic_close_white_24dp;
+        } else if (action.equals(ACTION_POWER_MENU)) {
+            return R.drawable.ic_power_settings_new_white_24dp;
         } else if (action.equals(ACTION_DOUBLE_TAP)) {
             return 0;
         } else if (action.equals(ACTION_LONG_PRESS)) {

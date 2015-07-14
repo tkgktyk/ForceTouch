@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Process;
 
@@ -51,6 +52,8 @@ public class ModInternal extends XposedModule {
                 logD(action);
                 if (action.equals(FTD.ACTION_KILL)) {
                     killForegroundApp(context);
+                } else if (action.equals(FTD.ACTION_POWER_MENU)) {
+                    showPowerMenu();
                 }
             } catch (Throwable t) {
                 logE(t);
@@ -101,6 +104,24 @@ public class ModInternal extends XposedModule {
                     }
                 }
             });
+        }
+
+        private void showPowerMenu() {
+            try {
+//                Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActions");
+                } else {
+                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActionsDialog");
+                }
+//                    }
+//                });
+            } catch (Throwable t) {
+                logE(t);
+            }
         }
     };
 

@@ -56,8 +56,8 @@ public class MyApp extends BaseApplication {
 
     @Override
     protected void onVersionUpdated(MyVersion next, MyVersion old) {
+        SharedPreferences prefs = getDefaultSharedPreferences();
         if (old.isOlderThan("0.2.0")) {
-            SharedPreferences prefs = getDefaultSharedPreferences();
             prefs.edit()
                     .putBoolean(getString(R.string.key_pressure_enabled),
                             prefs.getBoolean("key_enabled", false))
@@ -78,49 +78,64 @@ public class MyApp extends BaseApplication {
                     .apply();
         }
         if (old.isOlderThan("0.2.1")) {
-            SharedPreferences prefs = getDefaultSharedPreferences();
             prefs.edit()
                     .putString(getString(R.string.key_pressure_action_flick_down),
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
         }
+        String[] keys = {
+                getString(R.string.key_pressure_action_tap),
+                getString(R.string.key_pressure_action_double_tap),
+                getString(R.string.key_pressure_action_long_press),
+                getString(R.string.key_pressure_action_flick_left),
+                getString(R.string.key_pressure_action_flick_right),
+                getString(R.string.key_pressure_action_flick_up),
+                getString(R.string.key_pressure_action_flick_down),
+                getString(R.string.key_size_action_tap),
+                getString(R.string.key_size_action_double_tap),
+                getString(R.string.key_size_action_long_press),
+                getString(R.string.key_size_action_flick_left),
+                getString(R.string.key_size_action_flick_right),
+                getString(R.string.key_size_action_flick_up),
+                getString(R.string.key_size_action_flick_down),
+        };
         if (old.isOlderThan("0.3.0")) {
-            SharedPreferences prefs = getDefaultSharedPreferences();
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_tap));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_double_tap));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_long_press));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_left));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_right));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_up));
-            convertUriToAction(prefs, getString(R.string.key_pressure_action_flick_down));
-            convertUriToAction(prefs, getString(R.string.key_size_action_tap));
-            convertUriToAction(prefs, getString(R.string.key_size_action_double_tap));
-            convertUriToAction(prefs, getString(R.string.key_size_action_long_press));
-            convertUriToAction(prefs, getString(R.string.key_size_action_flick_left));
-            convertUriToAction(prefs, getString(R.string.key_size_action_flick_right));
-            convertUriToAction(prefs, getString(R.string.key_size_action_flick_up));
-            convertUriToAction(prefs, getString(R.string.key_size_action_flick_down));
+            for (String key : keys) {
+                ActionInfo.Record record = new ActionInfo.Record();
+                record.intentUri = prefs.getString(key, "");
+                ActionInfo info = new ActionInfo(record);
+                Intent intent = info.getIntent();
+                if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "FLOATING_NAVIGATION")) {
+                    intent.setAction(FTD.ACTION_FLOATING_ACTION);
+                }
+                if (Strings.isNullOrEmpty(record.intentUri)) {
+                    info = new ActionInfo(this, intent, ActionInfo.TYPE_NONE);
+                } else if (FTD.isLocalAction(intent)) {
+                    info = new ActionInfo(this, intent, ActionInfo.TYPE_TOOL);
+                } else {
+                    info = new ActionInfo(this, intent, ActionInfo.TYPE_APP);
+                }
+                prefs.edit()
+                        .putString(key, info.toStringForPreference())
+                        .apply();
+            }
         }
-    }
-
-    private void convertUriToAction(SharedPreferences prefs, String key) {
-        ActionInfo.Record record = new ActionInfo.Record();
-        record.intentUri = prefs.getString(key, "");
-        ActionInfo info = new ActionInfo(record);
-        Intent intent = info.getIntent();
-        if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "FLOATING_NAVIGATION")) {
-            intent.setAction(FTD.ACTION_FLOATING_ACTION);
+        if (old.isOlderThan("0.3.3")) {
+            for (String key : keys) {
+                ActionInfo.Record record = new ActionInfo.Record();
+                record.intentUri = prefs.getString(key, "");
+                ActionInfo info = new ActionInfo(record);
+                Intent intent = info.getIntent();
+                if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "EXPAND_NOTIFICATIONS")) {
+                    intent.setAction(FTD.ACTION_NOTIFICATIONS);
+                } else if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "EXPAND_QUICK_SETTINGS")) {
+                    intent.setAction(FTD.ACTION_QUICK_SETTINGS);
+                }
+                prefs.edit()
+                        .putString(key, info.toStringForPreference())
+                        .apply();
+            }
         }
-        if (Strings.isNullOrEmpty(record.intentUri)) {
-            info = new ActionInfo(this, intent, ActionInfo.TYPE_NONE);
-        } else if (FTD.isLocalAction(intent)) {
-            info = new ActionInfo(this, intent, ActionInfo.TYPE_TOOL);
-        } else {
-            info = new ActionInfo(this, intent, ActionInfo.TYPE_APP);
-        }
-        prefs.edit()
-                .putString(key, info.toStringForPreference())
-                .apply();
     }
 
     public static void updateService(Context context, boolean pressure, boolean size,
