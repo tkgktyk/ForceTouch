@@ -126,7 +126,11 @@ public class MyApp extends BaseApplication {
                 record.intentUri = prefs.getString(key, "");
                 ActionInfo info = new ActionInfo(record);
                 Intent intent = info.getIntent();
-                if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "EXPAND_NOTIFICATIONS")) {
+                if (intent == null) {
+                    continue;
+                }
+                String action = intent.getAction();
+                if (Objects.equal(action, FTD.PREFIX_ACTION + "EXPAND_NOTIFICATIONS")) {
                     intent.setAction(FTD.ACTION_NOTIFICATIONS);
                 } else if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "EXPAND_QUICK_SETTINGS")) {
                     intent.setAction(FTD.ACTION_QUICK_SETTINGS);
