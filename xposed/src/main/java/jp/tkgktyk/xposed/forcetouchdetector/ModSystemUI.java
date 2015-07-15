@@ -105,6 +105,7 @@ public class ModSystemUI extends XposedModule {
                     Instrumentation instrumentation = new Instrumentation();
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_MOVE_HOME, 2);
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_PAGE_UP, 10);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_DOWN, 1); // workaround to focus
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_UP, 100);
                 }
             }.start();
@@ -117,6 +118,7 @@ public class ModSystemUI extends XposedModule {
                     Instrumentation instrumentation = new Instrumentation();
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_MOVE_END, 2);
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_PAGE_DOWN, 10);
+                    sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_UP, 1); // workaround to focus
                     sendKeyEvent(instrumentation, KeyEvent.KEYCODE_DPAD_DOWN, 100);
                 }
             }.start();

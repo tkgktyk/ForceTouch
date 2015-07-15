@@ -17,7 +17,6 @@
 package jp.tkgktyk.xposed.forcetouchdetector;
 
 import android.annotation.SuppressLint;
-import android.app.Instrumentation;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -28,8 +27,6 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.v4.view.ViewCompat;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -283,15 +280,7 @@ public class FTD {
                                     try {
                                         view.scrollTo(view.getScrollX(), 0);
                                     } catch (RuntimeException e) {
-                                        new Thread() {
-                                            @Override
-                                            public void run() {
-                                                Instrumentation instrumentation = new Instrumentation();
-                                                sendKey(instrumentation, KeyEvent.KEYCODE_MOVE_HOME, 2, view);
-                                                sendKey(instrumentation, KeyEvent.KEYCODE_PAGE_UP, 10, view);
-                                                sendKey(instrumentation, KeyEvent.KEYCODE_DPAD_UP, 100, view);
-                                            }
-                                        }.start();
+                                        view.getContext().sendBroadcast(new Intent(FTD.ACTION_SCROLL_UP_GLOBAL));
                                     }
                                 }
                                 return true;
@@ -317,15 +306,7 @@ public class FTD {
 //                                            ((RecyclerView) view).getChildCount() - 1);
                                 } else {
 //                                    view.scrollTo(view.getScrollX(), view.getBottom());
-                                    new Thread() {
-                                        @Override
-                                        public void run() {
-                                            Instrumentation instrumentation = new Instrumentation();
-                                            sendKey(instrumentation, KeyEvent.KEYCODE_MOVE_END, 2, view);
-                                            sendKey(instrumentation, KeyEvent.KEYCODE_PAGE_DOWN, 10, view);
-                                            sendKey(instrumentation, KeyEvent.KEYCODE_DPAD_DOWN, 100, view);
-                                        }
-                                    }.start();
+                                    view.getContext().sendBroadcast(new Intent(FTD.ACTION_SCROLL_DOWN_GLOBAL));
                                 }
                                 return true;
                             }
@@ -377,22 +358,6 @@ public class FTD {
             }
         }
         return null;
-    }
-
-    private static void sendKey(Instrumentation instrumentation,
-                                int code, int repeat, View target) {
-        KeyEvent key = new KeyEvent(KeyEvent.ACTION_DOWN, code);
-        for (int i = 0; i < repeat; ++i) {
-            if (!ViewCompat.isAttachedToWindow(target)) {
-                return;
-            }
-            instrumentation.sendKeySync(key);
-        }
-        KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
-        if (!ViewCompat.isAttachedToWindow(target)) {
-            return;
-        }
-        instrumentation.sendKeySync(key);
     }
 
     /**
