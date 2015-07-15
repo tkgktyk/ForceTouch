@@ -7,8 +7,10 @@ import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.google.common.collect.Lists;
@@ -181,8 +183,9 @@ public class ActionPickerActivity extends AppCompatActivity {
             for (String action : getActionList()) {
                 titles.add(FTD.getActionName(context, action));
             }
-            ArrayAdapter adapter = new ArrayAdapter<>(context,
-                    android.R.layout.simple_list_item_1, titles);
+//            ArrayAdapter adapter = new ArrayAdapter<>(context,
+//                    android.R.layout.simple_list_item_1, titles);
+            MyAdapter adapter = new MyAdapter(context, titles);
             setListAdapter(adapter);
         }
 
@@ -193,9 +196,23 @@ public class ActionPickerActivity extends AppCompatActivity {
                     ActionInfo.TYPE_TOOL);
             activity.returnActivity(actionInfo);
         }
+
+        private class MyAdapter extends ArrayAdapter<String> {
+            MyAdapter(Context context, ArrayList<String> titles) {
+                super(context, R.layout.view_tool_list_item, R.id.action_name, titles);
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View root = super.getView(position, convertView, parent);
+                ImageView icon = (ImageView) root.findViewById(R.id.icon);
+                icon.setImageResource(FTD.getActionIconResource(getActionList()[position]));
+                return root;
+            }
+        }
     }
 
-    public static class ForceTouchToolPickerFragment extends  ToolPickerFragment {
+    public static class ForceTouchToolPickerFragment extends ToolPickerFragment {
         private static final String[] ACTION_LIST = {
                 FTD.ACTION_BACK,
                 FTD.ACTION_HOME,
@@ -224,7 +241,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         }
     }
 
-    public static class FloatingActionToolPickerFragment extends  ToolPickerFragment {
+    public static class FloatingActionToolPickerFragment extends ToolPickerFragment {
         private static final String[] ACTION_LIST = {
                 FTD.ACTION_BACK,
                 FTD.ACTION_HOME,
