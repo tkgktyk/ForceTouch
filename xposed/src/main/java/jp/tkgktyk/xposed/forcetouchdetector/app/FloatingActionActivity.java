@@ -17,6 +17,7 @@
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -31,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.base.Objects;
@@ -229,7 +229,7 @@ public class FloatingActionActivity extends AppCompatActivity
 
     protected static class Holder extends RecyclerView.ViewHolder {
         @InjectView(R.id.icon)
-        ImageView icon;
+        FloatingActionButton icon;
         @InjectView(R.id.action_name)
         TextView name;
         @InjectView(R.id.action_type)
@@ -265,6 +265,7 @@ public class FloatingActionActivity extends AppCompatActivity
                 }
             }
             holder.icon.setImageBitmap(icon);
+            holder.icon.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
             holder.name.setText(name);
             switch (info.getType()) {
                 case ActionInfo.TYPE_TOOL:
