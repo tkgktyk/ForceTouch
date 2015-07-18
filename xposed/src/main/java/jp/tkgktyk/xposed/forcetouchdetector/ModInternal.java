@@ -80,6 +80,8 @@ public class ModInternal extends XposedModule {
                     sendKeyEvent(KeyEvent.KEYCODE_VOLUME_UP);
                 } else if (action.equals(FTD.ACTION_VOLUME_DOWN)) {
                     sendKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN);
+                } else if (action.equals(FTD.ACTION_SCREENSHOT)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_SYSRQ);
                 }
             } catch (Throwable t) {
                 logE(t);

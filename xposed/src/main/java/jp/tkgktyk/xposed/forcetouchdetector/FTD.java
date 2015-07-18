@@ -65,6 +65,7 @@ public class FTD {
     public static final String ACTION_SCROLL_DOWN_GLOBAL = PREFIX_ACTION + "SCROLL_DOWN_GLOBAL";
     public static final String ACTION_VOLUME_UP = PREFIX_ACTION + "VOLUME_UP";
     public static final String ACTION_VOLUME_DOWN = PREFIX_ACTION + "VOLUME_DOWN";
+    public static final String ACTION_SCREENSHOT = PREFIX_ACTION + "SCREENSHOT";
 
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
     public static final String ACTION_POWER_MENU = PREFIX_ACTION + "POWER_MENU";
@@ -108,6 +109,7 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_SCROLL_DOWN_GLOBAL);
         INTERNAL_ACTION_FILTER.addAction(ACTION_VOLUME_UP);
         INTERNAL_ACTION_FILTER.addAction(ACTION_VOLUME_DOWN);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_SCREENSHOT);
     }
 
     public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
@@ -140,6 +142,8 @@ public class FTD {
             return mod.getString(R.string.action_volume_up);
         } else if (action.equals(ACTION_VOLUME_DOWN)) {
             return mod.getString(R.string.action_volume_down);
+        } else if (action.equals(ACTION_SCREENSHOT)) {
+            return mod.getString(R.string.action_screenshot);
         } else if (action.equals(ACTION_KILL)) {
             return mod.getString(R.string.action_kill);
         } else if (action.equals(ACTION_POWER_MENU)) {
@@ -184,6 +188,8 @@ public class FTD {
             return R.drawable.ic_volume_up_white_24dp;
         } else if (action.equals(ACTION_VOLUME_DOWN)) {
             return R.drawable.ic_volume_down_white_24dp;
+        } else if (action.equals(ACTION_SCREENSHOT)) {
+            return R.drawable.ic_camera_enhance_white_24dp;
         } else if (action.equals(ACTION_KILL)) {
             return R.drawable.ic_close_white_24dp;
         } else if (action.equals(ACTION_POWER_MENU)) {

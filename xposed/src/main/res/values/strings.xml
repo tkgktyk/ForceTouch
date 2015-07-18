@@ -49,6 +49,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_volume_up">Volume Up</string>
     <string name="action_volume_down">Volume Down</string>
+    <string name="action_screenshot">Screenshot</string>
     <string name="action_kill">Kill App</string>
     <string name="action_power_menu">Power Menu</string>
     <string name="action_double_tap">Double Tap</string>
