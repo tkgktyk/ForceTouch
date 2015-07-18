@@ -27,17 +27,16 @@
         android:id="@+id/icon"
         android:layout_width="@android:dimen/app_icon_size"
         android:layout_height="@android:dimen/app_icon_size"
-        android:background="@android:color/black"/>
+        android:background="?attr/colorAccent"/>
 
     <TextView
         android:id="@+id/action_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/icon"
         android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/icon"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:text="action name"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
-
 
 </RelativeLayout>
