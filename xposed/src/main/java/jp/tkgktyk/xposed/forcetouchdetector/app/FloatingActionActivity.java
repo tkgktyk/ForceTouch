@@ -201,7 +201,7 @@ public class FloatingActionActivity extends AppCompatActivity
     @OnClick(R.id.test_button)
     void onTestClicked(Button button) {
         saveActionList();
-        if (mSettings.isEnabled() && mSettings.showNotification) {
+        if (mSettings.isEnabled()) {
             FloatingAction.show(this);
         } else {
             MyApp.showToast(R.string.note_floating_action);
