@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-import android.os.Handler;
 import android.os.Process;
 import android.os.SystemClock;
 import android.view.KeyEvent;
@@ -53,21 +52,15 @@ public class ModInternal extends XposedModule {
             try {
                 final String action = intent.getAction();
                 logD(action);
-                if (action.equals(FTD.ACTION_KILL)) {
-                    killForegroundApp(context);
-                } else if (action.equals(FTD.ACTION_POWER_MENU)) {
-                    showPowerMenu();
-                } else if (action.equals(FTD.ACTION_BACK)) {
+                //
+                // Key Action
+                //
+                if (action.equals(FTD.ACTION_BACK)) {
                     sendKeyEvent(KeyEvent.KEYCODE_BACK);
                 } else if (action.equals(FTD.ACTION_HOME)) {
                     sendKeyEvent(KeyEvent.KEYCODE_HOME);
-//                    Intent home = new Intent(Intent.ACTION_MAIN);
-//                    home.addCategory(Intent.CATEGORY_HOME);
-//                    home.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    context.startActivity(home);
                 } else if (action.equals(FTD.ACTION_RECENTS)) {
                     sendKeyEvent(KeyEvent.KEYCODE_APP_SWITCH);
-//                    XposedHelpers.callMethod(mPhoneStatusBar, "toggleRecents");
                 } else if (action.equals(FTD.ACTION_FORWARD)) {
                     sendKeyEventAlt(KeyEvent.KEYCODE_DPAD_RIGHT);
                 } else if (action.equals(FTD.ACTION_REFRESH)) {
@@ -82,71 +75,25 @@ public class ModInternal extends XposedModule {
                     sendKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN);
                 } else if (action.equals(FTD.ACTION_SCREENSHOT)) {
                     sendKeyEvent(KeyEvent.KEYCODE_SYSRQ);
+
+                    //
+                    // status bar service
+                    //
+                } else if (action.equals(FTD.ACTION_NOTIFICATIONS)) {
+                    Object statusBarManager = XposedHelpers.callMethod(mPhoneWindowManager, "getStatusBarService");
+                    XposedHelpers.callMethod(statusBarManager, "expandNotificationsPanel");
+                } else if (action.equals(FTD.ACTION_QUICK_SETTINGS)) {
+                    Object statusBarManager = XposedHelpers.callMethod(mPhoneWindowManager, "getStatusBarService");
+                    XposedHelpers.callMethod(statusBarManager, "expandSettingsPanel");
+
+                    //
+                    // Other function
+                    //
+                } else if (action.equals(FTD.ACTION_KILL)) {
+                    killForegroundApp(context);
+                } else if (action.equals(FTD.ACTION_POWER_MENU)) {
+                    showPowerMenu();
                 }
-            } catch (Throwable t) {
-                logE(t);
-            }
-        }
-
-        // Based on GravityBox[LP]
-        private void killForegroundApp(final Context context) {
-            Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
-            if (handler == null) {
-                return;
-            }
-
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    final Intent intent = new Intent(Intent.ACTION_MAIN);
-                    final PackageManager pm = context.getPackageManager();
-                    String defaultHomePackage = "com.android.launcher";
-                    intent.addCategory(Intent.CATEGORY_HOME);
-
-                    final ResolveInfo res = pm.resolveActivity(intent, 0);
-                    if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                        defaultHomePackage = res.activityInfo.packageName;
-                    }
-
-                    ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                    List<ActivityManager.RunningAppProcessInfo> apps = am.getRunningAppProcesses();
-
-                    for (ActivityManager.RunningAppProcessInfo appInfo : apps) {
-                        int uid = appInfo.uid;
-                        // Make sure it's a foreground user application (not system,
-                        // root, phone, etc.)
-                        if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
-                                && appInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
-                                !appInfo.processName.startsWith(defaultHomePackage)) {
-                            if (appInfo.pkgList != null && appInfo.pkgList.length > 0) {
-                                for (String pkg : appInfo.pkgList) {
-                                    logD("Force stopping: " + pkg);
-                                    XposedHelpers.callMethod(am, "forceStopPackage", pkg);
-                                }
-                            } else {
-                                logD("Killing process ID " + appInfo.pid + ": " + appInfo.processName);
-                                Process.killProcess(appInfo.pid);
-                            }
-                            break;
-                        }
-                    }
-                }
-            });
-        }
-
-        private void showPowerMenu() {
-            try {
-//                Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
-//                handler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActions");
-                } else {
-                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActionsDialog");
-                }
-//                    }
-//                });
             } catch (Throwable t) {
                 logE(t);
             }
@@ -211,6 +158,69 @@ public class ModInternal extends XposedModule {
             instrumentation.sendKeySync(key);
         }
 
+        // Based on GravityBox[LP]
+        private void killForegroundApp(final Context context) {
+//            Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
+//            if (handler == null) {
+//                return;
+//            }
+//
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            final PackageManager pm = context.getPackageManager();
+            String defaultHomePackage = "com.android.launcher";
+            intent.addCategory(Intent.CATEGORY_HOME);
+
+            final ResolveInfo res = pm.resolveActivity(intent, 0);
+            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                defaultHomePackage = res.activityInfo.packageName;
+            }
+
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+
+            for (ActivityManager.RunningAppProcessInfo appInfo : apps) {
+                int uid = appInfo.uid;
+                // Make sure it's a foreground user application (not system,
+                // root, phone, etc.)
+                if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
+                        && appInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                        !appInfo.processName.startsWith(defaultHomePackage)) {
+                    if (appInfo.pkgList != null && appInfo.pkgList.length > 0) {
+                        for (String pkg : appInfo.pkgList) {
+                            logD("Force stopping: " + pkg);
+                            XposedHelpers.callMethod(am, "forceStopPackage", pkg);
+                        }
+                    } else {
+                        logD("Killing process ID " + appInfo.pid + ": " + appInfo.processName);
+                        Process.killProcess(appInfo.pid);
+                    }
+                    break;
+                }
+            }
+//                }
+//            });
+        }
+
+        private void showPowerMenu() {
+            try {
+//                Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActions");
+                } else {
+                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActionsDialog");
+                }
+//                    }
+//                });
+            } catch (Throwable t) {
+                logE(t);
+            }
+        }
     };
 
     public static void initZygote(XSharedPreferences prefs) {
