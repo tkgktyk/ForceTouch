@@ -24,6 +24,14 @@
         android:inputType="number"
         android:key="@string/key_detection_area"
         android:title="@string/title_detection_area"/>
+    <!-- Detection Window -->
+    <EditTextPreference
+        android:defaultValue="200"
+        android:dialogMessage="@string/unit_detection_window"
+        android:icon="@null"
+        android:inputType="numberSigned"
+        android:key="@string/key_detection_window"
+        android:title="@string/title_detection_window"/>
     <!-- Blacklist -->
     <Preference
         android:icon="@null"
@@ -47,6 +55,7 @@
         android:icon="@null"
         android:key="@string/key_show_notification"
         android:title="@string/title_show_notification"/>
+    <!-- Experimental Functions -->
     <PreferenceCategory
         android:title="@string/category_experimental">
         <!-- Detector Parameter -->
@@ -56,12 +65,5 @@
             android:inputType="number"
             android:key="@string/key_detection_sensitivity"
             android:title="@string/title_detection_sensitivity"/>
-        <EditTextPreference
-            android:defaultValue="200"
-            android:dialogMessage="@string/unit_detection_window"
-            android:icon="@null"
-            android:inputType="numberSigned"
-            android:key="@string/key_detection_window"
-            android:title="@string/title_detection_window"/>
     </PreferenceCategory>
 </PreferenceScreen>
