@@ -501,7 +501,7 @@ public class FTD {
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
             showNotification = prefs.getBoolean("key_show_notification", true);
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
-            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "200"));
+            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
 
             // Pressure
             pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);
@@ -532,7 +532,7 @@ public class FTD {
             // Floating Action
             floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
             floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
-            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "128"));
+            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
             useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
         }
 

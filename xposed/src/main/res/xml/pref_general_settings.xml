@@ -30,7 +30,7 @@
         android:title="@string/title_detection_area"/>-->
     <!-- Detection Window -->
     <EditTextPreference
-        android:defaultValue="200"
+        android:defaultValue="1000"
         android:dialogMessage="@string/unit_detection_window"
         android:icon="@null"
         android:inputType="numberSigned"
