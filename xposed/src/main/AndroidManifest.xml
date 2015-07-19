@@ -44,6 +44,9 @@
         <service android:name=".app.FloatingActionService"/>
 
         <activity
+            android:name=".app.AreaActivity"
+            android:label="@string/label_detection_area"/>
+        <activity
             android:name=".app.AppSelectActivity"/>
         <activity
             android:name=".app.ActionPickerActivity"

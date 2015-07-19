@@ -2,11 +2,24 @@
     <string name="app_name">Force Touch Detector</string>
     <string name="xposed_description">Force Touch for Android</string>
 
+    <string name="saved">Saved</string>
+
     <!-- Notification -->
     <string name="state_running">Running</string>
     <string name="state_enabled">Enabled</string>
     <string name="state_disabled">Disabled</string>
     <string name="state_floating_action">Floating Action</string>
+
+    <!-- Area Activity -->
+    <string name="label_detection_area">@string/title_detection_area</string>
+    <string name="title_area_size">Size</string>
+    <string name="area_size_width">W: </string>
+    <string name="area_size_height">H: </string>
+    <string name="title_area_pivot">Pivot</string>
+    <string name="area_pivot_x">X: </string>
+    <string name="area_pivot_y">Y: </string>
+    <string name="mirror_switch">Mirror: </string>
+    <string name="reverse_switch">Reverse: </string>
 
     <!-- Threshold Activity -->
     <!-- Pressure -->

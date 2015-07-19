@@ -17,4 +17,5 @@
 
 <resources>
     <color name="floating_action_dim">@color/primary_light</color>
+    <color name="detection_area">#80FFA000</color>
 </resources>

@@ -17,13 +17,17 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Force Touch Area -->
-    <EditTextPreference
+    <Preference
+        android:icon="@null"
+        android:key="@string/key_detection_area"
+        android:title="@string/title_detection_area"/>
+    <!--<EditTextPreference
         android:defaultValue="100"
         android:dialogMessage="@string/unit_detection_area"
         android:icon="@null"
         android:inputType="number"
         android:key="@string/key_detection_area"
-        android:title="@string/title_detection_area"/>
+        android:title="@string/title_detection_area"/>-->
     <!-- Detection Window -->
     <EditTextPreference
         android:defaultValue="200"

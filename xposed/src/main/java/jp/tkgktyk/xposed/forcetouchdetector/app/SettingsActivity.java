@@ -170,7 +170,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general_settings);
 
-            showTextSummary(R.string.key_detection_area, R.string.unit_detection_area);
+            openActivity(R.string.key_detection_area, AreaActivity.class);
+//            showTextSummary(R.string.key_detection_area, R.string.unit_detection_area);
             openActivityForResult(R.string.key_blacklist, AppSelectActivity.class,
                     REQUEST_BLACKLIST, new ExtraPutter() {
                         @Override
@@ -205,6 +206,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                                 .edit()
                                 .putStringSet(mPrefKey, blacklist)
                                 .apply();
+                        MyApp.showToast(R.string.saved);
                     }
                     break;
                 default:

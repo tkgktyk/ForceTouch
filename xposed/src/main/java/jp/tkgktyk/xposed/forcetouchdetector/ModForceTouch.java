@@ -23,6 +23,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -214,7 +215,7 @@ public class ModForceTouch extends XposedModule {
             return mTargetView.getContext();
         }
 
-        public void showToast(String text) {
+        private void showToast(String text) {
             if (mToast != null) {
                 mToast.cancel();
             }
@@ -223,10 +224,23 @@ public class ModForceTouch extends XposedModule {
         }
 
         protected FTD.Settings.Holder judgeForceTouch(MotionEvent event) {
-            int index = event.getActionIndex();
-            float y = event.getY(index);
+            return judgeForceTouch(event, event.getActionIndex());
+        }
+
+        protected FTD.Settings.Holder judgeForceTouch(MotionEvent event, int index) {
+            int x = Math.round(event.getX(index));
+            int y = Math.round(event.getY(index));
+            Rect area = mSettings.detectionArea.getRect(mTargetView.getWidth(), mTargetView.getHeight());
+            Rect mirroredArea = mSettings.detectionAreaMirror?
+                    mSettings.detectionArea.getMirroredRect(mTargetView.getWidth(), mTargetView.getHeight()):
+                    null;
             // touch area
-            if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
+            boolean contains = area.contains(x, y) ||
+                    (mirroredArea != null && mirroredArea.contains(x, y));
+            if (mSettings.detectionAreaReverse) {
+                contains = !contains;
+            }
+            if (contains) {
                 // pressure and size
                 if (mSettings.pressure.enabled &&
                         event.getPressure(index) > mSettings.pressure.threshold) {
@@ -592,19 +606,9 @@ public class ModForceTouch extends XposedModule {
                     FTD.Settings.Holder holder = null;
                     int index = 0;
                     for (; index < count; ++index) {
-                        float y = event.getY(index);
-                        // touch area
-                        if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
-                            // pressure and size
-                            if (mSettings.pressure.enabled &&
-                                    event.getPressure(index) > mSettings.pressure.threshold) {
-                                holder = mSettings.pressure;
-                                break;
-                            } else if (mSettings.size.enabled &&
-                                    event.getSize(index) > mSettings.size.threshold) {
-                                holder = mSettings.size;
-                                break;
-                            }
+                        holder = judgeForceTouch(event, index);
+                        if (holder != null) {
+                            break;
                         }
                     }
                     if (holder != null) {
@@ -707,19 +711,9 @@ public class ModForceTouch extends XposedModule {
                 FTD.Settings.Holder holder = null;
                 int index = 0;
                 for (; index < count; ++index) {
-                    float y = event.getY(index);
-                    // touch area
-                    if (y > mTargetView.getHeight() * mSettings.forceTouchArea) {
-                        // pressure and size
-                        if (mSettings.pressure.enabled &&
-                                event.getPressure(index) > mSettings.pressure.threshold) {
-                            holder = mSettings.pressure;
-                            break;
-                        } else if (mSettings.size.enabled &&
-                                event.getSize(index) > mSettings.size.threshold) {
-                            holder = mSettings.size;
-                            break;
-                        }
+                    holder = judgeForceTouch(event, index);
+                    if (holder != null) {
+                        break;
                     }
                 }
                 if (holder != null) {

@@ -167,6 +167,7 @@ public class FloatingActionActivity extends AppCompatActivity
                     .apply();
             sendBroadcast(new Intent(FloatingAction.ACTION_LIST_CHANGED));
             mIsChanged = false;
+            MyApp.showToast(R.string.saved);
         }
     }
 

@@ -1,0 +1,165 @@
+<!--
+  ~ Copyright 2015 Takagi Katsuyuki
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="MergeRootFrame">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+        <!-- Size -->
+        <TextView
+            android:id="@+id/area_size_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_area_size"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <!-- Width -->
+        <LinearLayout
+            android:id="@+id/area_size_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_size_title"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/area_size_width"/>
+
+            <SeekBar
+                android:id="@+id/area_size_width_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <!-- Height -->
+        <LinearLayout
+            android:id="@+id/area_size_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_size_width"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/area_size_height"/>
+
+            <SeekBar
+                android:id="@+id/area_size_height_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Space
+            android:id="@+id/bottom_area_size"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_below="@id/area_size_height"/>
+        <!-- Pivot -->
+        <TextView
+            android:id="@+id/area_pivot_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottom_area_size"
+            android:text="@string/title_area_pivot"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <!-- X -->
+        <LinearLayout
+            android:id="@+id/area_pivot_x"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_pivot_title"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/area_pivot_x"/>
+
+            <SeekBar
+                android:id="@+id/area_pivot_x_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <!-- Y -->
+        <LinearLayout
+            android:id="@+id/area_pivot_y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_pivot_x"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/area_pivot_y"/>
+
+            <SeekBar
+                android:id="@+id/area_pivot_y_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Space
+            android:id="@+id/bottom_area_pivot"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_below="@id/area_pivot_y"/>
+        <!-- Switch -->
+        <Switch
+            android:id="@+id/mirror_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottom_area_pivot"
+            android:text="@string/mirror_switch"/>
+
+        <Space
+            android:id="@+id/end_mirror_switch"
+            android:layout_width="16dp"
+            android:layout_height="0dp"
+            android:layout_toEndOf="@id/mirror_switch"/>
+
+        <Switch
+            android:id="@+id/reverse_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/mirror_switch"
+            android:layout_toEndOf="@id/end_mirror_switch"
+            android:text="@string/reverse_switch"/>
+    </RelativeLayout>
+</RelativeLayout>

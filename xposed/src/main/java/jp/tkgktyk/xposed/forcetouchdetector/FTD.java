@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ScaleRect;
 
 /**
  * Created by tkgktyk on 2015/06/03.
@@ -469,7 +470,9 @@ public class FTD {
         static final long serialVersionUID = 1L;
 
         // General
-        public final float forceTouchArea;
+        public final ScaleRect detectionArea;
+        public final boolean detectionAreaMirror;
+        public final boolean detectionAreaReverse;
         public final Set<String> blacklist;
         public final boolean showDisabledActionToast;
         public final boolean showEnabledActionToast;
@@ -490,8 +493,9 @@ public class FTD {
         public final boolean useLocalFAB;
 
         public Settings(SharedPreferences prefs) {
-            int area = Integer.parseInt(getStringToParse(prefs, "key_detection_area", "100"));
-            forceTouchArea = (100.0f - area) / 100.0f;
+            detectionArea = ScaleRect.fromPreference(prefs.getString("key_detection_area", ""));
+            detectionAreaMirror = prefs.getBoolean("key_detection_area_mirror", false);
+            detectionAreaReverse = prefs.getBoolean("key_detection_area_reverse", false);
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
             showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);

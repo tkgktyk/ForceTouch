@@ -140,6 +140,9 @@ public class MyApp extends BaseApplication {
                         .apply();
             }
         }
+        if (old.isOlderThan("0.3.4")) {
+            prefs.edit().remove(getString(R.string.key_detection_area)).apply();
+        }
     }
 
     public static void updateService(Context context, boolean pressure, boolean size,

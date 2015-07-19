@@ -12,6 +12,8 @@
 
     <!-- General -->
     <string name="key_detection_area" translatable="false">key_detection_area</string>
+    <string name="key_detection_area_mirror" translatable="false">key_detection_area_mirror</string>
+    <string name="key_detection_area_reverse" translatable="false">key_detection_area_reverse</string>
     <string name="key_blacklist" translatable="false">key_blacklist</string>
     <string name="key_show_disabled_action_toast" translatable="false">key_show_disabled_action_toast</string>
     <string name="key_show_enabled_action_toast" translatable="false">key_show_enabled_action_toast</string>

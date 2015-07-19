@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -68,6 +70,8 @@ public class PressureThresholdActivity extends AppCompatActivity {
     EditText mPressureThreshold;
     @InjectView(R.id.pressure_threshold_container)
     TextInputLayout mPressureThresholdContainer;
+
+    private boolean mIsChanged;
 
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
@@ -180,6 +184,20 @@ public class PressureThresholdActivity extends AppCompatActivity {
 
         mPressureThreshold.setText(FTD.getSharedPreferences(this)
                 .getString(getThresholdKey(), ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
+        mPressureThreshold.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mIsChanged = true;
+            }
+        });
     }
 
     @Override
@@ -204,13 +222,16 @@ public class PressureThresholdActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
 
-        FTD.getSharedPreferences(this)
-                .edit()
-                .putString(getThresholdKey(), mPressureThreshold.getText().toString())
-                .apply();
+        if (mIsChanged) {
+            FTD.getSharedPreferences(this)
+                    .edit()
+                    .putString(getThresholdKey(), mPressureThreshold.getText().toString())
+                    .apply();
+            MyApp.showToast(R.string.saved);
+        }
     }
 
     @OnClick(R.id.learn_more_button)
