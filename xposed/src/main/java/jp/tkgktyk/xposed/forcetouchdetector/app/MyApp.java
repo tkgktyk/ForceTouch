@@ -157,6 +157,9 @@ public class MyApp extends BaseApplication {
             } else if (showNotification) {
                 context.stopService(fa);
                 context.startService(em);
+            } else {
+                context.stopService(em);
+                context.stopService(fa);
             }
         } else {
             context.stopService(em);
