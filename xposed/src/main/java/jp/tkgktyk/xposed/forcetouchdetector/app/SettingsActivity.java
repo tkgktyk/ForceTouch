@@ -192,7 +192,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 }
             });
             showTextSummary(R.string.key_detection_sensitivity);
-            showTextSummary(R.string.key_detection_window, R.string.unit_detection_window);
+            showTextSummary(R.string.key_detection_window, R.string.unit_millisecond);
         }
 
         @Override
@@ -351,6 +351,18 @@ public class SettingsActivity extends BaseSettingsActivity {
     }
 
     public static class FloatingActionSettingsFragment extends XposedFragment {
+        private final SharedPreferences.OnSharedPreferenceChangeListener mChangeListener
+                = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                Context context = getActivity();
+                FTD.Settings settings = new FTD.Settings(sharedPreferences);
+                MyApp.updateService(context, false, false, false, false);
+                MyApp.updateService(context, settings.pressure.enabled,
+                        settings.size.enabled, settings.floatingActionEnabled,
+                        settings.showNotification);
+            }
+        };
 
         @Override
         protected String getTitle() {
@@ -361,6 +373,8 @@ public class SettingsActivity extends BaseSettingsActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_floating_action_settings);
+            getPreferenceManager().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(mChangeListener);
 
             setUpSwitch(R.string.key_floating_action_enabled, new OnSwitchChangeListener() {
                 @Override
@@ -380,31 +394,31 @@ public class SettingsActivity extends BaseSettingsActivity {
                     int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
                     drawable.setSize(size, size);
                     preference.setIcon(drawable);
-                    restartService(preference.getContext(), preference.getSharedPreferences());
+//                    restartService(preference.getContext(), preference.getSharedPreferences());
                     return true;
                 }
             });
             showTextSummary(R.string.key_floating_action_alpha, new OnTextChangeListener() {
                 @Override
                 public boolean onChange(EditTextPreference edit, String text) {
-                    restartService(edit.getContext(), edit.getSharedPreferences());
+//                    restartService(edit.getContext(), edit.getSharedPreferences());
                     return true;
                 }
             });
+            showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
             setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
-                    restartService(sw.getContext(), sw.getSharedPreferences());
+//                    restartService(sw.getContext(), sw.getSharedPreferences());
                 }
             });
         }
 
-        private void restartService(Context context, SharedPreferences prefs) {
-            FTD.Settings settings = new FTD.Settings(prefs);
-            MyApp.updateService(context, false, false, false, false);
-            MyApp.updateService(context, settings.pressure.enabled,
-                    settings.size.enabled, settings.floatingActionEnabled,
-                    settings.showNotification);
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            getPreferenceManager().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mChangeListener);
         }
     }
 }

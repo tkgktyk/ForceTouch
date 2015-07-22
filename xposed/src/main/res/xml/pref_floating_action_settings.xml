@@ -43,9 +43,17 @@
         android:inputType="number"
         android:key="@string/key_floating_action_alpha"
         android:title="@string/title_floating_action_alpha"/>
+    <!-- Timeout -->
+    <EditTextPreference
+        android:defaultValue="3000"
+        android:dialogMessage="@string/message_floating_action_timeout"
+        android:icon="@null"
+        android:inputType="number"
+        android:key="@string/key_floating_action_timeout"
+        android:title="@string/title_floating_action_timeout"/>
     <!-- Use Local FAB -->
     <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:icon="@null"
         android:key="@string/key_use_local_fab"
         android:title="@string/title_use_local_fab"

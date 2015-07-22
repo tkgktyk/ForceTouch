@@ -16,6 +16,7 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.BroadcastReceiver;
@@ -51,7 +52,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButt
  */
 public class FloatingAction implements View.OnClickListener {
 
-    public static final String ACTION_LIST_CHANGED = FTD.PREFIX_ACTION + "LIST_CHANGED";
+    private FTD.Settings mSettings;
 
     private final WindowManager mWindowManager;
     private final Point mDisplaySize;
@@ -63,11 +64,17 @@ public class FloatingAction implements View.OnClickListener {
 
     private boolean mNavigationShown;
     private ObjectAnimator mShowAnimation;
-    private ObjectAnimator mHideAnimation;
     private ObjectAnimator mDimAnimation;
-    private ObjectAnimator mClearAnimation;
+    private ObjectAnimator mFadeoutAnimation;
 
     private ActionInfoList mActionList;
+
+    private Runnable mAutoHide = new Runnable() {
+        @Override
+        public void run() {
+            fadeout();
+        }
+    };
 
     public static void show(Context context) {
         Intent intent = new Intent(FTD.ACTION_FLOATING_ACTION);
@@ -84,19 +91,16 @@ public class FloatingAction implements View.OnClickListener {
                 mFraction.x = intent.getFloatExtra(FTD.EXTRA_FRACTION_X, 0.0f);
                 mFraction.y = intent.getFloatExtra(FTD.EXTRA_FRACTION_Y, 0.0f);
                 show();
-            } else if (Objects.equal(action, ACTION_LIST_CHANGED)) {
-                FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
-                loadActions(context, settings);
             }
         }
     };
 
     public FloatingAction(Context context) {
-        FTD.Settings settings = new FTD.Settings(FTD.getSharedPreferences(context));
+        mSettings = new FTD.Settings(FTD.getSharedPreferences(context));
         context.setTheme(R.style.AppTheme);
         mContainer = (FrameLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
-        mContainer.getBackground().setAlpha(settings.floatingActionAlpha);
+        mContainer.getBackground().setAlpha(mSettings.floatingActionAlpha);
         mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
         mCircleLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -109,7 +113,7 @@ public class FloatingAction implements View.OnClickListener {
         // force hide
         mNavigationShown = true;
         hide();
-        loadActions(context, settings);
+        loadActions(context);
 
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         mDisplaySize = new Point();
@@ -127,7 +131,6 @@ public class FloatingAction implements View.OnClickListener {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTD.ACTION_FLOATING_ACTION);
-        filter.addAction(ACTION_LIST_CHANGED);
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -144,19 +147,37 @@ public class FloatingAction implements View.OnClickListener {
 //            mDimAnimation.setDuration(300); // default 300
         }
         { // hide
-            PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 0.0f);
-            PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 0.0f);
-            mHideAnimation = ObjectAnimator.ofPropertyValuesHolder(mCircleLayout,
-                    holderScaleX, holderScaleY);
-//            mHideAnimation.setDuration(300); // default 300
-
             PropertyValuesHolder holderAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 1.0f, 0.0f);
-            mClearAnimation = ObjectAnimator.ofPropertyValuesHolder(mContainer, holderAlpha);
-//            mClearAnimation.setDuration(300); // default 300
+            mFadeoutAnimation = ObjectAnimator.ofPropertyValuesHolder(mContainer, holderAlpha);
+            mFadeoutAnimation.addListener(new Animator.AnimatorListener() {
+                private boolean mIsCanceled;
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mIsCanceled = false;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (!mIsCanceled) {
+                        disappear();
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    mIsCanceled = true;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+            mFadeoutAnimation.setDuration(1000); // default 300
         }
     }
 
-    private void loadActions(Context context, FTD.Settings settings) {
+    private void loadActions(Context context) {
         mCircleLayout.removeAllViews();
         mActionList = ActionInfoList.fromPreference(
                 FTD.getSharedPreferences(context)
@@ -173,16 +194,16 @@ public class FloatingAction implements View.OnClickListener {
             // FloatingActionButton extends ImageView
             ImageView button;
             // for setBackgroundTintList
-            if (settings.useLocalFAB) {
+            if (mSettings.useLocalFAB) {
                 LocalFloatingActionButton fab = new LocalFloatingActionButton(context,
                         action.getType() != ActionInfo.TYPE_TOOL);
                 fab.setLayoutParams(lp);
-                fab.setBackgroundTintList(ColorStateList.valueOf(settings.floatingActionColor));
+                fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
                 button = fab;
             } else {
                 FloatingActionButton fab = (FloatingActionButton) inflater
                         .inflate(R.layout.view_floating_action, mCircleLayout, false);
-                fab.setBackgroundTintList(ColorStateList.valueOf(settings.floatingActionColor));
+                fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
                 button = fab;
             }
             button.setOnClickListener(this);
@@ -218,22 +239,39 @@ public class FloatingAction implements View.OnClickListener {
         mCircleLayout.setCircleOrigin(x, y);
         mCircleLayout.setRotation(rotation);
         mCircleLayout.requestLayout();
-        mHideAnimation.cancel();
-        mClearAnimation.cancel();
+        mFadeoutAnimation.cancel();
         mShowAnimation.start();
         mDimAnimation.start();
         mContainer.setVisibility(View.VISIBLE);
+
+        mContainer.removeCallbacks(mAutoHide);
+        if (mSettings.floatingActionTimeout > 0) {
+            mContainer.postDelayed(mAutoHide, mSettings.floatingActionTimeout);
+        }
     }
 
     private void hide() {
         if (mNavigationShown) {
-            mContainer.setVisibility(View.GONE);
             mShowAnimation.cancel();
             mDimAnimation.cancel();
-            mHideAnimation.start();
-            mClearAnimation.start();
-            mNavigationShown = false;
+            mFadeoutAnimation.cancel();
+            disappear();
         }
+    }
+
+    private void fadeout() {
+        if (mNavigationShown) {
+            mShowAnimation.cancel();
+            mDimAnimation.cancel();
+            mFadeoutAnimation.start();
+            mContainer.removeCallbacks(mAutoHide);
+        }
+    }
+
+    private void disappear() {
+        mContainer.setVisibility(View.GONE);
+        mNavigationShown = false;
+        mContainer.removeCallbacks(mAutoHide);
     }
 
     public void onConfigurationChanged(Configuration newConfig) {

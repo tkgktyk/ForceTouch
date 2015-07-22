@@ -98,6 +98,8 @@
     <string name="title_support">Support</string>
     <string name="summary_support">Tap to open support thread on XDA</string>
 
+    <string name="unit_millisecond">msec</string>
+
     <!-- General -->
     <string name="title_detection_area">Detection Area</string>
     <string name="unit_detection_area">% from bottom of screen</string>
@@ -109,7 +111,6 @@
     <string name="category_experimental">Experimental</string>
     <string name="title_detection_sensitivity">Detection Sensitivity</string>
     <string name="title_detection_window">Detection Window</string>
-    <string name="unit_detection_window">msec</string>
 
     <!-- Threshold -->
     <string name="title_enabled">Master Switch</string>
@@ -152,6 +153,8 @@
     <!-- Color END -->
     <string name="title_floating_action_alpha">Background Alpha</string>
     <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
+    <string name="title_floating_action_timeout">Timeout</string>
+    <string name="message_floating_action_timeout">Millisecond\n\"0\" is to disable</string>
     <string name="title_use_local_fab">Another Method</string>
-    <string name="summary_use_local_fab">Turn on if you get force close</string>
+    <string name="summary_use_local_fab">Switch if you get force close</string>
 </resources>

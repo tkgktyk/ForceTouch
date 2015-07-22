@@ -165,9 +165,16 @@ public class FloatingActionActivity extends AppCompatActivity
                     .putString(getString(R.string.key_floating_action_list),
                             mActionList.toStringForPreference())
                     .apply();
-            sendBroadcast(new Intent(FloatingAction.ACTION_LIST_CHANGED));
             mIsChanged = false;
             MyApp.showToast(R.string.saved);
+            mRecyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    FloatingAction.show(FloatingActionActivity.this);
+                }
+            }, 500);
+        } else {
+            FloatingAction.show(this);
         }
     }
 
@@ -202,9 +209,7 @@ public class FloatingActionActivity extends AppCompatActivity
     @OnClick(R.id.test_button)
     void onTestClicked(Button button) {
         saveActionList();
-        if (mSettings.isEnabled()) {
-            FloatingAction.show(this);
-        } else {
+        if (!mSettings.isEnabled()) {
             MyApp.showToast(R.string.note_floating_action);
         }
     }

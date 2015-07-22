@@ -490,6 +490,7 @@ public class FTD {
         public final boolean floatingActionEnabled;
         public final int floatingActionColor;
         public final int floatingActionAlpha;
+        public final int floatingActionTimeout;
         public final boolean useLocalFAB;
 
         public Settings(SharedPreferences prefs) {
@@ -533,7 +534,8 @@ public class FTD {
             floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
             floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
             floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
-            useLocalFAB = prefs.getBoolean("key_use_local_fab", false);
+            floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
+            useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
