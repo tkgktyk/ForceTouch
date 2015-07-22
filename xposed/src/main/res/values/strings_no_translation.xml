@@ -23,7 +23,7 @@
 
     <!-- Pressure -->
     <!-- Setting -->
-    <string name="key_pressure_enabled" translatable="false">key_pressure_enabled</string>
+    <string name="key_pressure_enable" translatable="false">key_pressure_enable</string>
     <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
     <!-- Action -->
     <string name="key_pressure_action_tap" translatable="false">key_pressure_action_tap</string>
@@ -36,7 +36,7 @@
 
     <!-- Size -->
     <!-- Setting -->
-    <string name="key_size_enabled" translatable="false">key_size_enabled</string>
+    <string name="key_size_enable" translatable="false">key_size_enable</string>
     <string name="key_size_threshold" translatable="false">key_size_threshold</string>
     <!-- Action -->
     <string name="key_size_action_tap" translatable="false">key_size_action_tap</string>
@@ -48,7 +48,7 @@
     <string name="key_size_action_flick_down" translatable="false">key_size_action_flick_down</string>
 
     <!-- Floating Action -->
-    <string name="key_floating_action_enabled" translatable="false">key_floating_action_enabled</string>
+    <string name="key_floating_action_enable" translatable="false">key_floating_action_enable</string>
     <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
     <string name="key_floating_action_color" translatable="false">key_floating_action_color</string>
     <string name="key_floating_action_alpha" translatable="false">key_floating_action_alpha</string>

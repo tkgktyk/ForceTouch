@@ -204,7 +204,7 @@ class FloatingActionButtonEclairMr1 extends FloatingActionButtonImpl {
         colors[i] = selectedColor;
         i++;
 
-        // Default enabled state
+        // Default enable state
         states[i] = new int[0];
         colors[i] = Color.TRANSPARENT;
         i++;

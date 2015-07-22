@@ -113,7 +113,7 @@
     <string name="title_detection_window">Detection Window</string>
 
     <!-- Threshold -->
-    <string name="title_enabled">Master Switch</string>
+    <string name="title_enable">Master Switch</string>
     <string name="title_threshold">Threshold</string>
     <string name="summary_threshold">Adjust and practice Force Touch</string>
     <!-- Action -->

@@ -23,8 +23,8 @@
         <jp.tkgktyk.lib.SwitchPreference
             android:defaultValue="false"
             android:icon="@null"
-            android:key="@string/key_size_enabled"
-            android:title="@string/title_enabled"/>
+            android:key="@string/key_size_enable"
+            android:title="@string/title_enable"/>
         <!-- Pressure Threshold -->
         <Preference
             android:defaultValue="1.0"

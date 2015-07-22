@@ -242,10 +242,10 @@ public class ModForceTouch extends XposedModule {
             }
             if (contains) {
                 // pressure and size
-                if (mSettings.pressure.enabled &&
+                if (mSettings.pressure.enable &&
                         event.getPressure(index) > mSettings.pressure.threshold) {
                     return mSettings.pressure;
-                } else if (mSettings.size.enabled &&
+                } else if (mSettings.size.enable &&
                         event.getSize(index) > mSettings.size.threshold) {
                     return mSettings.size;
                 }

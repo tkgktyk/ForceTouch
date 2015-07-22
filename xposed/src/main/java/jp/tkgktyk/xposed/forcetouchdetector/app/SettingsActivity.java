@@ -118,9 +118,9 @@ public class SettingsActivity extends BaseSettingsActivity {
             changeScreen(R.string.key_header_size, SizeSettingsFragment.class);
             changeScreen(R.string.key_header_floating_action, FloatingActionSettingsFragment.class);
 
-            updateState(R.string.key_header_pressure, R.string.key_pressure_enabled);
-            updateState(R.string.key_header_size, R.string.key_size_enabled);
-            updateState(R.string.key_header_floating_action, R.string.key_floating_action_enabled);
+            updateState(R.string.key_header_pressure, R.string.key_pressure_enable);
+            updateState(R.string.key_header_size, R.string.key_size_enable);
+            updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -129,11 +129,11 @@ public class SettingsActivity extends BaseSettingsActivity {
 
         @Override
         protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
-            if (Objects.equal(key, getString(R.string.key_pressure_enabled))) {
+            if (Objects.equal(key, getString(R.string.key_pressure_enable))) {
                 updateState(R.string.key_header_pressure, key);
-            } else if (Objects.equal(key, getString(R.string.key_size_enabled))) {
+            } else if (Objects.equal(key, getString(R.string.key_size_enable))) {
                 updateState(R.string.key_header_size, key);
-            } else if (Objects.equal(key, getString(R.string.key_floating_action_enabled))) {
+            } else if (Objects.equal(key, getString(R.string.key_floating_action_enable))) {
                 updateState(R.string.key_header_floating_action, key);
             }
         }
@@ -187,8 +187,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
-                            settings.size.enabled, settings.floatingActionEnabled, enabled);
+                    MyApp.updateService(sw.getContext(), settings.pressure.enable,
+                            settings.size.enable, settings.floatingActionEnable, enabled);
                 }
             });
             showTextSummary(R.string.key_detection_sensitivity);
@@ -294,12 +294,12 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_pressure_settings);
 
             // Setting
-            setUpSwitch(R.string.key_pressure_enabled, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_pressure_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    MyApp.updateService(sw.getContext(), enabled, settings.size.enabled,
-                            settings.floatingActionEnabled, settings.showNotification);
+                    MyApp.updateService(sw.getContext(), enabled, settings.size.enable,
+                            settings.floatingActionEnable, settings.showNotification);
                 }
             });
             openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
@@ -330,12 +330,12 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_size_settings);
 
             // Setting
-            setUpSwitch(R.string.key_size_enabled, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_size_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    MyApp.updateService(sw.getContext(), settings.pressure.enabled, enabled,
-                            settings.floatingActionEnabled, settings.showNotification);
+                    MyApp.updateService(sw.getContext(), settings.pressure.enable, enabled,
+                            settings.floatingActionEnable, settings.showNotification);
                 }
             });
             openActivity(R.string.key_size_threshold, SizeThresholdActivity.class);
@@ -358,8 +358,8 @@ public class SettingsActivity extends BaseSettingsActivity {
                 Context context = getActivity();
                 FTD.Settings settings = new FTD.Settings(sharedPreferences);
                 MyApp.updateService(context, false, false, false, false);
-                MyApp.updateService(context, settings.pressure.enabled,
-                        settings.size.enabled, settings.floatingActionEnabled,
+                MyApp.updateService(context, settings.pressure.enable,
+                        settings.size.enable, settings.floatingActionEnable,
                         settings.showNotification);
             }
         };
@@ -376,12 +376,12 @@ public class SettingsActivity extends BaseSettingsActivity {
             getPreferenceManager().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(mChangeListener);
 
-            setUpSwitch(R.string.key_floating_action_enabled, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_floating_action_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
                     FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
-                    MyApp.updateService(sw.getContext(), settings.pressure.enabled,
-                            settings.size.enabled, enabled, settings.showNotification);
+                    MyApp.updateService(sw.getContext(), settings.pressure.enable,
+                            settings.size.enable, enabled, settings.showNotification);
                 }
             });
             openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);

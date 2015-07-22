@@ -59,7 +59,7 @@ public class MyApp extends BaseApplication {
         SharedPreferences prefs = getDefaultSharedPreferences();
         if (old.isOlderThan("0.2.0")) {
             prefs.edit()
-                    .putBoolean(getString(R.string.key_pressure_enabled),
+                    .putBoolean("key_pressure_enabled",
                             prefs.getBoolean("key_enabled", false))
                     .putString(getString(R.string.key_pressure_action_tap),
                             prefs.getString("key_action_tap", ""))
@@ -142,6 +142,17 @@ public class MyApp extends BaseApplication {
         }
         if (old.isOlderThan("0.3.4")) {
             prefs.edit().remove(getString(R.string.key_detection_area)).apply();
+        }
+        if (old.isOlderThan("0.3.5")) {
+            // rename enable to enable
+            prefs.edit()
+                    .putBoolean(getString(R.string.key_pressure_enable),
+                            prefs.getBoolean("key_pressure_enabled", false))
+                    .putBoolean(getString(R.string.key_size_enable),
+                            prefs.getBoolean("key_size_enabled", false))
+                    .putBoolean(getString(R.string.key_floating_action_enable),
+                            prefs.getBoolean("key_floating_action_enabled", false))
+                    .apply();
         }
     }
 

@@ -487,7 +487,7 @@ public class FTD {
         public final Holder size = new Holder();
 
         // Floating Action
-        public final boolean floatingActionEnabled;
+        public final boolean floatingActionEnable;
         public final int floatingActionColor;
         public final int floatingActionAlpha;
         public final int floatingActionTimeout;
@@ -505,7 +505,7 @@ public class FTD {
             detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
 
             // Pressure
-            pressure.enabled = prefs.getBoolean("key_pressure_enabled", false);
+            pressure.enable = prefs.getBoolean("key_pressure_enable", false);
             pressure.threshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
@@ -518,7 +518,7 @@ public class FTD {
             pressure.actionFlickDown = getActionRecord(prefs, "key_pressure_action_flick_down");
 
             // Size
-            size.enabled = prefs.getBoolean("key_size_enabled", false);
+            size.enable = prefs.getBoolean("key_size_enable", false);
             size.threshold = Float.parseFloat(getStringToParse(prefs, "key_size_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
@@ -531,7 +531,7 @@ public class FTD {
             size.actionFlickDown = getActionRecord(prefs, "key_size_action_flick_down");
 
             // Floating Action
-            floatingActionEnabled = prefs.getBoolean("key_floating_action_enabled", false);
+            floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
             floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
             floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
@@ -551,14 +551,14 @@ public class FTD {
         }
 
         public boolean isEnabled() {
-            return pressure.enabled || size.enabled;
+            return pressure.enable || size.enable;
         }
 
         public class Holder implements Serializable {
             static final long serialVersionUID = 1L;
 
             // Setting
-            public boolean enabled;
+            public boolean enable;
             public float threshold;
             // Action
             public ActionInfo.Record actionTap;

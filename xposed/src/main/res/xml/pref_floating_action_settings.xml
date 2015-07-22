@@ -20,11 +20,11 @@
     <jp.tkgktyk.lib.SwitchPreference
         android:defaultValue="false"
         android:icon="@null"
-        android:key="@string/key_floating_action_enabled"
-        android:title="@string/title_enabled"/>
+        android:key="@string/key_floating_action_enable"
+        android:title="@string/title_enable"/>
     <!-- Actions -->
     <Preference
-        android:dependency="@string/key_floating_action_enabled"
+        android:dependency="@string/key_floating_action_enable"
         android:icon="@null"
         android:key="@string/key_floating_action_list"
         android:title="@string/title_floating_action_list"/>
