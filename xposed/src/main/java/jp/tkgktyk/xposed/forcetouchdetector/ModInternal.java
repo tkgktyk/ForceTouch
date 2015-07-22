@@ -205,21 +205,17 @@ public class ModInternal extends XposedModule {
         }
 
         private void showPowerMenu() {
-            try {
 //                Handler handler = (Handler) XposedHelpers.getObjectField(mPhoneWindowManager, "mHandler");
 //                handler.post(new Runnable() {
 //                    @Override
 //                    public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActions");
-                } else {
-                    XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActionsDialog");
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActions");
+            } else {
+                XposedHelpers.callMethod(mPhoneWindowManager, "showGlobalActionsDialog");
+            }
 //                    }
 //                });
-            } catch (Throwable t) {
-                logE(t);
-            }
         }
     };
 

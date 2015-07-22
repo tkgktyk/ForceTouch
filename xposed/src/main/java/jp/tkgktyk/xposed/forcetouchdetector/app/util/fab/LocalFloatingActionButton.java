@@ -25,10 +25,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.design.R;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import jp.tkgktyk.xposed.forcetouchdetector.R;
 
 /**
  * Floating action buttons are used for a special type of promoted action. They are distinguished
@@ -57,15 +58,16 @@ public class LocalFloatingActionButton extends ImageView {
 
     private final FloatingActionButtonImpl mImpl;
 
-    public LocalFloatingActionButton(Context context) {
-        this(context, null);
+    public LocalFloatingActionButton(Context context, boolean bigContent) {
+        this(context, null, 0, bigContent);
     }
 
     public LocalFloatingActionButton(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0, false);
     }
 
-    public LocalFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LocalFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr,
+                                     boolean bigContent) {
         super(context, attrs, defStyleAttr);
 
         mShadowPadding = new Rect();
@@ -117,7 +119,8 @@ public class LocalFloatingActionButton extends ImageView {
             mImpl = new FloatingActionButtonEclairMr1(this, delegate);
         }
 
-        final int maxContentSize = (int) getResources().getDimension(R.dimen.fab_content_size);
+        final int maxContentSize = (int) getResources().getDimension(
+                bigContent? R.dimen.local_fab_content_size: R.dimen.fab_content_size);
         mContentPadding = (getSizeDimension() - maxContentSize) / 2;
 
         mImpl.setBackgroundDrawable(background, mBackgroundTint,

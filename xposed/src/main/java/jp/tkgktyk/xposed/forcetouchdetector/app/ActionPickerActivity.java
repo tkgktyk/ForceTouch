@@ -119,7 +119,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                     Intent intent = new Intent(Intent.ACTION_PICK_ACTIVITY);
                     intent.putExtra(Intent.EXTRA_INTENT, new Intent(Intent.ACTION_MAIN)
                             .addCategory(Intent.CATEGORY_LAUNCHER));
-                    intent.putExtra(Intent.EXTRA_TITLE, activity.getTitle());
+                    intent.putExtra(Intent.EXTRA_TITLE, activity.getSupportActionBar().getTitle());
 
                     startActivityForResult(intent, REQUEST_PICK_APP);
                     break;
@@ -128,7 +128,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                     Intent intent = new Intent(Intent.ACTION_PICK_ACTIVITY);
                     intent.putExtra(Intent.EXTRA_INTENT, new Intent(
                             Intent.ACTION_CREATE_SHORTCUT));
-                    intent.putExtra(Intent.EXTRA_TITLE, activity.getTitle());
+                    intent.putExtra(Intent.EXTRA_TITLE, activity.getSupportActionBar().getTitle());
 
                     startActivityForResult(intent, REQUEST_PICK_SHORTCUT);
                     break;

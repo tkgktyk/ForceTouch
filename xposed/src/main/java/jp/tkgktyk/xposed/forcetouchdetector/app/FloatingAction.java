@@ -32,6 +32,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -166,13 +167,16 @@ public class FloatingAction implements View.OnClickListener {
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_BACK), ActionInfo.TYPE_TOOL));
         }
         LayoutInflater inflater = LayoutInflater.from(context);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         for (ActionInfo action : mActionList) {
             // FloatingActionButton extends ImageView
             ImageView button;
             // for setBackgroundTintList
             if (settings.useLocalFAB) {
-                LocalFloatingActionButton fab = (LocalFloatingActionButton) inflater
-                        .inflate(R.layout.view_local_floating_action, mCircleLayout, false);
+                LocalFloatingActionButton fab = new LocalFloatingActionButton(context,
+                        action.getType() != ActionInfo.TYPE_TOOL);
+                fab.setLayoutParams(lp);
                 fab.setBackgroundTintList(ColorStateList.valueOf(settings.floatingActionColor));
                 button = fab;
             } else {
