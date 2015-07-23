@@ -63,6 +63,16 @@
                 android:action="android.intent.action.VIEW"
                 android:data="http://forum.xda-developers.com/xposed/modules/mod-force-touch-detector-t3130154"/>
         </Preference>
+        <!-- Donate -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_donate"
+            android:summary="@string/summary_donate"
+            android:title="@string/title_donate">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="market://details?id=jp.tkgktyk.xposed.forcetouchdetector"/>
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>

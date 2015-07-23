@@ -97,6 +97,8 @@
     <string name="title_about">About</string>
     <string name="title_support">Support</string>
     <string name="summary_support">Tap to open support thread on XDA</string>
+    <string name="title_donate">Donate</string>
+    <string name="summary_donate">Tap to open Google Play</string>
 
     <string name="unit_millisecond">msec</string>
 
