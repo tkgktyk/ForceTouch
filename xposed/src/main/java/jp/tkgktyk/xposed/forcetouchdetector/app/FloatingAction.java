@@ -19,15 +19,22 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,6 +46,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
@@ -52,6 +66,9 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButt
  */
 public class FloatingAction implements View.OnClickListener {
 
+    private static final String ACTION_SHOW_RECENTS = FTD.PREFIX_ACTION + "SHOW_RECENTS";
+
+    private Context mContext;
     private FTD.Settings mSettings;
 
     private final WindowManager mWindowManager;
@@ -68,6 +85,95 @@ public class FloatingAction implements View.OnClickListener {
     private ObjectAnimator mFadeoutAnimation;
 
     private ActionInfoList mActionList;
+    private int mPaddingForRecents;
+    private Thread mRecentsThread;
+    private final ActionInfoList mRecentList = new ActionInfoList();
+    private final static Set<String> mIgnoreList = Sets.newHashSet(
+            "com.android.systemui",
+            "com.mediatek.bluetooth",
+            "android.process.acore",
+            "com.google.process.gapps",
+            "com.android.smspush",
+            "com.mediatek.voicecommand"
+    );
+    private final Runnable mLoadRecents = new Runnable() {
+        @Override
+        public void run() {
+            MyApp.logD();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                synchronized (mRecentList) {
+                    mRecentList.clear();
+                }
+
+                UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext
+                        .getSystemService(Context.USAGE_STATS_SERVICE);
+                Calendar beginCal = Calendar.getInstance();
+                beginCal.add(Calendar.DATE, -1);
+                Calendar endCal = Calendar.getInstance();
+                List<UsageStats> stats = mUsageStatsManager.queryUsageStats(
+                        UsageStatsManager.INTERVAL_DAILY,
+                        beginCal.getTimeInMillis(), endCal.getTimeInMillis());
+                // Sort the stats by the last time used
+                if (stats != null) {
+                    final Intent intent = new Intent(Intent.ACTION_MAIN);
+                    final PackageManager pm = mContext.getPackageManager();
+                    String defaultHomePackage = "com.android.launcher";
+                    intent.addCategory(Intent.CATEGORY_HOME);
+
+                    final ResolveInfo res = pm.resolveActivity(intent, 0);
+                    if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                        defaultHomePackage = res.activityInfo.packageName;
+                    }
+
+                    Collections.sort(stats, new Comparator<UsageStats>() {
+                        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public int compare(UsageStats lhs, UsageStats rhs) {
+                            return Long.compare(rhs.getLastTimeUsed(), lhs.getLastTimeUsed());
+                        }
+                    });
+                    for (int i = 0; i < stats.size() && mRecentList.size() < mPaddingForRecents; ++i) {
+                        if (i == 0) {
+                            // first app is foreground app.
+                            continue;
+                        }
+                        UsageStats usageStats = stats.get(i);
+                        String packageName = usageStats.getPackageName();
+                        MyApp.logD(packageName);
+                        if (mIgnoreList.contains(packageName) ||
+                                packageName.equals(defaultHomePackage)) {
+                            MyApp.logD("ignored");
+                            continue;
+                        }
+                        ActionInfo actionInfo = new ActionInfo(mContext,
+                                pm.getLaunchIntentForPackage(usageStats.getPackageName()),
+                                ActionInfo.TYPE_APP);
+                        synchronized (mRecentList) {
+                            mRecentList.add(actionInfo);
+                        }
+                    }
+
+                    mContext.sendBroadcast(new Intent(ACTION_SHOW_RECENTS));
+                }
+            } else {
+                ActivityManager am = (ActivityManager) mContext
+                        .getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RecentTaskInfo> recents = am
+                        .getRecentTasks(mPaddingForRecents, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+
+                for (ActivityManager.RecentTaskInfo info : recents) {
+                    ActionInfo actionInfo = new ActionInfo(mContext, info.baseIntent, ActionInfo.TYPE_APP);
+                    synchronized (mRecentList) {
+                        mRecentList.add(actionInfo);
+                    }
+                }
+
+                mContext.sendBroadcast(new Intent(ACTION_SHOW_RECENTS));
+            }
+
+            mRecentsThread = null;
+        }
+    };
 
     private Runnable mAutoHide = new Runnable() {
         @Override
@@ -91,11 +197,26 @@ public class FloatingAction implements View.OnClickListener {
                 mFraction.x = intent.getFloatExtra(FTD.EXTRA_FRACTION_X, 0.0f);
                 mFraction.y = intent.getFloatExtra(FTD.EXTRA_FRACTION_Y, 0.0f);
                 show();
+            } else if (Objects.equal(action, ACTION_SHOW_RECENTS)) {
+                showRecents();
             }
         }
     };
 
+    private void showRecents() {
+        int offset = mCircleLayout.getChildCount() - mPaddingForRecents;
+        synchronized (mRecentList) {
+            for (int i = 0; i < mRecentList.size(); ++i) {
+                ImageView button = (ImageView) mCircleLayout.getChildAt(i + offset);
+                ActionInfo action = mRecentList.get(i);
+                button.setTag(action);
+                button.setImageBitmap(action.getIcon());
+            }
+        }
+    }
+
     public FloatingAction(Context context) {
+        mContext = context;
         mSettings = new FTD.Settings(FTD.getSharedPreferences(context));
         context.setTheme(R.style.AppTheme);
         mContainer = (FrameLayout) LayoutInflater.from(context)
@@ -131,6 +252,7 @@ public class FloatingAction implements View.OnClickListener {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTD.ACTION_FLOATING_ACTION);
+        filter.addAction(ACTION_SHOW_RECENTS);
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -187,30 +309,39 @@ public class FloatingAction implements View.OnClickListener {
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_HOME), ActionInfo.TYPE_TOOL));
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_BACK), ActionInfo.TYPE_TOOL));
         }
+        for (ActionInfo action : mActionList) {
+            mCircleLayout.addView(inflateButton(context, action));
+        }
+        if (mSettings.floatingActionRecents) {
+            mPaddingForRecents = mCircleLayout.calcPaddingToFill();
+            for (int i = 0; i < mPaddingForRecents; ++i) {
+                mCircleLayout.addView(inflateButton(context, new ActionInfo()));
+            }
+        }
+    }
+
+    private ImageView inflateButton(Context context, ActionInfo actionInfo) {
         LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        for (ActionInfo action : mActionList) {
-            // FloatingActionButton extends ImageView
-            ImageView button;
-            // for setBackgroundTintList
-            if (mSettings.useLocalFAB) {
-                LocalFloatingActionButton fab = new LocalFloatingActionButton(context,
-                        action.getType() != ActionInfo.TYPE_TOOL);
-                fab.setLayoutParams(lp);
-                fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
-                button = fab;
-            } else {
-                FloatingActionButton fab = (FloatingActionButton) inflater
-                        .inflate(R.layout.view_floating_action, mCircleLayout, false);
-                fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
-                button = fab;
-            }
-            button.setOnClickListener(this);
-            button.setTag(action);
-            button.setImageBitmap(action.getIcon());
-            mCircleLayout.addView(button);
+        // FloatingActionButton extends ImageView
+        ImageView button;
+        // for setBackgroundTintList
+        if (mSettings.useLocalFAB) {
+            LocalFloatingActionButton fab = new LocalFloatingActionButton(context,
+                    actionInfo.getType() != ActionInfo.TYPE_TOOL);
+            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
+            button = fab;
+        } else {
+            FloatingActionButton fab = new FloatingActionButton(context);
+            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
+            button = fab;
         }
+        button.setLayoutParams(lp);
+        button.setOnClickListener(this);
+        button.setTag(actionInfo);
+        button.setImageBitmap(actionInfo.getIcon());
+        return button;
     }
 
     @Override
@@ -222,6 +353,7 @@ public class FloatingAction implements View.OnClickListener {
 
     private void show() {
         hide();
+
         float x;
         float y = mFraction.y * mDisplaySize.y;
         float rotation;
@@ -248,6 +380,19 @@ public class FloatingAction implements View.OnClickListener {
         if (mSettings.floatingActionTimeout > 0) {
             mContainer.postDelayed(mAutoHide, mSettings.floatingActionTimeout);
         }
+
+        if (mSettings.floatingActionRecents) {
+            loadRecents();
+        }
+    }
+
+    private void loadRecents() {
+        if (mRecentsThread == null) {
+            mRecentsThread = new Thread(mLoadRecents);
+            mRecentsThread.start();
+        } else {
+            showRecents();
+        }
     }
 
     private void hide() {
@@ -256,6 +401,16 @@ public class FloatingAction implements View.OnClickListener {
             mDimAnimation.cancel();
             mFadeoutAnimation.cancel();
             disappear();
+        }
+
+        if (mSettings.floatingActionRecents) {
+            // erase recent action
+            int count = mCircleLayout.getChildCount();
+            for (int i = count - mPaddingForRecents; i < count; ++i) {
+                ImageView button = (ImageView) mCircleLayout.getChildAt(i);
+                button.setTag(new ActionInfo());
+                button.setImageDrawable(null);
+            }
         }
     }
 

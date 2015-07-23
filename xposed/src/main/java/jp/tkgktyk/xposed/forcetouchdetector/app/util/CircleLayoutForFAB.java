@@ -121,6 +121,24 @@ public class CircleLayoutForFAB extends FrameLayout {
         return index;
     }
 
+    public int calcPaddingToFill() {
+        int count = getChildCount();
+        int level = calcLevel(count);
+        int i = 0;
+        while (level == calcLevel(count + i)) {
+            ++i;
+        }
+        if (i > 0) {
+            return i;
+        }
+        // if already filled, calc for next level
+        ++level;
+        while (level == calcLevel(count + i)) {
+            ++i;
+        }
+        return i;
+    }
+
     public void setCircleOrigin(float x, float y) {
         mCircleOrigin.set(x, y);
         setPivotX(x);

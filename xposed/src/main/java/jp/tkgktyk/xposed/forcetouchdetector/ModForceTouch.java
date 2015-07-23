@@ -539,11 +539,12 @@ public class ModForceTouch extends XposedModule {
 
         public LazyForceTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
+            mHandler = targetView.getHandler();
         }
 
-        private Handler mHandler = new Handler();
+        private final Handler mHandler;
         private boolean mIsDetectionWindowOpened;
-        private Runnable mStopDetector = new Runnable() {
+        private final Runnable mStopDetector = new Runnable() {
             @Override
             public void run() {
                 if (mIsDetectionWindowOpened) {
@@ -680,9 +681,9 @@ public class ModForceTouch extends XposedModule {
             super(targetView, settings);
         }
 
-        private Handler mHandler = new Handler();
+        private final Handler mHandler = new Handler();
         private boolean mIsDetectionWindowOpened;
-        private Runnable mStopDetector = new Runnable() {
+        private final Runnable mStopDetector = new Runnable() {
             @Override
             public void run() {
                 mIsDetectionWindowOpened = false;

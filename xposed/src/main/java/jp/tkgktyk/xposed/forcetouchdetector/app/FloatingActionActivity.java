@@ -159,7 +159,7 @@ public class FloatingActionActivity extends AppCompatActivity
         saveActionList();
     }
 
-    private void saveActionList() {
+    private boolean saveActionList() {
         if (mIsChanged) {
             FTD.getSharedPreferences(this).edit()
                     .putString(getString(R.string.key_floating_action_list),
@@ -167,15 +167,9 @@ public class FloatingActionActivity extends AppCompatActivity
                     .apply();
             mIsChanged = false;
             MyApp.showToast(R.string.saved);
-            mRecyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    FloatingAction.show(FloatingActionActivity.this);
-                }
-            }, 500);
-        } else {
-            FloatingAction.show(this);
+            return true;
         }
+        return false;
     }
 
     @OnClick(R.id.add_fab)
@@ -208,8 +202,19 @@ public class FloatingActionActivity extends AppCompatActivity
 
     @OnClick(R.id.test_button)
     void onTestClicked(Button button) {
-        saveActionList();
-        if (!mSettings.isEnabled()) {
+        boolean saved = saveActionList();
+        if (mSettings.isEnabled()) {
+            if (saved) {
+                mRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        FloatingAction.show(FloatingActionActivity.this);
+                    }
+                }, 500);
+            } else {
+                FloatingAction.show(this);
+            }
+        } else {
             MyApp.showToast(R.string.note_floating_action);
         }
     }

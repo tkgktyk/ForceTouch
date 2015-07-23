@@ -21,10 +21,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -394,24 +395,21 @@ public class SettingsActivity extends BaseSettingsActivity {
                     int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
                     drawable.setSize(size, size);
                     preference.setIcon(drawable);
-//                    restartService(preference.getContext(), preference.getSharedPreferences());
                     return true;
                 }
             });
-            showTextSummary(R.string.key_floating_action_alpha, new OnTextChangeListener() {
-                @Override
-                public boolean onChange(EditTextPreference edit, String text) {
-//                    restartService(edit.getContext(), edit.getSharedPreferences());
-                    return true;
-                }
-            });
+            showTextSummary(R.string.key_floating_action_alpha);
             showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
-            setUpSwitch(R.string.key_use_local_fab, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_floating_action_recents, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled) {
-//                    restartService(sw.getContext(), sw.getSharedPreferences());
+                    if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                        startActivity(intent);
+                    }
                 }
             });
+
         }
 
         @Override

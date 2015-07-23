@@ -61,7 +61,7 @@ public class ActionInfoList extends ArrayList<ActionInfo> {
         return actions;
     }
 
-    private ActionInfoList() {
+    public ActionInfoList() {
         super();
     }
 

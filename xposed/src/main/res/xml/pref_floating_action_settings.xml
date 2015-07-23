@@ -51,6 +51,13 @@
         android:inputType="number"
         android:key="@string/key_floating_action_timeout"
         android:title="@string/title_floating_action_timeout"/>
+    <!-- Show Recents -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="false"
+        android:icon="@null"
+        android:key="@string/key_floating_action_recents"
+        android:title="@string/title_floating_action_recents"
+        android:summary="@string/summary_floating_action_recents"/>
     <!-- Use Local FAB -->
     <jp.tkgktyk.lib.SwitchPreference
         android:defaultValue="true"
