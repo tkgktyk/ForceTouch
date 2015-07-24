@@ -43,6 +43,7 @@
 
     <!-- Information -->
     <PreferenceCategory
+        android:key="@string/key_information"
         android:title="@string/category_information">
         <!-- About -->
         <Preference

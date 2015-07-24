@@ -24,6 +24,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.support.annotation.StringRes;
@@ -126,6 +127,10 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Information
             Preference about = findPreference(R.string.key_about);
             about.setSummary(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME);
+            if (MyApp.isInstalledFromStore()) {
+                ((PreferenceCategory)findPreference(R.string.key_information))
+                        .removePreference(findPreference(R.string.key_donate));
+            }
         }
 
         @Override

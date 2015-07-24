@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 import java.util.Collections;
@@ -116,9 +115,7 @@ public class FloatingActionActivity extends AppCompatActivity
         mSettings = new FTD.Settings(FTD.getSharedPreferences(this));
 
         if (savedInstanceState == null) {
-            String installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
-            MyApp.logE("Installer = " + installer);
-            mAlreadySupported = Objects.equal("com.android.vending", installer);
+            mAlreadySupported = MyApp.isInstalledFromStore();
         } else {
             mAlreadySupported = savedInstanceState.getBoolean(KEY_ALREADY_SUPPORTED);
         }

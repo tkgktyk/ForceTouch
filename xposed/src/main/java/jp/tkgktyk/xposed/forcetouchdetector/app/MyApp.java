@@ -54,6 +54,21 @@ public class MyApp extends BaseApplication {
         return BuildConfig.VERSION_NAME;
     }
 
+    private static boolean mIsInstalledFromStore;
+
+    public static boolean isInstalledFromStore() {
+        return mIsInstalledFromStore;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        String installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
+        MyApp.logE("Installer = " + installer);
+        mIsInstalledFromStore = Objects.equal("com.android.vending", installer);
+    }
+
     @Override
     protected void onVersionUpdated(MyVersion next, MyVersion old) {
         SharedPreferences prefs = getDefaultSharedPreferences();

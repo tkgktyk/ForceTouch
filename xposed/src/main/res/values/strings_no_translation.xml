@@ -7,6 +7,7 @@
     <string name="key_header_pressure" translatable="false">key_header_pressure</string>
     <string name="key_header_size" translatable="false">key_header_size</string>
     <string name="key_header_floating_action" translatable="false">key_header_floating_action</string>
+    <string name="key_information" translatable="false">key_information</string>
     <string name="key_about" translatable="false">key_about</string>
     <string name="key_support" translatable="false">key_support</string>
     <string name="key_donate" translatable="false">key_donate</string>
