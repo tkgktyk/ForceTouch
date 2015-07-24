@@ -91,6 +91,16 @@ public class ModForceTouch extends XposedModule {
                 }
             }
         });
+//        XposedHelpers.findAndHookMethod(View.class, "dispatchPointerEvent", MotionEvent.class,
+//                new XC_MethodHook() {
+//                    @Override
+//                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                        View view = (View) param.thisObject;
+//                        MotionEvent event = (MotionEvent) param.args[0];
+//                        logD("dispatchPointerEvent: " + event.toString());
+//                        logD("isRootView: " + (view.getRootView() == view));
+//                    }
+//                });
         XposedHelpers.findAndHookMethod(classDecorView, "dispatchTouchEvent", MotionEvent.class,
                 new XC_MethodReplacement() {
                     @Override
@@ -231,8 +241,8 @@ public class ModForceTouch extends XposedModule {
             int x = Math.round(event.getX(index));
             int y = Math.round(event.getY(index));
             Rect area = mSettings.detectionArea.getRect(mTargetView.getWidth(), mTargetView.getHeight());
-            Rect mirroredArea = mSettings.detectionAreaMirror?
-                    mSettings.detectionArea.getMirroredRect(mTargetView.getWidth(), mTargetView.getHeight()):
+            Rect mirroredArea = mSettings.detectionAreaMirror ?
+                    mSettings.detectionArea.getMirroredRect(mTargetView.getWidth(), mTargetView.getHeight()) :
                     null;
             // touch area
             boolean contains = area.contains(x, y) ||
