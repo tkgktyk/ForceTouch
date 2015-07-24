@@ -46,12 +46,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
@@ -98,33 +100,34 @@ public class FloatingAction implements View.OnClickListener {
             "com.mediatek.voicecommand"
     );
     private final Runnable mLoadRecents = new Runnable() {
+        private String mDefaultHomePackage;
+
         @Override
         public void run() {
             MyApp.logD();
             synchronized (mRecentList) {
                 mRecentList.clear();
             }
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            final PackageManager pm = mContext.getPackageManager();
+            mDefaultHomePackage = "com.android.launcher";
+            intent.addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo res = pm.resolveActivity(intent, 0);
+            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                mDefaultHomePackage = res.activityInfo.packageName;
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext
                         .getSystemService(Context.USAGE_STATS_SERVICE);
                 Calendar beginCal = Calendar.getInstance();
-                beginCal.add(Calendar.DATE, -1);
+                beginCal.add(Calendar.DATE, -7);
                 Calendar endCal = Calendar.getInstance();
-                List<UsageStats> stats = mUsageStatsManager.queryUsageStats(
-                        UsageStatsManager.INTERVAL_DAILY,
+                Map<String, UsageStats> statsMap = mUsageStatsManager.queryAndAggregateUsageStats(
                         beginCal.getTimeInMillis(), endCal.getTimeInMillis());
                 // Sort the stats by the last time used
-                if (stats != null) {
-                    final Intent intent = new Intent(Intent.ACTION_MAIN);
-                    final PackageManager pm = mContext.getPackageManager();
-                    String defaultHomePackage = "com.android.launcher";
-                    intent.addCategory(Intent.CATEGORY_HOME);
-
-                    final ResolveInfo res = pm.resolveActivity(intent, 0);
-                    if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                        defaultHomePackage = res.activityInfo.packageName;
-                    }
-
+                if (statsMap != null) {
+                    List<UsageStats> stats = Lists.newArrayList(statsMap.values());
                     Collections.sort(stats, new Comparator<UsageStats>() {
                         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                         @Override
@@ -137,20 +140,7 @@ public class FloatingAction implements View.OnClickListener {
                             // first app is foreground app.
                             continue;
                         }
-                        UsageStats usageStats = stats.get(i);
-                        String packageName = usageStats.getPackageName();
-                        MyApp.logD(packageName);
-                        if (mIgnoreList.contains(packageName) ||
-                                packageName.equals(defaultHomePackage)) {
-                            MyApp.logD("ignored");
-                            continue;
-                        }
-                        ActionInfo actionInfo = new ActionInfo(mContext,
-                                pm.getLaunchIntentForPackage(usageStats.getPackageName()),
-                                ActionInfo.TYPE_APP);
-                        synchronized (mRecentList) {
-                            mRecentList.add(actionInfo);
-                        }
+                        addRecentApp(stats.get(i).getPackageName());
                     }
 
                     mContext.sendBroadcast(new Intent(ACTION_SHOW_RECENTS));
@@ -158,25 +148,38 @@ public class FloatingAction implements View.OnClickListener {
             } else {
                 ActivityManager am = (ActivityManager) mContext
                         .getSystemService(Context.ACTIVITY_SERVICE);
+                final int margin = 1 + 5; // foreground app + ignore
                 List<ActivityManager.RecentTaskInfo> recents = am
-                        .getRecentTasks(mPaddingForRecents + 1, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
-
+                        .getRecentTasks(mPaddingForRecents + margin, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
                 boolean first = true;
                 for (ActivityManager.RecentTaskInfo info : recents) {
                     if (first) {
+                        // first app is foreground app.
                         first = false;
                         continue;
                     }
-                    ActionInfo actionInfo = new ActionInfo(mContext, info.baseIntent, ActionInfo.TYPE_APP);
-                    synchronized (mRecentList) {
-                        mRecentList.add(actionInfo);
-                    }
+                    addRecentApp(info.baseIntent.getComponent().getPackageName());
                 }
 
                 mContext.sendBroadcast(new Intent(ACTION_SHOW_RECENTS));
             }
 
             mRecentsThread = null;
+        }
+
+        private void addRecentApp(String packageName) {
+            MyApp.logD(packageName);
+            if (mIgnoreList.contains(packageName) ||
+                    packageName.equals(mDefaultHomePackage)) {
+                MyApp.logD("ignored");
+                return;
+            }
+            ActionInfo actionInfo = new ActionInfo(mContext,
+                    mContext.getPackageManager().getLaunchIntentForPackage(packageName),
+                    ActionInfo.TYPE_APP);
+            synchronized (mRecentList) {
+                mRecentList.add(actionInfo);
+            }
         }
     };
 
