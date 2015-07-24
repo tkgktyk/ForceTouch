@@ -89,6 +89,7 @@ public class FloatingAction implements View.OnClickListener {
     private Thread mRecentsThread;
     private final ActionInfoList mRecentList = new ActionInfoList();
     private final static Set<String> mIgnoreList = Sets.newHashSet(
+            "android",
             "com.android.systemui",
             "com.mediatek.bluetooth",
             "android.process.acore",
@@ -100,11 +101,10 @@ public class FloatingAction implements View.OnClickListener {
         @Override
         public void run() {
             MyApp.logD();
+            synchronized (mRecentList) {
+                mRecentList.clear();
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                synchronized (mRecentList) {
-                    mRecentList.clear();
-                }
-
                 UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext
                         .getSystemService(Context.USAGE_STATS_SERVICE);
                 Calendar beginCal = Calendar.getInstance();
@@ -159,9 +159,14 @@ public class FloatingAction implements View.OnClickListener {
                 ActivityManager am = (ActivityManager) mContext
                         .getSystemService(Context.ACTIVITY_SERVICE);
                 List<ActivityManager.RecentTaskInfo> recents = am
-                        .getRecentTasks(mPaddingForRecents, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+                        .getRecentTasks(mPaddingForRecents + 1, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
 
+                boolean first = true;
                 for (ActivityManager.RecentTaskInfo info : recents) {
+                    if (first) {
+                        first = false;
+                        continue;
+                    }
                     ActionInfo actionInfo = new ActionInfo(mContext, info.baseIntent, ActionInfo.TYPE_APP);
                     synchronized (mRecentList) {
                         mRecentList.add(actionInfo);
@@ -321,7 +326,6 @@ public class FloatingAction implements View.OnClickListener {
     }
 
     private ImageView inflateButton(Context context, ActionInfo actionInfo) {
-        LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         // FloatingActionButton extends ImageView
@@ -346,8 +350,9 @@ public class FloatingAction implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        hide();
+        // get action before erasing recent apps by hide()
         ActionInfo action = (ActionInfo) v.getTag();
+        hide();
         action.launch(v.getContext());
     }
 
@@ -402,16 +407,6 @@ public class FloatingAction implements View.OnClickListener {
             mFadeoutAnimation.cancel();
             disappear();
         }
-
-        if (mSettings.floatingActionRecents) {
-            // erase recent action
-            int count = mCircleLayout.getChildCount();
-            for (int i = count - mPaddingForRecents; i < count; ++i) {
-                ImageView button = (ImageView) mCircleLayout.getChildAt(i);
-                button.setTag(new ActionInfo());
-                button.setImageDrawable(null);
-            }
-        }
     }
 
     private void fadeout() {
@@ -427,6 +422,16 @@ public class FloatingAction implements View.OnClickListener {
         mContainer.setVisibility(View.GONE);
         mNavigationShown = false;
         mContainer.removeCallbacks(mAutoHide);
+
+        if (mSettings.floatingActionRecents) {
+            // erase recent action
+            int count = mCircleLayout.getChildCount();
+            for (int i = count - mPaddingForRecents; i < count; ++i) {
+                ImageView button = (ImageView) mCircleLayout.getChildAt(i);
+                button.setTag(new ActionInfo());
+                button.setImageDrawable(null);
+            }
+        }
     }
 
     public void onConfigurationChanged(Configuration newConfig) {

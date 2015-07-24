@@ -237,6 +237,7 @@ public class ActionInfo {
         if (mIntent == null) {
             return false;
         }
+        MyApp.logD("launch: " + mIntent.toString());
         switch (mType) {
             case TYPE_TOOL:
                 context.sendBroadcast(mIntent);

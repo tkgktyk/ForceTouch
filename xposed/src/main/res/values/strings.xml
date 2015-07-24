@@ -158,7 +158,7 @@
     <string name="title_floating_action_timeout">Timeout</string>
     <string name="message_floating_action_timeout">Millisecond\n\"0\" is to disable</string>
     <string name="title_floating_action_recents">Show Recent Apps</string>
-    <string name="summary_floating_action_recents">Fill the arc by recent apps</string>
+    <string name="summary_floating_action_recents">Fill the arc with recent apps</string>
     <string name="title_use_local_fab">Another Method</string>
     <string name="summary_use_local_fab">Switch if you get force close</string>
 </resources>
