@@ -159,7 +159,7 @@ public class MyApp extends BaseApplication {
             prefs.edit().remove(getString(R.string.key_detection_area)).apply();
         }
         if (old.isOlderThan("0.3.5")) {
-            // rename enable to enable
+            // rename enabled to enable
             prefs.edit()
                     .putBoolean(getString(R.string.key_pressure_enable),
                             prefs.getBoolean("key_pressure_enabled", false))

@@ -135,11 +135,8 @@ public class FloatingAction implements View.OnClickListener {
                             return Long.compare(rhs.getLastTimeUsed(), lhs.getLastTimeUsed());
                         }
                     });
-                    for (int i = 0; i < stats.size() && mRecentList.size() < mPaddingForRecents; ++i) {
-                        if (i == 0) {
-                            // first app is foreground app.
-                            continue;
-                        }
+                    // first app is foreground app.
+                    for (int i = 1; i < stats.size() && mRecentList.size() < mPaddingForRecents; ++i) {
                         addRecentApp(stats.get(i).getPackageName());
                     }
 
@@ -148,16 +145,12 @@ public class FloatingAction implements View.OnClickListener {
             } else {
                 ActivityManager am = (ActivityManager) mContext
                         .getSystemService(Context.ACTIVITY_SERVICE);
-                final int margin = 1 + 5; // foreground app + ignore
+                final int margin = 1 + 5; // foreground app + for ignored app
                 List<ActivityManager.RecentTaskInfo> recents = am
                         .getRecentTasks(mPaddingForRecents + margin, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
-                boolean first = true;
-                for (ActivityManager.RecentTaskInfo info : recents) {
-                    if (first) {
-                        // first app is foreground app.
-                        first = false;
-                        continue;
-                    }
+                // first app is foreground app.
+                for (int i = 1; i < recents.size() && mRecentList.size() < mPaddingForRecents; ++i) {
+                    ActivityManager.RecentTaskInfo info = recents.get(i);
                     addRecentApp(info.baseIntent.getComponent().getPackageName());
                 }
 
@@ -213,7 +206,11 @@ public class FloatingAction implements View.OnClickListener {
 
     private void showRecents() {
         int offset = mCircleLayout.getChildCount() - mPaddingForRecents;
+        MyApp.logD("offset=" + offset);
+        MyApp.logD("count=" + mCircleLayout.getChildCount());
+        MyApp.logD("mPaddingForRecents=" + mPaddingForRecents);
         synchronized (mRecentList) {
+            MyApp.logD("size=" + mRecentList.size());
             for (int i = 0; i < mRecentList.size(); ++i) {
                 ImageView button = (ImageView) mCircleLayout.getChildAt(i + offset);
                 ActionInfo action = mRecentList.get(i);
@@ -308,7 +305,6 @@ public class FloatingAction implements View.OnClickListener {
     }
 
     private void loadActions(Context context) {
-        mCircleLayout.removeAllViews();
         mActionList = ActionInfoList.fromPreference(
                 FTD.getSharedPreferences(context)
                         .getString(context.getString(R.string.key_floating_action_list), ""));
@@ -317,6 +313,7 @@ public class FloatingAction implements View.OnClickListener {
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_HOME), ActionInfo.TYPE_TOOL));
             mActionList.add(new ActionInfo(context, new Intent(FTD.ACTION_BACK), ActionInfo.TYPE_TOOL));
         }
+        mCircleLayout.removeAllViews();
         for (ActionInfo action : mActionList) {
             mCircleLayout.addView(inflateButton(context, action));
         }
