@@ -215,15 +215,15 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enabled = (Boolean) newValue;
-                    listener.onChange((SwitchPreference) preference, enabled);
+                    listener.onChange((SwitchPreference) preference, enabled, true);
                     return true;
                 }
             });
-            sw.getOnPreferenceChangeListener().onPreferenceChange(sw, sw.isChecked());
+            listener.onChange(sw, sw.isChecked(), false);
         }
 
         protected interface OnSwitchChangeListener {
-            void onChange(SwitchPreference sw, boolean enabled);
+            void onChange(SwitchPreference sw, boolean enabled, boolean fromUser);
         }
 
         protected void openActivity(@StringRes int id, final Class<?> cls) {
