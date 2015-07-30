@@ -112,7 +112,7 @@ public class FloatingActionActivity extends AppCompatActivity
         });
         helper.attachToRecyclerView(mRecyclerView);
 
-        mSettings = new FTD.Settings(FTD.getSharedPreferences(this));
+        mSettings = new FTD.Settings(this, FTD.getSharedPreferences(this));
 
         if (savedInstanceState == null) {
             mAlreadySupported = MyApp.isInstalledFromStore();

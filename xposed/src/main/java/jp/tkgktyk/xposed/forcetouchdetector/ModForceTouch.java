@@ -72,12 +72,14 @@ public class ModForceTouch extends XposedModule {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     FrameLayout decorView = (FrameLayout) param.thisObject;
-                    FTD.Settings settings = newSettings(mPrefs);
+                    Context context = decorView.getContext();
+                    mPrefs.reload();
+                    FTD.Settings settings = new FTD.Settings(context, mPrefs);
                     settings.blacklist.add(FTD.PACKAGE_NAME);
-                    String packageName = decorView.getContext().getPackageName();
+                    String packageName = context.getPackageName();
                     if (settings.blacklist.contains(packageName)) {
                         // blacklist
-                        log("ignore: " + packageName);
+                        logD("ignore: " + packageName);
                         return;
                     }
                     ForceTouchDetector ftd = settings.detectionWindow == 0 ?

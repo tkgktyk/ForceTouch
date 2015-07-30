@@ -39,19 +39,37 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
+        <!-- Pressure Threshold (Charging) -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/pressure_threshold_charging_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <EditText
+                android:id="@+id/pressure_threshold_charging"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_pressure_threshold_charging"
+                android:inputType="numberDecimal"/>
+        </android.support.design.widget.TextInputLayout>
+
         <!-- Pressure Threshold -->
         <android.support.design.widget.TextInputLayout
             android:id="@+id/pressure_threshold_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:layout_above="@id/pressure_threshold_charging_container">
 
             <EditText
                 android:id="@+id/pressure_threshold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_pressure_threshold"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal">
+
+                <requestFocus/>
+            </EditText>
         </android.support.design.widget.TextInputLayout>
 
         <TextView

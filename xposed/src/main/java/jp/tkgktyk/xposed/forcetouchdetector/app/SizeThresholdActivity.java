@@ -16,15 +16,14 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
-import android.os.Bundle;
 import android.view.MotionEvent;
 
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 
 /**
- * Created by tkgktyk on 2015/06/07.
+ * Created by tkgktyk on 2015/07/30.
  */
-public class SizeThresholdActivity extends PressureThresholdActivity {
+public class SizeThresholdActivity extends ThresholdActivity {
 
     @Override
     protected int getMaxPressureResource() {
@@ -47,14 +46,22 @@ public class SizeThresholdActivity extends PressureThresholdActivity {
     }
 
     @Override
-    protected float getPressure(MotionEvent event) {
+    protected String getThresholdChargingKey() {
+        return getString(R.string.key_size_threshold_charging);
+    }
+
+    @Override
+    protected float getParameter(MotionEvent event) {
         return event.getSize();
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int getThresholdHint() {
+        return R.string.hint_size_threshold;
+    }
 
-        mPressureThresholdContainer.setHint(getString(R.string.hint_size_threshold));
+    @Override
+    protected int getThresholdChargingHint() {
+        return R.string.hint_size_threshold_charging;
     }
 }

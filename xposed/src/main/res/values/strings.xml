@@ -34,6 +34,7 @@
     <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
     <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
     <string name="hint_pressure_threshold">Threshold: press back key to save</string>
+    <string name="hint_pressure_threshold_charging">Threshold (charging)</string>
     <!-- Size -->
     <string name="label_size_threshold">Size Threshold</string>
     <string name="size_f1">Size: %1$.04f</string>
@@ -44,6 +45,7 @@
     <string name="ave_size_f1_default">Ave: ------</string>
     <string name="description_size_threshold">Input a number between Ave and Max by trial and error</string>
     <string name="hint_size_threshold">Threshold: press back key to save</string>
+    <string name="hint_size_threshold_charging">Threshold (charging)</string>
     <!-- Practice -->
     <string name="learn_more">Learn more</string>
 

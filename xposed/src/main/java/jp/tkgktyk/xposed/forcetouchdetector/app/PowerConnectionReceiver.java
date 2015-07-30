@@ -23,13 +23,11 @@ import android.content.Intent;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 
 /**
- * Created by tkgktyk on 2015/06/09.
+ * Created by tkgktyk on 2015/07/30.
  */
-public class BootCompletedReceiver extends BroadcastReceiver {
+public class PowerConnectionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        FTD.Settings settings = new FTD.Settings(context, FTD.getSharedPreferences(context));
-        MyApp.updateService(context, settings.pressure.enable, settings.size.enable,
-                settings.floatingActionEnable, settings.showNotification);
+        FTD.sendSettingsChanged(context, FTD.getSharedPreferences(context));
     }
 }

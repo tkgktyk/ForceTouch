@@ -28,6 +28,7 @@
     <!-- Setting -->
     <string name="key_pressure_enable" translatable="false">key_pressure_enable</string>
     <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
+    <string name="key_pressure_threshold_charging" translatable="false">key_pressure_threshold_charging</string>
     <!-- Action -->
     <string name="key_pressure_action_tap" translatable="false">key_pressure_action_tap</string>
     <string name="key_pressure_action_double_tap" translatable="false">key_pressure_action_double_tap</string>
@@ -41,6 +42,7 @@
     <!-- Setting -->
     <string name="key_size_enable" translatable="false">key_size_enable</string>
     <string name="key_size_threshold" translatable="false">key_size_threshold</string>
+    <string name="key_size_threshold_charging" translatable="false">key_size_threshold_charging</string>
     <!-- Action -->
     <string name="key_size_action_tap" translatable="false">key_size_action_tap</string>
     <string name="key_size_action_double_tap" translatable="false">key_size_action_double_tap</string>

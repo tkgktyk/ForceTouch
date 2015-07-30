@@ -222,7 +222,7 @@ public class FloatingAction implements View.OnClickListener {
 
     public FloatingAction(Context context) {
         mContext = context;
-        mSettings = new FTD.Settings(FTD.getSharedPreferences(context));
+        mSettings = new FTD.Settings(context, FTD.getSharedPreferences(context));
         context.setTheme(R.style.AppTheme);
         mContainer = (FrameLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);

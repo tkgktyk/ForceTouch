@@ -34,6 +34,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".app.PowerConnectionReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".app.SettingsActivity"
             android:label="@string/app_name"
@@ -58,10 +65,12 @@
             android:theme="@style/DialogTheme"/>
         <activity
             android:name=".app.PressureThresholdActivity"
-            android:label="@string/label_pressure_threshold"/>
+            android:label="@string/label_pressure_threshold"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
             android:name=".app.SizeThresholdActivity"
-            android:label="@string/label_size_threshold"/>
+            android:label="@string/label_size_threshold"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
             android:name=".app.FloatingActionActivity"
             android:label="@string/label_floating_action"/>

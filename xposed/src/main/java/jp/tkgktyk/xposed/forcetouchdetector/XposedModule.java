@@ -19,18 +19,12 @@ package jp.tkgktyk.xposed.forcetouchdetector;
 import java.lang.reflect.InvocationTargetException;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 /**
  * Created by tkgktyk on 2015/02/08.
  */
 public class XposedModule {
-    public static FTD.Settings newSettings(XSharedPreferences prefs) {
-        prefs.reload();
-        return new FTD.Settings(prefs);
-    }
-
     private static String prefix() {
         int stack = 4;
         String method = Thread.currentThread().getStackTrace()[stack].getClassName();

@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 import jp.tkgktyk.lib.BaseApplication;
 import jp.tkgktyk.xposed.forcetouchdetector.BuildConfig;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
+import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
@@ -167,6 +168,16 @@ public class MyApp extends BaseApplication {
                             prefs.getBoolean("key_size_enabled", false))
                     .putBoolean(getString(R.string.key_floating_action_enable),
                             prefs.getBoolean("key_floating_action_enabled", false))
+                    .apply();
+        }
+        if (old.isOlderThan("0.3.6")) {
+            prefs.edit()
+                    .putString(getString(R.string.key_pressure_threshold_charging),
+                            prefs.getString(getString(R.string.key_pressure_threshold),
+                                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD))
+                    .putString(getString(R.string.key_size_threshold_charging),
+                            prefs.getString(getString(R.string.key_size_threshold),
+                                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD))
                     .apply();
         }
     }

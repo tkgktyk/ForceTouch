@@ -192,7 +192,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             setUpSwitch(R.string.key_show_notification, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    FTD.Settings settings = new FTD.Settings(sw.getContext(),
+                            sw.getSharedPreferences());
                     MyApp.updateService(sw.getContext(), settings.pressure.enable,
                             settings.size.enable, settings.floatingActionEnable, enabled);
                 }
@@ -304,7 +305,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             setUpSwitch(R.string.key_pressure_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    FTD.Settings settings = new FTD.Settings(sw.getContext(),
+                            sw.getSharedPreferences());
                     MyApp.updateService(sw.getContext(), enabled, settings.size.enable,
                             settings.floatingActionEnable, settings.showNotification);
                 }
@@ -340,7 +342,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             setUpSwitch(R.string.key_size_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    FTD.Settings settings = new FTD.Settings(sw.getContext(),
+                            sw.getSharedPreferences());
                     MyApp.updateService(sw.getContext(), settings.pressure.enable, enabled,
                             settings.floatingActionEnable, settings.showNotification);
                 }
@@ -363,7 +366,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 Context context = getActivity();
-                FTD.Settings settings = new FTD.Settings(sharedPreferences);
+                FTD.Settings settings = new FTD.Settings(context, sharedPreferences);
                 MyApp.updateService(context, false, false, false, false);
                 MyApp.updateService(context, settings.pressure.enable,
                         settings.size.enable, settings.floatingActionEnable,
@@ -386,7 +389,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             setUpSwitch(R.string.key_floating_action_enable, new OnSwitchChangeListener() {
                 @Override
                 public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    FTD.Settings settings = new FTD.Settings(sw.getSharedPreferences());
+                    FTD.Settings settings = new FTD.Settings(sw.getContext(),
+                            sw.getSharedPreferences());
                     MyApp.updateService(sw.getContext(), settings.pressure.enable,
                             settings.size.enable, enabled, settings.showNotification);
                 }

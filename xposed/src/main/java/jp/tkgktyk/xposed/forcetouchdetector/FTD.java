@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.BatteryManager;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -434,7 +435,7 @@ public class FTD {
 
     // called by SettingsActivity
     public static void sendSettingsChanged(Context context, SharedPreferences prefs) {
-        FTD.Settings settings = new FTD.Settings(prefs);
+        FTD.Settings settings = new FTD.Settings(context, prefs);
         Intent intent = new Intent(FTD.ACTION_SETTINGS_CHANGED);
         intent.putExtra(FTD.EXTRA_SETTINGS, settings);
         context.sendBroadcast(intent);
@@ -469,6 +470,8 @@ public class FTD {
     public static class Settings implements Serializable {
         static final long serialVersionUID = 1L;
 
+        private final boolean isCharging;
+
         // General
         public final ScaleRect detectionArea;
         public final boolean detectionAreaMirror;
@@ -495,7 +498,13 @@ public class FTD {
         public final boolean floatingActionRecents;
         public final boolean useLocalFAB;
 
-        public Settings(SharedPreferences prefs) {
+        public Settings(Context context, SharedPreferences prefs) {
+            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = context.registerReceiver(null, ifilter);
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
+//                    status == BatteryManager.BATTERY_STATUS_FULL;
+
             // General
             detectionArea = ScaleRect.fromPreference(prefs.getString("key_detection_area", ""));
             detectionAreaMirror = prefs.getBoolean("key_detection_area_mirror", false);
@@ -510,7 +519,8 @@ public class FTD {
 
             // Pressure
             pressure.enable = prefs.getBoolean("key_pressure_enable", false);
-            pressure.threshold = Float.parseFloat(getStringToParse(prefs, "key_pressure_threshold",
+            pressure.threshold = Float.parseFloat(getStringToParse(prefs,
+                    isCharging? "key_pressure_threshold_charging": "key_pressure_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
             pressure.actionTap = getActionRecord(prefs, "key_pressure_action_tap");
@@ -523,7 +533,8 @@ public class FTD {
 
             // Size
             size.enable = prefs.getBoolean("key_size_enable", false);
-            size.threshold = Float.parseFloat(getStringToParse(prefs, "key_size_threshold",
+            size.threshold = Float.parseFloat(getStringToParse(prefs,
+                    isCharging? "key_size_threshold_charging": "key_size_threshold",
                     ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
 
             size.actionTap = getActionRecord(prefs, "key_size_action_tap");
