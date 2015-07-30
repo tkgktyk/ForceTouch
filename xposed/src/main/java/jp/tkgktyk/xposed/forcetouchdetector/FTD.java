@@ -56,11 +56,10 @@ public class FTD {
     public static final String PREFIX_EXTRA = PACKAGE_NAME + ".intent.extra.";
     public static final String SUFFIX_TOUCH_ACTION = ".touch";
 
+    // key actions
     public static final String ACTION_BACK = PREFIX_ACTION + "BACK";
     public static final String ACTION_HOME = PREFIX_ACTION + "HOME";
     public static final String ACTION_RECENTS = PREFIX_ACTION + "RECENTS";
-    public static final String ACTION_NOTIFICATIONS = PREFIX_ACTION + "NOTIFICATIONS";
-    public static final String ACTION_QUICK_SETTINGS = PREFIX_ACTION + "QUICK_SETTINGS";
     public static final String ACTION_FORWARD = PREFIX_ACTION + "FORWARD";
     public static final String ACTION_REFRESH = PREFIX_ACTION + "REFRESH";
     public static final String ACTION_SCROLL_UP_GLOBAL = PREFIX_ACTION + "SCROLL_UP_GLOBAL";
@@ -68,16 +67,20 @@ public class FTD {
     public static final String ACTION_VOLUME_UP = PREFIX_ACTION + "VOLUME_UP";
     public static final String ACTION_VOLUME_DOWN = PREFIX_ACTION + "VOLUME_DOWN";
     public static final String ACTION_SCREENSHOT = PREFIX_ACTION + "SCREENSHOT";
-
+    public static final String ACTION_LOCK_SCREEN = PREFIX_ACTION + "LOCK_SCREEN";
+    // status bar
+    public static final String ACTION_NOTIFICATIONS = PREFIX_ACTION + "NOTIFICATIONS";
+    public static final String ACTION_QUICK_SETTINGS = PREFIX_ACTION + "QUICK_SETTINGS";
+    // other internal functions
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
     public static final String ACTION_POWER_MENU = PREFIX_ACTION + "POWER_MENU";
-
+    // touch event
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS_FULL = PREFIX_ACTION + "LONG_PRESS_FULL" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_SCROLL_UP = PREFIX_ACTION + "SCROLL_UP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_SCROLL_DOWN = PREFIX_ACTION + "SCROLL_DOWN" + SUFFIX_TOUCH_ACTION;
-
+    // other local app
     public static final String ACTION_FLOATING_ACTION = PREFIX_ACTION + "FLOATING_ACTION";
 
     public static final IntentFilter INTERNAL_ACTION_FILTER;
@@ -98,10 +101,11 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_VOLUME_UP);
         INTERNAL_ACTION_FILTER.addAction(ACTION_VOLUME_DOWN);
         INTERNAL_ACTION_FILTER.addAction(ACTION_SCREENSHOT);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_LOCK_SCREEN);
         // status bar
         INTERNAL_ACTION_FILTER.addAction(ACTION_NOTIFICATIONS);
         INTERNAL_ACTION_FILTER.addAction(ACTION_QUICK_SETTINGS);
-        // other
+        // other internal
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
         INTERNAL_ACTION_FILTER.addAction(ACTION_POWER_MENU);
     }
@@ -137,6 +141,8 @@ public class FTD {
             return mod.getString(R.string.action_volume_down);
         } else if (action.equals(ACTION_SCREENSHOT)) {
             return mod.getString(R.string.action_screenshot);
+        } else if (action.equals(ACTION_LOCK_SCREEN)) {
+            return mod.getString(R.string.action_lock_screen);
 
             //
             // status bar
@@ -147,7 +153,7 @@ public class FTD {
             return mod.getString(R.string.action_quick_settings);
 
             //
-            // Other functions
+            // Other internal functions
             //
         } else if (action.equals(ACTION_KILL)) {
             return mod.getString(R.string.action_kill);
@@ -202,6 +208,8 @@ public class FTD {
             return R.drawable.ic_volume_down_white_24dp;
         } else if (action.equals(ACTION_SCREENSHOT)) {
             return R.drawable.ic_camera_enhance_white_24dp;
+        } else if (action.equals(ACTION_LOCK_SCREEN)) {
+            return R.drawable.ic_phonelink_lock_white_24dp;
 
             //
             // status bar
@@ -212,7 +220,7 @@ public class FTD {
             return R.drawable.ic_settings_white_24dp;
 
             //
-            // other function
+            // other internal function
             //
         } else if (action.equals(ACTION_KILL)) {
             return R.drawable.ic_close_white_24dp;

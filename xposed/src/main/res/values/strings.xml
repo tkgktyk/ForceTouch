@@ -55,23 +55,29 @@
     <string name="shortcuts">Shortcuts</string>
     <string name="none">None</string>
     <!-- Tool -->
+    <!-- key action -->
     <string name="action_back">Back</string>
     <string name="action_home">Home</string>
     <string name="action_recents">Recents</string>
-    <string name="action_notifications">Notifications</string>
-    <string name="action_quick_settings">Quick Settings</string>
     <string name="action_forward">Forward</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_volume_up">Volume Up</string>
     <string name="action_volume_down">Volume Down</string>
     <string name="action_screenshot">Screenshot</string>
+    <string name="action_lock_screen">Lock Screen</string>
+    <!-- status bar -->
+    <string name="action_notifications">Notifications</string>
+    <string name="action_quick_settings">Quick Settings</string>
+    <!-- internal -->
     <string name="action_kill">Kill App</string>
     <string name="action_power_menu">Power Menu</string>
+    <!-- touch event -->
     <string name="action_double_tap">Double Tap</string>
     <string name="action_long_press">Long Press</string>
     <string name="action_long_press_full">Long Press (Fully Simulated)</string>
     <string name="action_scroll_up">Scroll Up</string>
     <string name="action_scroll_down">Scroll Down</string>
+    <!-- local app -->
     <string name="action_floating_action">Floating Action</string>
 
     <string name="not_found">Not found</string>

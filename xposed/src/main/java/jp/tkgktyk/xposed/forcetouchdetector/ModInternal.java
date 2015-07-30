@@ -75,6 +75,8 @@ public class ModInternal extends XposedModule {
                     sendKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN);
                 } else if (action.equals(FTD.ACTION_SCREENSHOT)) {
                     sendKeyEvent(KeyEvent.KEYCODE_SYSRQ);
+                } else if (action.equals(FTD.ACTION_LOCK_SCREEN)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_POWER);
 
                     //
                     // status bar service
