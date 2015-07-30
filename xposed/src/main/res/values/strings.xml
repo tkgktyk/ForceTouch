@@ -113,6 +113,7 @@
     <string name="category_experimental">Experimental</string>
     <string name="title_detection_sensitivity">Detection Sensitivity</string>
     <string name="title_detection_window">Detection Window</string>
+    <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
 
     <!-- Threshold -->
     <string name="title_enable">Master Switch</string>

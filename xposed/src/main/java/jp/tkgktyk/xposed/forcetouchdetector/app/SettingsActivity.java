@@ -199,6 +199,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             });
             showTextSummary(R.string.key_detection_sensitivity);
             showTextSummary(R.string.key_detection_window, R.string.unit_millisecond);
+            showTextSummary(R.string.key_extra_long_press_timeout, R.string.unit_millisecond);
         }
 
         @Override
@@ -415,7 +416,6 @@ public class SettingsActivity extends BaseSettingsActivity {
                     }
                 }
             });
-
         }
 
         @Override

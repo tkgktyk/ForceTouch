@@ -21,13 +21,6 @@
         android:icon="@null"
         android:key="@string/key_detection_area"
         android:title="@string/title_detection_area"/>
-    <!--<EditTextPreference
-        android:defaultValue="100"
-        android:dialogMessage="@string/unit_detection_area"
-        android:icon="@null"
-        android:inputType="number"
-        android:key="@string/key_detection_area"
-        android:title="@string/title_detection_area"/>-->
     <!-- Detection Window -->
     <EditTextPreference
         android:defaultValue="1000"
@@ -36,6 +29,14 @@
         android:inputType="numberSigned"
         android:key="@string/key_detection_window"
         android:title="@string/title_detection_window"/>
+    <!-- Extra Long Press Timeout -->
+    <EditTextPreference
+        android:defaultValue="0"
+        android:dialogMessage="@string/unit_millisecond"
+        android:icon="@null"
+        android:inputType="number"
+        android:key="@string/key_extra_long_press_timeout"
+        android:title="@string/title_extra_long_press_timeout"/>
     <!-- Blacklist -->
     <Preference
         android:icon="@null"

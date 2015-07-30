@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Message;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -192,6 +193,42 @@ public class ModForceTouch extends XposedModule {
 
         private Toast mToast;
 
+        private final Handler mDefaultGestureHandler;
+        private final GestureHandler mGestureHandler;
+
+        private final int LONG_PRESS = 2;
+        private final int DELAYED_LONG_PRESS = 4;
+
+        private class GestureHandler extends Handler {
+            GestureHandler() {
+                super();
+            }
+
+            GestureHandler(Handler handler) {
+                super(handler.getLooper());
+            }
+
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case LONG_PRESS:
+                        if (mSettings.extraLongPressTimeout > 0) {
+                            mGestureHandler.removeMessages(DELAYED_LONG_PRESS);
+                            mGestureHandler.sendEmptyMessageDelayed(DELAYED_LONG_PRESS,
+                                    mSettings.extraLongPressTimeout);
+                        } else {
+                            XposedHelpers.callMethod(mGestureDetector, "dispatchLongPress");
+                        }
+                        break;
+                    case DELAYED_LONG_PRESS:
+                        XposedHelpers.callMethod(mGestureDetector, "dispatchLongPress");
+                        break;
+                    default:
+                        mDefaultGestureHandler.handleMessage(msg);
+                }
+            }
+        }
+
         public ForceTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             mTargetView = targetView;
             mGestureDetector = new GestureDetector(getContext(), this);
@@ -204,6 +241,11 @@ public class ModForceTouch extends XposedModule {
                     .getIntField(mGestureDetector, "mDoubleTapSlopSquare"); // 100 * density
             mDefaultMinimumFlingVelocity = XposedHelpers
                     .getIntField(mGestureDetector, "mMinimumFlingVelocity"); // 50 * density
+
+            mDefaultGestureHandler = (Handler) XposedHelpers
+                    .getObjectField(mGestureDetector, "mHandler");
+            mGestureHandler = new GestureHandler();
+            XposedHelpers.setObjectField(mGestureDetector, "mHandler", mGestureHandler);
 
             onSettingsLoaded(settings);
         }

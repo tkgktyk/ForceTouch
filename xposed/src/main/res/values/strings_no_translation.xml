@@ -22,6 +22,7 @@
     <string name="key_show_notification" translatable="false">key_show_notification</string>
     <string name="key_detection_sensitivity" translatable="false">key_detection_sensitivity</string>
     <string name="key_detection_window" translatable="false">key_detection_window</string>
+    <string name="key_extra_long_press_timeout" translatable="false">key_extra_long_press_timeout</string>
 
     <!-- Pressure -->
     <!-- Setting -->

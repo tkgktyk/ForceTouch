@@ -479,6 +479,7 @@ public class FTD {
         public final boolean showNotification;
         public final int detectionSensitivity;
         public final int detectionWindow;
+        public final int extraLongPressTimeout;
 
         // Pressure
         public final Holder pressure = new Holder();
@@ -495,6 +496,7 @@ public class FTD {
         public final boolean useLocalFAB;
 
         public Settings(SharedPreferences prefs) {
+            // General
             detectionArea = ScaleRect.fromPreference(prefs.getString("key_detection_area", ""));
             detectionAreaMirror = prefs.getBoolean("key_detection_area_mirror", false);
             detectionAreaReverse = prefs.getBoolean("key_detection_area_reverse", false);
@@ -504,6 +506,7 @@ public class FTD {
             showNotification = prefs.getBoolean("key_show_notification", true);
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
             detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
+            extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "0"));
 
             // Pressure
             pressure.enable = prefs.getBoolean("key_pressure_enable", false);
