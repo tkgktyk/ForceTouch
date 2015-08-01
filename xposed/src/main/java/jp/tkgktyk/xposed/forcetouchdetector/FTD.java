@@ -199,9 +199,9 @@ public class FTD {
         } else if (action.equals(ACTION_REFRESH)) {
             return R.drawable.ic_refresh_white_24dp;
         } else if (action.equals(ACTION_SCROLL_UP_GLOBAL)) {
-            return R.drawable.ic_scroll_up_white_48px;
+            return R.drawable.ic_vertical_align_top_white_24dp;
         } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
-            return R.drawable.ic_scroll_down_white_48px;
+            return R.drawable.ic_vertical_align_bottom_white_24dp;
         } else if (action.equals(ACTION_VOLUME_UP)) {
             return R.drawable.ic_volume_up_white_24dp;
         } else if (action.equals(ACTION_VOLUME_DOWN)) {
@@ -237,9 +237,9 @@ public class FTD {
         } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
             return 0;
         } else if (action.equals(ACTION_SCROLL_UP)) {
-            return R.drawable.ic_scroll_up_white_48px;
+            return R.drawable.ic_vertical_align_top_white_24dp;
         } else if (action.equals(ACTION_SCROLL_DOWN)) {
-            return R.drawable.ic_scroll_down_white_48px;
+            return R.drawable.ic_vertical_align_bottom_white_24dp;
 
             //
             // other local action
