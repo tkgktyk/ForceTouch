@@ -127,7 +127,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Information
             Preference about = findPreference(R.string.key_about);
             about.setSummary(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME);
-            if (MyApp.isInstalledFromStore()) {
+            if (MyApp.isDonated()) {
                 ((PreferenceCategory)findPreference(R.string.key_information))
                         .removePreference(findPreference(R.string.key_donate));
             }

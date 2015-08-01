@@ -115,7 +115,7 @@ public class FloatingActionActivity extends AppCompatActivity
         mSettings = new FTD.Settings(this, FTD.getSharedPreferences(this));
 
         if (savedInstanceState == null) {
-            mAlreadySupported = MyApp.isInstalledFromStore();
+            mAlreadySupported = MyApp.isDonated();
         } else {
             mAlreadySupported = savedInstanceState.getBoolean(KEY_ALREADY_SUPPORTED);
         }

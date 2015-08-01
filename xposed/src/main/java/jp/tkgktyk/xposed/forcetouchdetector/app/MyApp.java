@@ -55,19 +55,25 @@ public class MyApp extends BaseApplication {
         return BuildConfig.VERSION_NAME;
     }
 
-    private static boolean mIsInstalledFromStore;
+    private static boolean mIsDonated;
 
-    public static boolean isInstalledFromStore() {
-        return mIsInstalledFromStore;
+    public static boolean isDonated() {
+        return mIsDonated;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        String installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
-        MyApp.logE("Installer = " + installer);
-        mIsInstalledFromStore = Objects.equal("com.android.vending", installer);
+        String installer = getPackageManager().getInstallerPackageName(
+                "jp.tkgktyk.key.forcetouchdetector");
+        logD("Installer of key = " + installer);
+        mIsDonated = Objects.equal("com.android.vending", installer);
+        if (!mIsDonated) {
+            installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
+            logD("Installer of FTD = " + installer);
+            mIsDonated = Objects.equal("com.android.vending", installer);
+        }
     }
 
     @Override

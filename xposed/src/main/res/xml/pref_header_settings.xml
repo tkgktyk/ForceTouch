@@ -72,7 +72,7 @@
             android:title="@string/title_donate">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="market://details?id=jp.tkgktyk.xposed.forcetouchdetector"/>
+                android:data="market://details?id=jp.tkgktyk.key.forcetouchdetector"/>
         </Preference>
     </PreferenceCategory>
 
