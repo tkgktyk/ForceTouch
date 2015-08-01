@@ -65,10 +65,17 @@ public class MyApp extends BaseApplication {
     public void onCreate() {
         super.onCreate();
 
-        String installer = getPackageManager().getInstallerPackageName(
-                "jp.tkgktyk.key.forcetouchdetector");
-        logD("Installer of key = " + installer);
-        mIsDonated = Objects.equal("com.android.vending", installer);
+        String installer = null;
+        try {
+            installer = getPackageManager().getInstallerPackageName(
+                    "jp.tkgktyk.key.forcetouchdetector");
+        } catch (IllegalArgumentException e) {
+            // not installed
+        }
+        if (!Strings.isNullOrEmpty(installer)) {
+            logD("Installer of key = " + installer);
+            mIsDonated = Objects.equal("com.android.vending", installer);
+        }
         if (!mIsDonated) {
             installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
             logD("Installer of FTD = " + installer);
