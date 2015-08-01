@@ -16,11 +16,8 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -28,7 +25,6 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -39,7 +35,6 @@ import java.util.LinkedList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
@@ -69,33 +64,21 @@ public abstract class ThresholdActivity extends AppCompatActivity {
     PressureButton mForceTouchButton;
     @InjectView(R.id.pressure_threshold)
     EditText mPressureThreshold;
-    @InjectView(R.id.pressure_threshold_container)
-    TextInputLayout mPressureThresholdContainer;
     @InjectView(R.id.pressure_threshold_charging)
     EditText mPressureThresholdCharging;
-    @InjectView(R.id.pressure_threshold_charging_container)
-    TextInputLayout mPressureThresholdChargingContainer;
 
     private boolean mIsChanged;
 
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
 
-    protected abstract int getMaxPressureResource();
-
     protected abstract int getPressureResource();
-
-    protected abstract int getAvePressureResource();
 
     protected abstract String getThresholdKey();
 
     protected abstract String getThresholdChargingKey();
 
     protected abstract float getParameter(MotionEvent event);
-
-    protected abstract int getThresholdHint();
-
-    protected abstract int getThresholdChargingHint();
 
     private void updateTapPressureText(float pressure) {
         // size limited queue
@@ -104,7 +87,7 @@ public abstract class ThresholdActivity extends AppCompatActivity {
             mMaxPressureList.remove();
         }
 
-        mMaxPressureText.setText(getString(getMaxPressureResource(), getMaxPressure()));
+        mMaxPressureText.setText(getString(R.string.max_f1, getMaxPressure()));
         mTapPressureText.setText(getString(getPressureResource(), pressure));
     }
 
@@ -119,7 +102,7 @@ public abstract class ThresholdActivity extends AppCompatActivity {
             mAvePressureList.remove();
         }
 
-        mAvePressureText.setText(getString(getAvePressureResource(), getAvePressure()));
+        mAvePressureText.setText(getString(R.string.ave_f1, getAvePressure()));
         mForceTouchPressureText.setText(getString(getPressureResource(), pressure));
     }
 
@@ -204,9 +187,6 @@ public abstract class ThresholdActivity extends AppCompatActivity {
         mPressureThresholdCharging.setText(prefs.getString(getThresholdChargingKey(),
                 ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
         mPressureThresholdCharging.addTextChangedListener(textWatcher);
-
-        mPressureThresholdContainer.setHint(getString(getThresholdHint()));
-        mPressureThresholdChargingContainer.setHint(getString(getThresholdChargingHint()));
     }
 
     @Override
@@ -243,11 +223,4 @@ public abstract class ThresholdActivity extends AppCompatActivity {
             MyApp.showToast(R.string.saved);
         }
     }
-
-    @OnClick(R.id.learn_more_button)
-    void onLearnMoreClicked(Button button) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_readme)));
-        startActivity(intent);
-    }
-
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_readme">https://github.com/tkgktyk/ForceTouch/blob/master/README.md</string>
-
     <!-- Header -->
     <string name="key_header_general" translatable="false">key_header_general</string>
     <string name="key_header_pressure" translatable="false">key_header_pressure</string>

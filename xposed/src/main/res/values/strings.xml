@@ -22,32 +22,23 @@
     <string name="reverse_switch">Reverse: </string>
 
     <!-- Threshold Activity -->
+    <string name="please_tap_d1">Tap this\n%1$d times or more</string>
+    <string name="max_f1">Max: %1$.04f</string>
+    <string name="max_f1_default">Max: ------</string>
+    <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
+    <string name="ave_f1">Ave: %1$.04f</string>
+    <string name="ave_f1_default">Ave: ------</string>
+    <string name="description_threshold">Input a number between Max and Ave by trial and error</string>
+    <string name="hint_threshold">Threshold</string>
+    <string name="hint_threshold_charging">Threshold (charging)</string>
     <!-- Pressure -->
     <string name="label_pressure_threshold">Pressure Threshold</string>
     <string name="pressure_f1">Pressure: %1$.04f</string>
     <string name="pressure_f1_default">Pressure: ------</string>
-    <string name="max_pressure_f1">Max: %1$.04f</string>
-    <string name="max_pressure_f1_default">Max: ------</string>
-    <string name="please_tap_d1">Tap this\n%1$d times or more</string>
-    <string name="ave_pressure_f1">Ave: %1$.04f</string>
-    <string name="ave_pressure_f1_default">Ave: ------</string>
-    <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
-    <string name="description_pressure_threshold">Input a number between Ave and Max by trial and error</string>
-    <string name="hint_pressure_threshold">Threshold: press back key to save</string>
-    <string name="hint_pressure_threshold_charging">Threshold (charging)</string>
     <!-- Size -->
     <string name="label_size_threshold">Size Threshold</string>
     <string name="size_f1">Size: %1$.04f</string>
     <string name="size_f1_default">Size: ------</string>
-    <string name="max_size_f1">Max: %1$.04f</string>
-    <string name="max_size_f1_default">Max: ------</string>
-    <string name="ave_size_f1">Ave: %1$.04f</string>
-    <string name="ave_size_f1_default">Ave: ------</string>
-    <string name="description_size_threshold">Input a number between Ave and Max by trial and error</string>
-    <string name="hint_size_threshold">Threshold: press back key to save</string>
-    <string name="hint_size_threshold_charging">Threshold (charging)</string>
-    <!-- Practice -->
-    <string name="learn_more">Learn more</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>
@@ -126,7 +117,7 @@
     <!-- Threshold -->
     <string name="title_enable">Master Switch</string>
     <string name="title_threshold">Threshold</string>
-    <string name="summary_threshold">Adjust and practice Force Touch</string>
+    <string name="summary_threshold">Practice and adjust Force Touch</string>
     <!-- Action -->
     <string name="category_action">Action</string>
     <string name="title_action_tap">Tap</string>

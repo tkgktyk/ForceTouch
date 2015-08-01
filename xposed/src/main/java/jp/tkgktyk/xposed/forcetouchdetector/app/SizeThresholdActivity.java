@@ -26,18 +26,8 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
 public class SizeThresholdActivity extends ThresholdActivity {
 
     @Override
-    protected int getMaxPressureResource() {
-        return R.string.max_size_f1;
-    }
-
-    @Override
     protected int getPressureResource() {
         return R.string.size_f1;
-    }
-
-    @Override
-    protected int getAvePressureResource() {
-        return R.string.ave_size_f1;
     }
 
     @Override
@@ -53,15 +43,5 @@ public class SizeThresholdActivity extends ThresholdActivity {
     @Override
     protected float getParameter(MotionEvent event) {
         return event.getSize();
-    }
-
-    @Override
-    protected int getThresholdHint() {
-        return R.string.hint_size_threshold;
-    }
-
-    @Override
-    protected int getThresholdChargingHint() {
-        return R.string.hint_size_threshold_charging;
     }
 }
