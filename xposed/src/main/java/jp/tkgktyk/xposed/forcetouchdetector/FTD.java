@@ -509,9 +509,13 @@ public class FTD {
         public Settings(Context context, SharedPreferences prefs) {
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = context.registerReceiver(null, ifilter);
-            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
+            if (batteryStatus != null) {
+                int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
 //                    status == BatteryManager.BATTERY_STATUS_FULL;
+            } else {
+                isCharging = false;
+            }
 
             // General
             detectionArea = ScaleRect.fromPreference(prefs.getString("key_detection_area", ""));
