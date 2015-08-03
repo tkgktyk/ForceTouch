@@ -187,6 +187,7 @@ public class ModForceTouch extends XposedModule {
         protected final ViewGroup mTargetView;
         protected FTD.Settings mSettings;
         protected final GestureDetector mGestureDetector;
+        protected boolean mUseDoubleTap;
 
         private final int mDefaultTouchSlopSquare;
         private final int mDefaultDoubleTapTouchSlopSquare;
@@ -199,7 +200,6 @@ public class ModForceTouch extends XposedModule {
         private final GestureHandler mGestureHandler;
 
         private final int LONG_PRESS = 2;
-        private final int DELAYED_LONG_PRESS = 4;
 
         private class GestureHandler extends Handler {
             GestureHandler() {
@@ -214,16 +214,14 @@ public class ModForceTouch extends XposedModule {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case LONG_PRESS:
-                        if (mSettings.extraLongPressTimeout > 0) {
-                            mGestureHandler.removeMessages(DELAYED_LONG_PRESS);
-                            mGestureHandler.sendEmptyMessageDelayed(DELAYED_LONG_PRESS,
+                        if (msg.arg1 != LONG_PRESS && mSettings.extraLongPressTimeout > 0) {
+                            mGestureHandler.removeMessages(LONG_PRESS);
+                            mGestureHandler.sendMessageDelayed(
+                                    mGestureHandler.obtainMessage(LONG_PRESS, LONG_PRESS, 0),
                                     mSettings.extraLongPressTimeout);
                         } else {
                             XposedHelpers.callMethod(mGestureDetector, "dispatchLongPress");
                         }
-                        break;
-                    case DELAYED_LONG_PRESS:
-                        XposedHelpers.callMethod(mGestureDetector, "dispatchLongPress");
                         break;
                     default:
                         mDefaultGestureHandler.handleMessage(msg);
@@ -263,6 +261,20 @@ public class ModForceTouch extends XposedModule {
 //                    mDefaulDoubleTapSlopSquare * n * n); // 100 * density
             XposedHelpers.setIntField(mGestureDetector, "mMinimumFlingVelocity",
                     mDefaultMinimumFlingVelocity * n); // 50 * density
+
+            mUseDoubleTap = true;
+            if (mSettings.pressure.enable &&
+                    mSettings.pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
+                mUseDoubleTap = false;
+            } else if (mSettings.size.enable &&
+                    mSettings.size.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
+                mUseDoubleTap = false;
+            }
+            if (mUseDoubleTap) {
+                mGestureDetector.setOnDoubleTapListener(this);
+            } else {
+                mGestureDetector.setOnDoubleTapListener(null);
+            }
         }
 
         protected Context getContext() {
@@ -278,6 +290,10 @@ public class ModForceTouch extends XposedModule {
         }
 
         protected FTD.Settings.Holder judgeForceTouch(MotionEvent event) {
+//            logD("index=" + event.getActionIndex());
+//            logD(event.toString());
+//            logD("pressure=" + event.getPressure());
+//            logD("size=" + event.getSize());
             return judgeForceTouch(event, event.getActionIndex());
         }
 
@@ -332,14 +348,18 @@ public class ModForceTouch extends XposedModule {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            performAction(holder.actionTap, e, "force tap");
+            if (holder != null) {
+                performAction(holder.actionTap, e, "force tap");
+            }
             return true;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            performAction(holder.actionDoubleTap, e, "force double tap");
+            if (holder != null) {
+                performAction(holder.actionDoubleTap, e, "force double tap");
+            }
             return true;
         }
 
@@ -359,6 +379,11 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
+            if (!mUseDoubleTap) {
+                // usually e is ACTION_UP event
+                return onSingleTapConfirmed(
+                        (MotionEvent) XposedHelpers.getObjectField(mGestureDetector, "mCurrentDownEvent"));
+            }
             return false;
         }
 
@@ -372,26 +397,30 @@ public class ModForceTouch extends XposedModule {
         public void onLongPress(MotionEvent e) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             FTD.Settings.Holder holder = judgeForceTouch(e);
-            performAction(holder.actionLongPress, e, "force long press");
+            if (holder != null) {
+                performAction(holder.actionLongPress, e, "force long press");
+            }
         }
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             FTD.Settings.Holder holder = judgeForceTouch(e1);
-            float x = e2.getX() - e1.getX();
-            float y = e2.getY() - e1.getY();
-            if (Math.abs(x) > Math.abs(y)) {
-                if (x > 0) {
-                    performAction(holder.actionFlickRight, e2, "force flick right");
+            if (holder != null) {
+                float x = e2.getX() - e1.getX();
+                float y = e2.getY() - e1.getY();
+                if (Math.abs(x) > Math.abs(y)) {
+                    if (x > 0) {
+                        performAction(holder.actionFlickRight, e2, "force flick right");
+                    } else {
+                        performAction(holder.actionFlickLeft, e2, "force flick left");
+                    }
                 } else {
-                    performAction(holder.actionFlickLeft, e2, "force flick left");
-                }
-            } else {
-                if (y > 0) {
-                    performAction(holder.actionFlickDown, e2, "force flick down");
-                } else {
-                    performAction(holder.actionFlickUp, e2, "force flick up");
+                    if (y > 0) {
+                        performAction(holder.actionFlickDown, e2, "force flick down");
+                    } else {
+                        performAction(holder.actionFlickUp, e2, "force flick up");
+                    }
                 }
             }
             return true;
