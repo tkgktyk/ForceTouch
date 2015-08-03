@@ -138,7 +138,8 @@ public abstract class ThresholdActivity extends AppCompatActivity {
 
             @Override
             public void onUpdate(MotionEvent event) {
-                mPressure = Math.max(mPressure, getParameter(event));
+//                mPressure = Math.max(mPressure, getParameter(event));
+                mPressure = getParameter(event);
             }
 
             @Override
