@@ -72,10 +72,8 @@ public class MyApp extends BaseApplication {
         } catch (IllegalArgumentException e) {
             // not installed
         }
-        if (!Strings.isNullOrEmpty(installer)) {
-            logD("Installer of key = " + installer);
-            mIsDonated = Objects.equal("com.android.vending", installer);
-        }
+        logD("Installer of key = " + installer);
+        mIsDonated = Objects.equal("com.android.vending", installer);
         if (!mIsDonated) {
             installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
             logD("Installer of FTD = " + installer);
