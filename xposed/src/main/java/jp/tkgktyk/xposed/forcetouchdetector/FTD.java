@@ -479,6 +479,8 @@ public class FTD {
         static final long serialVersionUID = 1L;
 
         private final boolean isCharging;
+        public final boolean useDoubleTap;
+        public final boolean useGesture;
 
         // General
         public final ScaleRect detectionArea;
@@ -564,6 +566,35 @@ public class FTD {
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
+
+            // double tap
+            if (pressure.enable &&
+                    pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
+                useDoubleTap = false;
+            } else if (size.enable &&
+                    size.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
+                useDoubleTap = false;
+            } else {
+                useDoubleTap = true;
+            }
+
+            if (pressure.enable &&
+                    pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE &&
+                    pressure.actionFlickLeft.type == ActionInfo.TYPE_NONE &&
+                    pressure.actionFlickUp.type == ActionInfo.TYPE_NONE &&
+                    pressure.actionFlickRight.type == ActionInfo.TYPE_NONE &&
+                    pressure.actionFlickDown.type == ActionInfo.TYPE_NONE) {
+                useGesture = false;
+            } else if (size.enable &&
+                    size.actionDoubleTap.type == ActionInfo.TYPE_NONE &&
+                    size.actionFlickLeft.type == ActionInfo.TYPE_NONE &&
+                    size.actionFlickUp.type == ActionInfo.TYPE_NONE &&
+                    size.actionFlickRight.type == ActionInfo.TYPE_NONE &&
+                    size.actionFlickDown.type == ActionInfo.TYPE_NONE) {
+                useGesture = false;
+            } else {
+                useGesture = true;
+            }
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {

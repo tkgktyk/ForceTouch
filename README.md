@@ -22,7 +22,7 @@ Examples:
 *  Expand notifications by performing **force flick to bottom** anywhere.
 
 ## Xposed Module is here!
-[tkgktyk/ForceTouch/xposed](xposed) is an Xposed modeule to detect Force Touch and switch touch action.
+[tkgktyk/ForceTouch/xposed](xposed) is a Xposed modeule to detect Force Touch and switch touch action.
 Repository: [Force Touch Detector (FTD)](http://repo.xposed.info/module/jp.tkgktyk.xposed.forcetouchdetector).
 
 FTD assigns seven force actions:

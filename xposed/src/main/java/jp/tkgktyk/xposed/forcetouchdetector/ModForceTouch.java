@@ -262,15 +262,7 @@ public class ModForceTouch extends XposedModule {
             XposedHelpers.setIntField(mGestureDetector, "mMinimumFlingVelocity",
                     mDefaultMinimumFlingVelocity * n); // 50 * density
 
-            mUseDoubleTap = true;
-            if (mSettings.pressure.enable &&
-                    mSettings.pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
-                mUseDoubleTap = false;
-            } else if (mSettings.size.enable &&
-                    mSettings.size.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
-                mUseDoubleTap = false;
-            }
-            if (mUseDoubleTap) {
+            if (settings.useDoubleTap) {
                 mGestureDetector.setOnDoubleTapListener(this);
             } else {
                 mGestureDetector.setOnDoubleTapListener(null);
