@@ -77,6 +77,11 @@ public class ModInternal extends XposedModule {
                     sendKeyEvent(KeyEvent.KEYCODE_SYSRQ);
                 } else if (action.equals(FTD.ACTION_LOCK_SCREEN)) {
                     sendKeyEvent(KeyEvent.KEYCODE_POWER);
+                } else if (action.equals(FTD.ACTION_LAST_APP)) {
+                    // TODO: not work
+                    sendKeyEventAlt(KeyEvent.KEYCODE_TAB);
+                } else if (action.equals(FTD.ACTION_MENU)) {
+                    sendKeyEvent(KeyEvent.KEYCODE_MENU);
 
                     //
                     // status bar service
@@ -117,10 +122,21 @@ public class ModInternal extends XposedModule {
                 public void run() {
                     long downTime = SystemClock.uptimeMillis();
                     long eventTime = SystemClock.uptimeMillis() + 100;
+//                    KeyEvent alt = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ALT_LEFT, 0, 0);
+//                    Instrumentation ist = new Instrumentation();
+//                    ist.sendKeySync(alt);
+//                    ist.sendKeyDownUpSync(code);
+//                    alt = KeyEvent.changeAction(alt, KeyEvent.ACTION_UP);
+//                    eventTime = SystemClock.uptimeMillis() + 100;
+//                    alt = KeyEvent.changeTimeRepeat(alt, eventTime, 0);
+//                    ist.sendKeySync(alt);
                     KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
                     Instrumentation ist = new Instrumentation();
                     ist.sendKeySync(key);
-                    ist.sendKeySync(KeyEvent.changeAction(key, KeyEvent.ACTION_UP));
+                    key = KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
+                    eventTime = SystemClock.uptimeMillis() + 100;
+                    key = KeyEvent.changeTimeRepeat(key, eventTime, 0);
+                    ist.sendKeySync(key);
                 }
             }.start();
         }

@@ -68,6 +68,8 @@ public class FTD {
     public static final String ACTION_VOLUME_DOWN = PREFIX_ACTION + "VOLUME_DOWN";
     public static final String ACTION_SCREENSHOT = PREFIX_ACTION + "SCREENSHOT";
     public static final String ACTION_LOCK_SCREEN = PREFIX_ACTION + "LOCK_SCREEN";
+    public static final String ACTION_LAST_APP = PREFIX_ACTION + "LAST_APP";
+    public static final String ACTION_MENU = PREFIX_ACTION + "MENU";
     // status bar
     public static final String ACTION_NOTIFICATIONS = PREFIX_ACTION + "NOTIFICATIONS";
     public static final String ACTION_QUICK_SETTINGS = PREFIX_ACTION + "QUICK_SETTINGS";
@@ -102,6 +104,8 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_VOLUME_DOWN);
         INTERNAL_ACTION_FILTER.addAction(ACTION_SCREENSHOT);
         INTERNAL_ACTION_FILTER.addAction(ACTION_LOCK_SCREEN);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_LAST_APP);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_MENU);
         // status bar
         INTERNAL_ACTION_FILTER.addAction(ACTION_NOTIFICATIONS);
         INTERNAL_ACTION_FILTER.addAction(ACTION_QUICK_SETTINGS);
@@ -143,6 +147,10 @@ public class FTD {
             return mod.getString(R.string.action_screenshot);
         } else if (action.equals(ACTION_LOCK_SCREEN)) {
             return mod.getString(R.string.action_lock_screen);
+        } else if (action.equals(ACTION_LAST_APP)) {
+            return mod.getString(R.string.action_last_app);
+        } else if (action.equals(ACTION_MENU)) {
+            return mod.getString(R.string.action_menu);
 
             //
             // status bar
@@ -210,6 +218,10 @@ public class FTD {
             return R.drawable.ic_camera_enhance_white_24dp;
         } else if (action.equals(ACTION_LOCK_SCREEN)) {
             return R.drawable.ic_phonelink_lock_white_24dp;
+        } else if (action.equals(ACTION_LAST_APP)) {
+            return R.drawable.ic_swap_horiz_white_24dp;
+        } else if (action.equals(ACTION_MENU)) {
+            return R.drawable.ic_menu_white_24dp;
 
             //
             // status bar
@@ -508,6 +520,11 @@ public class FTD {
         public final boolean floatingActionRecents;
         public final boolean useLocalFAB;
 
+        // Wiggle Touch
+        public final boolean wiggleTouchEnable;
+        public final float wiggleTouchMagnification;
+        public final ActionInfo.Record wiggleTouchAction;
+
         public Settings(Context context, SharedPreferences prefs) {
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = context.registerReceiver(null, ifilter);
@@ -566,6 +583,11 @@ public class FTD {
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
+
+            // Wiggle Touch
+            wiggleTouchEnable = prefs.getBoolean("key_wiggle_touch_enable", false);
+            wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
+            wiggleTouchAction = getActionRecord(prefs, "key_wiggle_touch_action");
 
             // double tap
             if (pressure.enable &&

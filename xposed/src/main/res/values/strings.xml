@@ -10,6 +10,9 @@
     <string name="state_disabled">Disabled</string>
     <string name="state_floating_action">Floating Action</string>
 
+    <!-- Header -->
+    <string name="message_unlock">You have to get a key from donate button to unlock this feature.</string>
+
     <!-- Area Activity -->
     <string name="label_detection_area">@string/title_detection_area</string>
     <string name="title_area_size">Size</string>
@@ -56,6 +59,8 @@
     <string name="action_volume_down">Volume Down</string>
     <string name="action_screenshot">Screenshot</string>
     <string name="action_lock_screen">Lock Screen</string>
+    <string name="action_last_app">Last App</string>
+    <string name="action_menu">Menu</string>
     <!-- status bar -->
     <string name="action_notifications">Notifications</string>
     <string name="action_quick_settings">Quick Settings</string>
@@ -91,6 +96,7 @@
     <string name="header_pressure">Pressure</string>
     <string name="header_size">Size</string>
     <string name="header_floating_action">Floating Action</string>
+    <string name="header_wiggle_touch">Wiggle Touch</string>
     <!-- Information -->
     <string name="category_information">Information</string>
     <string name="title_about">About</string>
@@ -161,4 +167,8 @@
     <string name="summary_floating_action_recents">Fill the arc with recent apps</string>
     <string name="title_use_local_fab">Another Method</string>
     <string name="summary_use_local_fab">Switch if you get force close</string>
+
+    <!-- Wiggle Touch -->
+    <string name="title_wiggle_touch_magnification">Magnification</string>
+    <string name="title_wiggle_touch_action">Action</string>
 </resources>
