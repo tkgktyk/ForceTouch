@@ -88,6 +88,10 @@ public class ActionInfo {
     }
 
     public ActionInfo(Record record) {
+        if (Strings.isNullOrEmpty(record.intentUri)) {
+            setNone();
+            return;
+        }
         try {
             mIntent = Intent.parseUri(record.intentUri, 0);
             mType = record.type;
