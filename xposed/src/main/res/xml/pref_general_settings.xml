@@ -29,11 +29,12 @@
         android:inputType="numberSigned"
         android:key="@string/key_detection_window"
         android:title="@string/title_detection_window"/>
-    <!-- Detector Parameter -->
+    <!-- Detector Sensitivity -->
     <EditTextPreference
         android:defaultValue="7"
         android:icon="@null"
         android:inputType="number"
+        android:dialogMessage="@string/message_detection_sensitivity"
         android:key="@string/key_detection_sensitivity"
         android:title="@string/title_detection_sensitivity"/>
     <!-- Extra Long Press Timeout -->

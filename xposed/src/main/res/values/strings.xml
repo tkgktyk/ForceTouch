@@ -92,7 +92,7 @@
     <string name="label_floating_action">@string/header_floating_action</string>
     <string name="test">Test</string>
     <string name="note_floating_action">Enable pressure and/or size at first</string>
-    <string name="message_supported">This feature, customizing Floating Action, is in return for your support, discussion, donation and so on. This is independent of Xposed framework.</string>
+    <string name="message_supported">This feature, customizing Floating Action, is in return for your support, discussion, donation and so on.</string>
     <string name="back">Back</string>
     <string name="already_supported">Already support</string>
 
@@ -130,6 +130,7 @@
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
     <string name="title_show_notification">Notification</string>
     <string name="title_detection_sensitivity">Detection Sensitivity</string>
+    <string name="message_detection_sensitivity">0 to about 20 depending on hardware.\nIf 0, Force Touch is always interpreted as a flick. If too high value, it is always tap.</string>
     <string name="title_detection_window">Detection Window (Method1/3)</string>
     <string name="title_extra_long_press_timeout">Extra Long Press Timeout (Method1/3)</string>
     <string name="title_use_pressure">Use Pressure (Method2/3)</string>
