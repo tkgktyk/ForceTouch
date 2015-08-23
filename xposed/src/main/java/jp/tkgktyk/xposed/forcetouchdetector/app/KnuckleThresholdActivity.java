@@ -33,8 +33,8 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
@@ -43,7 +43,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton;
 /**
  * Created by tkgktyk on 2015/06/07.
  */
-public abstract class ThresholdActivity extends AppCompatActivity {
+public class KnuckleThresholdActivity extends AppCompatActivity {
 
     private static final int MAX_COUNT = 5;
     private static final int AVERAGE_COUNT = 5;
@@ -72,13 +72,17 @@ public abstract class ThresholdActivity extends AppCompatActivity {
     private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
     private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
 
-    protected abstract int getPressureResource();
+    protected int getPressureResource() {
+        return R.string.parameter_f1;
+    }
 
-    protected abstract String getThresholdKey();
+    protected String getThresholdKey() {
+        return getString(R.string.key_knuckle_touch_threshold);
+    }
 
-    protected abstract String getThresholdChargingKey();
-
-    protected abstract float getParameter(MotionEvent event);
+    protected String getThresholdChargingKey() {
+        return getString(R.string.key_knuckle_touch_threshold_charging);
+    }
 
     private void updateTapPressureText(float pressure) {
         // size limited queue
@@ -102,67 +106,60 @@ public abstract class ThresholdActivity extends AppCompatActivity {
             mAvePressureList.remove();
         }
 
-        mAvePressureText.setText(getString(R.string.ave_f1, getAvePressure()));
+        mAvePressureText.setText(getString(R.string.min_f1, getAvePressure()));
         mForceTouchPressureText.setText(getString(getPressureResource(), pressure));
     }
 
     private float getAvePressure() {
-        float sum = 0;
-        for (float v : mAvePressureList) {
-            sum += v;
-        }
-        return sum / mAvePressureList.size();
+//        float sum = 0;
+//        for (float v : mAvePressureList) {
+//            sum += v;
+//        }
+//        return sum / mAvePressureList.size();
+        return Collections.min(mAvePressureList);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pressure_threshold);
+        setContentView(R.layout.activity_knuckle_threshold);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
-        mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
+        mTapButton.setText(getString(R.string.please_knuckle_touch_d1, MAX_COUNT));
+        mForceTouchButton.setText(getString(R.string.please_tap_d1, AVERAGE_COUNT));
 
         long detectionWindow = Long.parseLong(FTD.getSharedPreferences(this)
                 .getString(getString(R.string.key_detection_window), "0"));
         mTapButton.setDetectionWindow(detectionWindow);
         mTapButton.setOnPressedListener(new PressureButton.OnPressedListener() {
-            private float mPressure;
-
             @Override
             public void onStart(MotionEvent event) {
-                mPressure = getParameter(event);
+                updateTapPressureText(MyApp.getParameter(event));
             }
 
             @Override
             public void onUpdate(MotionEvent event) {
-                mPressure = Math.max(mPressure, getParameter(event));
             }
 
             @Override
             public void onStop() {
-                updateTapPressureText(mPressure);
             }
         });
         mForceTouchButton.setDetectionWindow(detectionWindow);
         mForceTouchButton.setOnPressedListener(new PressureButton.OnPressedListener() {
-            private float mPressure;
-
             @Override
             public void onStart(MotionEvent event) {
-                mPressure = getParameter(event);
+                updateForceTouchPressureText(MyApp.getParameter(event));
             }
 
             @Override
             public void onUpdate(MotionEvent event) {
-                mPressure = Math.max(mPressure, getParameter(event));
             }
 
             @Override
             public void onStop() {
-                updateForceTouchPressureText(mPressure);
             }
         });
 

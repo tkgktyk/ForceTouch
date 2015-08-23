@@ -10,9 +10,6 @@
     <string name="state_disabled">Disabled</string>
     <string name="state_floating_action">Floating Action</string>
 
-    <!-- Header -->
-    <string name="message_unlock">You have to get a key from donate button to unlock this feature.</string>
-
     <!-- Area Activity -->
     <string name="label_detection_area">@string/title_detection_area</string>
     <string name="title_area_size">Size</string>
@@ -42,6 +39,15 @@
     <string name="label_size_threshold">Size Threshold</string>
     <string name="size_f1">Size: %1$.04f</string>
     <string name="size_f1_default">Size: ------</string>
+    <!-- Large -->
+    <string name="label_large_threshold">Large Threshold</string>
+    <string name="parameter_f1">Parameter: %1$.04f</string>
+    <string name="parameter_f1_default">Parameter: ------</string>
+    <string name="min_f1">Min: %1$.04f</string>
+    <string name="min_f1_default">Min: ------</string>
+    <!-- Knuckle -->
+    <string name="label_knuckle_threshold">Knuckle Threshold</string>
+    <string name="please_knuckle_touch_d1">Touch with Knuckle\n%1$d times or more</string>
 
     <!-- Action Picker -->
     <string name="tools">Tools</string>
@@ -92,11 +98,18 @@
     <!-- Header -->
     <!-- Setting -->
     <string name="category_setting">Setting</string>
+    <string name="category_method1">Method1</string>
+    <string name="category_method2">Method2</string>
+    <string name="category_method3">Method3</string>
+    <string name="message_parameter">Note: choose parameter at general setting</string>
+    <string name="message_unlock">You have to get a key from donate button to unlock this feature.</string>
     <string name="header_general">General</string>
     <string name="header_pressure">Pressure</string>
     <string name="header_size">Size</string>
-    <string name="header_floating_action">Floating Action</string>
+    <string name="header_large_touch">Large Touch</string>
+    <string name="header_knuckle_touch">Knuckle Touch</string>
     <string name="header_wiggle_touch">Wiggle Touch</string>
+    <string name="header_floating_action">Floating Action</string>
     <!-- Information -->
     <string name="category_information">Information</string>
     <string name="title_about">About</string>
@@ -115,10 +128,10 @@
     <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
     <string name="title_show_notification">Notification</string>
-    <string name="category_experimental">Experimental</string>
     <string name="title_detection_sensitivity">Detection Sensitivity</string>
-    <string name="title_detection_window">Detection Window</string>
-    <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
+    <string name="title_detection_window">Detection Window (Method1/3)</string>
+    <string name="title_extra_long_press_timeout">Extra Long Press Timeout (Method1/3)</string>
+    <string name="title_use_pressure">Use Pressure (Method2/3)</string>
 
     <!-- Threshold -->
     <string name="title_enable">Master Switch</string>
@@ -133,6 +146,16 @@
     <string name="title_action_flick_right">Flick Right</string>
     <string name="title_action_flick_up">Flick Up</string>
     <string name="title_action_flick_down">Flick Down</string>
+
+    <!-- Large Touch -->
+    <string name="title_large_touch_action">Action</string>
+
+    <!-- Knuckle Touch -->
+    <string name="title_knuckle_touch_action">Action</string>
+
+    <!-- Wiggle Touch -->
+    <string name="title_wiggle_touch_magnification">Magnification</string>
+    <string name="title_wiggle_touch_action">Action</string>
 
     <!-- Floating Action -->
     <string name="title_floating_action_list">Actions</string>
@@ -168,7 +191,4 @@
     <string name="title_use_local_fab">Another Method</string>
     <string name="summary_use_local_fab">Switch if you get force close</string>
 
-    <!-- Wiggle Touch -->
-    <string name="title_wiggle_touch_magnification">Magnification</string>
-    <string name="title_wiggle_touch_action">Action</string>
 </resources>

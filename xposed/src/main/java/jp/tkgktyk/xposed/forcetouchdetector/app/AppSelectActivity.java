@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.IconCache;
@@ -79,9 +79,9 @@ public class AppSelectActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_SELECTED_HASH_SET, selectedSet);
     }
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.only_selected_check)
+    @Bind(R.id.only_selected_check)
     CheckBox mOnlySelectedCheck;
 
     private AppSelectFragment mAppSelectFragment;
@@ -91,7 +91,7 @@ public class AppSelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_select);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

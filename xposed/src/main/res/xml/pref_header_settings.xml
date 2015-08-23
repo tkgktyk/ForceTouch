@@ -24,6 +24,15 @@
             android:icon="@null"
             android:key="@string/key_header_general"
             android:title="@string/header_general"/>
+        <!-- Floating Action -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_header_floating_action"
+            android:title="@string/header_floating_action"/>
+    </PreferenceCategory>
+    <!-- Method1  -->
+    <PreferenceCategory
+        android:title="@string/category_method1">
         <!-- Pressure -->
         <Preference
             android:icon="@null"
@@ -34,11 +43,29 @@
             android:icon="@null"
             android:key="@string/key_header_size"
             android:title="@string/header_size"/>
-        <!-- Floating Action -->
+    </PreferenceCategory>
+    <!-- Method2  -->
+    <PreferenceCategory
+        android:title="@string/category_method2">
+        <!-- Large Touch -->
         <Preference
             android:icon="@null"
-            android:key="@string/key_header_floating_action"
-            android:title="@string/header_floating_action"/>
+            android:key="@string/key_header_large_touch"
+            android:title="@string/header_large_touch"/>
+        <!-- Knuckle Touch -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_header_knuckle_touch"
+            android:title="@string/header_knuckle_touch"/>
+    </PreferenceCategory>
+    <!-- Method3  -->
+    <PreferenceCategory
+        android:title="@string/category_method3">
+        <!-- Wiggle Touch -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_header_wiggle_touch"
+            android:title="@string/header_wiggle_touch"/>
     </PreferenceCategory>
 
     <!-- Information -->

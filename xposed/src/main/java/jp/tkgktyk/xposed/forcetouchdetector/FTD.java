@@ -28,6 +28,7 @@ import android.os.BatteryManager;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -265,6 +266,19 @@ public class FTD {
     public static boolean performAction(@NonNull ViewGroup container,
                                         @NonNull ActionInfo actionInfo,
                                         @NonNull MotionEvent event) {
+        return performAction(container, actionInfo, event.getX(), event.getY(), event);
+    }
+
+    public static boolean performAction(@NonNull ViewGroup container,
+                                        @NonNull ActionInfo actionInfo,
+                                        float x, float y) {
+        return performAction(container, actionInfo, x, y, null);
+    }
+
+    public static boolean performAction(@NonNull ViewGroup container,
+                                        @NonNull ActionInfo actionInfo,
+                                        float x, float y,
+                                        @Nullable MotionEvent event) {
         Context context = container.getContext();
         Intent intent = actionInfo.getIntent();
         if (intent == null) {
@@ -273,13 +287,13 @@ public class FTD {
         // add coordinates
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getRealSize(mDisplaySize);
-        intent.putExtra(EXTRA_FRACTION_X, event.getX() / mDisplaySize.x);
-        intent.putExtra(EXTRA_FRACTION_Y, event.getY() / mDisplaySize.y);
+        intent.putExtra(EXTRA_FRACTION_X, x / mDisplaySize.x);
+        intent.putExtra(EXTRA_FRACTION_Y, y / mDisplaySize.y);
         // launch action like ActionInfo#launch
         switch (actionInfo.getType()) {
             case ActionInfo.TYPE_TOOL:
                 String action = intent.getAction();
-                if (action.endsWith(SUFFIX_TOUCH_ACTION)) {
+                if (event != null && action.endsWith(SUFFIX_TOUCH_ACTION)) {
                     performTouchAction(container, action, event);
                 } else {
                     context.sendBroadcast(intent);
@@ -505,6 +519,7 @@ public class FTD {
         public final int detectionSensitivity;
         public final int detectionWindow;
         public final int extraLongPressTimeout;
+        public final boolean usePressure;
 
         // Pressure
         public final Holder pressure = new Holder();
@@ -520,10 +535,23 @@ public class FTD {
         public final boolean floatingActionRecents;
         public final boolean useLocalFAB;
 
+        // Large Touch
+        public final boolean largeTouchEnable;
+        public final float largeTouchThreshold;
+        public final ActionInfo.Record largeTouchActionTap;
+        public final ActionInfo.Record largeTouchActionLongPress;
+
+        // Knuckle Touch
+        public final boolean knuckleTouchEnable;
+        public final float knuckleTouchThreshold;
+        public final ActionInfo.Record knuckleTouchActionTap;
+        public final ActionInfo.Record knuckleTouchActionLongPress;
+
         // Wiggle Touch
         public final boolean wiggleTouchEnable;
         public final float wiggleTouchMagnification;
-        public final ActionInfo.Record wiggleTouchAction;
+        public final ActionInfo.Record wiggleTouchActionTap;
+        public final ActionInfo.Record wiggleTouchActionLongPress;
 
         public Settings(Context context, SharedPreferences prefs) {
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -547,12 +575,13 @@ public class FTD {
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
             detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
             extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "0"));
+            usePressure = prefs.getBoolean("key_use_pressure", false);
 
             // Pressure
             pressure.enable = prefs.getBoolean("key_pressure_enable", false);
             pressure.threshold = Float.parseFloat(getStringToParse(prefs,
-                    isCharging? "key_pressure_threshold_charging": "key_pressure_threshold",
-                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
+                    isCharging ? "key_pressure_threshold_charging" : "key_pressure_threshold",
+                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
 
             pressure.actionTap = getActionRecord(prefs, "key_pressure_action_tap");
             pressure.actionDoubleTap = getActionRecord(prefs, "key_pressure_action_double_tap");
@@ -565,8 +594,8 @@ public class FTD {
             // Size
             size.enable = prefs.getBoolean("key_size_enable", false);
             size.threshold = Float.parseFloat(getStringToParse(prefs,
-                    isCharging? "key_size_threshold_charging": "key_size_threshold",
-                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD));
+                    isCharging ? "key_size_threshold_charging" : "key_size_threshold",
+                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
 
             size.actionTap = getActionRecord(prefs, "key_size_action_tap");
             size.actionDoubleTap = getActionRecord(prefs, "key_size_action_double_tap");
@@ -576,6 +605,34 @@ public class FTD {
             size.actionFlickUp = getActionRecord(prefs, "key_size_action_flick_up");
             size.actionFlickDown = getActionRecord(prefs, "key_size_action_flick_down");
 
+            // double tap
+            useDoubleTap = doubleTap(pressure) || doubleTap(size);
+
+            // gesture
+            useGesture = gesture(pressure) || gesture(size);
+
+            // Large Touch
+            largeTouchEnable = prefs.getBoolean("key_large_touch_enable", false);
+            largeTouchThreshold = Float.parseFloat(getStringToParse(prefs,
+                    isCharging ? "key_large_touch_threshold_charging" : "key_large_touch_threshold",
+                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
+            largeTouchActionTap = getActionRecord(prefs, "key_large_touch_action_tap");
+            largeTouchActionLongPress = getActionRecord(prefs, "key_large_touch_action_long_press");
+
+            // Knuckle Touch
+            knuckleTouchEnable = prefs.getBoolean("key_knuckle_touch_enable", false);
+            knuckleTouchThreshold = Float.parseFloat(getStringToParse(prefs,
+                    isCharging ? "key_knuckle_touch_threshold_charging" : "key_knuckle_touch_threshold",
+                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
+            knuckleTouchActionTap = getActionRecord(prefs, "key_knuckle_touch_action_tap");
+            knuckleTouchActionLongPress = getActionRecord(prefs, "key_knuckle_touch_action_long_press");
+
+            // Wiggle Touch
+            wiggleTouchEnable = prefs.getBoolean("key_wiggle_touch_enable", false);
+            wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
+            wiggleTouchActionTap = getActionRecord(prefs, "key_wiggle_touch_action_tap");
+            wiggleTouchActionLongPress = getActionRecord(prefs, "key_wiggle_touch_action_long_press");
+
             // Floating Action
             floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
             floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
@@ -583,40 +640,6 @@ public class FTD {
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
-
-            // Wiggle Touch
-            wiggleTouchEnable = prefs.getBoolean("key_wiggle_touch_enable", false);
-            wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
-            wiggleTouchAction = getActionRecord(prefs, "key_wiggle_touch_action");
-
-            // double tap
-            if (pressure.enable &&
-                    pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
-                useDoubleTap = false;
-            } else if (size.enable &&
-                    size.actionDoubleTap.type == ActionInfo.TYPE_NONE) {
-                useDoubleTap = false;
-            } else {
-                useDoubleTap = true;
-            }
-
-            if (pressure.enable &&
-                    pressure.actionDoubleTap.type == ActionInfo.TYPE_NONE &&
-                    pressure.actionFlickLeft.type == ActionInfo.TYPE_NONE &&
-                    pressure.actionFlickUp.type == ActionInfo.TYPE_NONE &&
-                    pressure.actionFlickRight.type == ActionInfo.TYPE_NONE &&
-                    pressure.actionFlickDown.type == ActionInfo.TYPE_NONE) {
-                useGesture = false;
-            } else if (size.enable &&
-                    size.actionDoubleTap.type == ActionInfo.TYPE_NONE &&
-                    size.actionFlickLeft.type == ActionInfo.TYPE_NONE &&
-                    size.actionFlickUp.type == ActionInfo.TYPE_NONE &&
-                    size.actionFlickRight.type == ActionInfo.TYPE_NONE &&
-                    size.actionFlickDown.type == ActionInfo.TYPE_NONE) {
-                useGesture = false;
-            } else {
-                useGesture = true;
-            }
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
@@ -631,8 +654,18 @@ public class FTD {
             return ActionInfo.Record.fromPreference(prefs.getString(key, ""));
         }
 
-        public boolean isEnabled() {
-            return pressure.enable || size.enable;
+        private boolean doubleTap(Holder holder) {
+            return holder.enable &&
+                    holder.actionDoubleTap.type != ActionInfo.TYPE_NONE;
+        }
+
+        private boolean gesture(Holder holder) {
+            return holder.enable &&
+                    holder.actionDoubleTap.type != ActionInfo.TYPE_NONE &&
+                    holder.actionFlickLeft.type != ActionInfo.TYPE_NONE &&
+                    holder.actionFlickUp.type != ActionInfo.TYPE_NONE &&
+                    holder.actionFlickRight.type != ActionInfo.TYPE_NONE &&
+                    holder.actionFlickDown.type != ActionInfo.TYPE_NONE;
         }
 
         public class Holder implements Serializable {

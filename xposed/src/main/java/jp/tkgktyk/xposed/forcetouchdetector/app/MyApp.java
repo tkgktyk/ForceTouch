@@ -19,6 +19,7 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.view.MotionEvent;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -34,6 +35,8 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
  * Created by tkgktyk on 2015/06/06.
  */
 public class MyApp extends BaseApplication {
+
+    private static final boolean DONATED = true;
 
     /**
      * for version name
@@ -58,7 +61,7 @@ public class MyApp extends BaseApplication {
     private static boolean mIsDonated;
 
     public static boolean isDonated() {
-        return mIsDonated;
+        return mIsDonated || (BuildConfig.DEBUG && DONATED);
     }
 
     @Override
@@ -79,6 +82,9 @@ public class MyApp extends BaseApplication {
             logD("Installer of FTD = " + installer);
             mIsDonated = Objects.equal("com.android.vending", installer);
         }
+
+        SharedPreferences prefs = getDefaultSharedPreferences();
+        setParameter(prefs.getBoolean(getString(R.string.key_use_pressure), false));
     }
 
     @Override
@@ -185,19 +191,28 @@ public class MyApp extends BaseApplication {
             prefs.edit()
                     .putString(getString(R.string.key_pressure_threshold_charging),
                             prefs.getString(getString(R.string.key_pressure_threshold),
-                                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD))
+                                    ModForceTouch.Detector.DEFAULT_THRESHOLD))
                     .putString(getString(R.string.key_size_threshold_charging),
                             prefs.getString(getString(R.string.key_size_threshold),
-                                    ModForceTouch.ForceTouchDetector.DEFAULT_THRESHOLD))
+                                    ModForceTouch.Detector.DEFAULT_THRESHOLD))
                     .apply();
         }
     }
 
+    public static void updateService(Context context, SharedPreferences prefs) {
+        FTD.Settings settings = new FTD.Settings(context, prefs);
+        updateService(context, settings.pressure.enable, settings.size.enable,
+                settings.largeTouchEnable, settings.knuckleTouchEnable,
+                settings.wiggleTouchEnable, settings.floatingActionEnable,
+                settings.showNotification);
+    }
+
     public static void updateService(Context context, boolean pressure, boolean size,
+                                     boolean large, boolean knuckle, boolean wiggle,
                                      boolean floatingAction, boolean showNotification) {
         Intent em = new Intent(context, EmergencyService.class);
         Intent fa = new Intent(context, FloatingActionService.class);
-        boolean ftdEnable = pressure || size;
+        boolean ftdEnable = pressure || size || large || knuckle || wiggle;
         if (ftdEnable) {
             if (floatingAction) {
                 context.stopService(em);
@@ -213,5 +228,15 @@ public class MyApp extends BaseApplication {
             context.stopService(em);
             context.stopService(fa);
         }
+    }
+
+    private static boolean mPressure;
+
+    public static void setParameter(boolean pressure) {
+        mPressure = pressure;
+    }
+
+    public static float getParameter(MotionEvent event) {
+        return mPressure ? event.getPressure() : event.getSize();
     }
 }

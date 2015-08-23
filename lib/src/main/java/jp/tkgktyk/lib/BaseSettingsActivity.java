@@ -117,21 +117,28 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
         }
 
         protected void changeScreen(@StringRes int id, final Class<?> cls) {
+            changeScreen(id, cls, null);
+        }
+
+        protected void changeScreen(@StringRes int id, final Class<?> cls,
+                                    @Nullable final Preference.OnPreferenceClickListener extraListener) {
             Preference pref = findPreference(id);
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    try {
-                        ((BaseSettingsActivity) getActivity())
-                                .changeFragment((BaseFragment) cls.getConstructor().newInstance());
-                    } catch (java.lang.InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
+                    if (extraListener == null || extraListener.onPreferenceClick(preference)) {
+                        try {
+                            ((BaseSettingsActivity) getActivity())
+                                    .changeFragment((BaseFragment) cls.getConstructor().newInstance());
+                        } catch (java.lang.InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
                     }
                     return true;
                 }
@@ -209,17 +216,25 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             boolean onChange(EditTextPreference edit, String text);
         }
 
+        protected void setUpSwitch(@StringRes int id) {
+            setUpSwitch(id, null);
+        }
+
         protected void setUpSwitch(@StringRes int id, final OnSwitchChangeListener listener) {
             SwitchPreference sw = (SwitchPreference) findPreference(id);
             sw.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean enabled = (Boolean) newValue;
-                    listener.onChange((SwitchPreference) preference, enabled, true);
+                    if (listener != null) {
+                        listener.onChange((SwitchPreference) preference, enabled, true);
+                    }
                     return true;
                 }
             });
-            listener.onChange(sw, sw.isChecked(), false);
+            if (listener != null) {
+                listener.onChange(sw, sw.isChecked(), false);
+            }
         }
 
         protected interface OnSwitchChangeListener {

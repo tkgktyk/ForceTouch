@@ -1,0 +1,143 @@
+<!--
+  ~ Copyright 2015 Takagi Katsuyuki
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="MergeRootFrame">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <!-- Contents -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <!-- Input Field -->
+        <RelativeLayout
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/pressure_threshold_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description_threshold"/>
+
+            <!-- Pressure Threshold -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/pressure_threshold_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pressure_threshold_description">
+
+                <EditText
+                    android:id="@+id/pressure_threshold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_threshold"
+                    android:inputType="numberDecimal">
+
+                    <requestFocus/>
+                </EditText>
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Pressure Threshold (Charging) -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/pressure_threshold_charging_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pressure_threshold_container">
+
+                <EditText
+                    android:id="@+id/pressure_threshold_charging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_threshold_charging"
+                    android:inputType="numberDecimal"/>
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+        <!-- Practice -->
+        <RelativeLayout
+            android:id="@+id/practice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/input">
+            <!-- for tap -->
+            <TextView
+                android:id="@+id/max_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/max_f1_default"
+                android:textColor="?attr/colorAccent"/>
+
+            <TextView
+                android:id="@+id/tap_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@string/parameter_f1_default"/>
+
+            <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
+                android:id="@+id/tap_button"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_below="@id/max_pressure"
+                android:text="@string/please_tap_d1"/>
+
+            <!-- for Force Touch -->
+            <TextView
+                android:id="@+id/ave_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tap_button"
+                android:text="@string/min_f1_default"
+                android:textColor="?attr/colorAccent"/>
+
+            <TextView
+                android:id="@+id/force_touch_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/tap_button"
+                android:text="@string/parameter_f1_default"/>
+
+            <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
+                android:id="@+id/force_touch_button"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/ave_pressure"
+                android:text="@string/please_force_touch_d1"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

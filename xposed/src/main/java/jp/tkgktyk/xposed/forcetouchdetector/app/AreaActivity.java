@@ -37,7 +37,7 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ScaleRect;
@@ -70,26 +70,26 @@ public class AreaActivity extends AppCompatActivity {
     private View mDetectionArea;
     private View mMirroredDetectionArea;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.area_size_width_seek)
+    @Bind(R.id.area_size_width_seek)
     SeekBar mWidthSeek;
-    @InjectView(R.id.area_size_height_seek)
+    @Bind(R.id.area_size_height_seek)
     SeekBar mHeightSeek;
-    @InjectView(R.id.area_pivot_x_seek)
+    @Bind(R.id.area_pivot_x_seek)
     SeekBar mXSeek;
-    @InjectView(R.id.area_pivot_y_seek)
+    @Bind(R.id.area_pivot_y_seek)
     SeekBar mYSeek;
-    @InjectView(R.id.mirror_switch)
+    @Bind(R.id.mirror_switch)
     Switch mMirrorSwitch;
-    @InjectView(R.id.reverse_switch)
+    @Bind(R.id.reverse_switch)
     Switch mReverseSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_area);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

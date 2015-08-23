@@ -39,7 +39,7 @@ import com.google.common.base.Strings;
 import java.util.Collections;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import jp.tkgktyk.lib.ConfirmDialogFragment;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
@@ -57,9 +57,9 @@ public class FloatingActionActivity extends AppCompatActivity
 
     private static final int CONFIRMED_SUPPORTED = 1;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.recycler_view)
+    @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     private MyAdapter mMyAdapter;
@@ -75,7 +75,7 @@ public class FloatingActionActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_floating_action);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,7 +200,8 @@ public class FloatingActionActivity extends AppCompatActivity
     @OnClick(R.id.test_button)
     void onTestClicked(Button button) {
         boolean saved = saveActionList();
-        if (mSettings.isEnabled()) {
+        if (mSettings.pressure.enable || mSettings.size.enable ||
+                mSettings.knuckleTouchEnable || mSettings.wiggleTouchEnable) {
             if (saved) {
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
@@ -236,16 +237,16 @@ public class FloatingActionActivity extends AppCompatActivity
     }
 
     protected static class Holder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.icon)
+        @Bind(R.id.icon)
         FloatingActionButton icon;
-        @InjectView(R.id.action_name)
+        @Bind(R.id.action_name)
         TextView name;
-        @InjectView(R.id.action_type)
+        @Bind(R.id.action_type)
         TextView type;
 
         public Holder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 

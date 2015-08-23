@@ -72,6 +72,14 @@
             android:label="@string/label_size_threshold"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
+            android:name=".app.LargeThresholdActivity"
+            android:label="@string/label_large_threshold"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity
+            android:name=".app.KnuckleThresholdActivity"
+            android:label="@string/label_knuckle_threshold"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity
             android:name=".app.FloatingActionActivity"
             android:label="@string/label_floating_action"/>
     </application>

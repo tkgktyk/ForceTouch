@@ -18,7 +18,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
@@ -36,7 +36,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_FORCE_TOUCH, forceTouch);
     }
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     private boolean mForceTouch;
@@ -46,7 +46,7 @@ public class ActionPickerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_picker);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_TITLE));
