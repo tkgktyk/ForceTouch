@@ -1,1 +1,1 @@
-include ':xposed', ':lib', ':key'
+include ':xposed', ':lib', ':key', ':game'
