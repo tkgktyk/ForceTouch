@@ -250,14 +250,6 @@ public class FTD {
         return true;
     }
 
-    public static boolean isLocalAction(@NonNull Intent intent) {
-        return isLocalAction(intent.getAction());
-    }
-
-    public static boolean isLocalAction(String action) {
-        return !Strings.isNullOrEmpty(action) && action.startsWith(PREFIX_ACTION);
-    }
-
     private static void performTouchAction(@NonNull final ViewGroup container,
                                            @NonNull String action,
                                            @NonNull final MotionEvent event) {

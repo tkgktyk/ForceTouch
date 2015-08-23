@@ -146,7 +146,8 @@ public class MyApp extends BaseApplication {
                 }
                 if (Strings.isNullOrEmpty(record.intentUri)) {
                     info = new ActionInfo(this, intent, ActionInfo.TYPE_NONE);
-                } else if (FTD.isLocalAction(intent)) {
+                } else if (!Strings.isNullOrEmpty(intent.getAction()) &&
+                        intent.getAction().startsWith(FTD.PREFIX_ACTION)) {
                     info = new ActionInfo(this, intent, ActionInfo.TYPE_TOOL);
                 } else {
                     info = new ActionInfo(this, intent, ActionInfo.TYPE_APP);
