@@ -38,11 +38,9 @@ import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.google.common.base.Objects;
@@ -61,6 +59,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.CircleLayoutForFAB;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.MovableLayout;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButton;
 
 /**
@@ -77,7 +76,7 @@ public class FloatingAction implements View.OnClickListener {
     private final Point mDisplaySize;
     private final WindowManager.LayoutParams mLayoutParams;
     private final CircleLayoutForFAB mCircleLayout;
-    private final FrameLayout mContainer;
+    private final MovableLayout mContainer;
 
     private final PointF mFraction = new PointF();
 
@@ -224,17 +223,22 @@ public class FloatingAction implements View.OnClickListener {
         mContext = context;
         mSettings = new FTD.Settings(context, FTD.getSharedPreferences(context));
         context.setTheme(R.style.AppTheme);
-        mContainer = (FrameLayout) LayoutInflater.from(context)
+        mContainer = (MovableLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
         mContainer.getBackground().setAlpha(mSettings.floatingActionAlpha);
-        mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
-        mCircleLayout.setOnTouchListener(new View.OnTouchListener() {
+        mContainer.setCallback(new MovableLayout.Callback() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void move(MovableLayout layout, float dx, float dy) {
+                mCircleLayout.addOffset(dx, dy);
+                mCircleLayout.requestLayout();
+            }
+
+            @Override
+            public void onClick(MovableLayout layout) {
                 hide();
-                return true;
             }
         });
+        mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
         setUpAnimator();
         // force hide
         mNavigationShown = true;
@@ -422,6 +426,7 @@ public class FloatingAction implements View.OnClickListener {
         mContainer.setVisibility(View.GONE);
         mNavigationShown = false;
         mContainer.removeCallbacks(mAutoHide);
+        mCircleLayout.setOffset(0, 0);
 
         if (mSettings.floatingActionRecents) {
             // erase recent action

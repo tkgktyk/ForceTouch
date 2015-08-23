@@ -36,6 +36,7 @@ public class CircleLayoutForFAB extends FrameLayout {
     private static final int ITEM_COUNT_EXTRA_STEP = 2;
 
     private final PointF mCircleOrigin = new PointF();
+    private final PointF mOffset = new PointF();
     private float mCircleRadius;
 
     private boolean mReverseDirection = false;
@@ -153,6 +154,14 @@ public class CircleLayoutForFAB extends FrameLayout {
         mReverseDirection = reverse;
     }
 
+    public void setOffset(float x, float y) {
+        mOffset.set(x, y);
+    }
+
+    public void addOffset(float dx, float dy) {
+        mOffset.offset(dx, dy);
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         float firstAngle = calcFirstAngle();
@@ -181,17 +190,17 @@ public class CircleLayoutForFAB extends FrameLayout {
             rect.set(childLeft, childTop, childRight, childBottom);
             mChildrenRect.union(rect);
         }
-        int dx = 0;
-        int dy = 0;
+        int dx = Math.round(mOffset.x);
+        int dy = Math.round(mOffset.y);
         if (mChildrenRect.left < getLeft()) {
-            dx = getLeft() - mChildrenRect.left;
+            dx += getLeft() - mChildrenRect.left;
         } else if (mChildrenRect.right > getRight()) {
-            dx = getRight() - mChildrenRect.right;
+            dx += getRight() - mChildrenRect.right;
         }
         if (mChildrenRect.top < getTop()) {
-            dy = getTop() - mChildrenRect.top;
+            dy += getTop() - mChildrenRect.top;
         } else if (mChildrenRect.bottom > getBottom()) {
-            dy = getBottom() - mChildrenRect.bottom;
+            dy += getBottom() - mChildrenRect.bottom;
         }
         for (int i = 0; i < count; ++i) {
             View child = getChildAt(i);
