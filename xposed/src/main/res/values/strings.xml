@@ -73,6 +73,7 @@
     <!-- internal -->
     <string name="action_kill">Kill App</string>
     <string name="action_power_menu">Power Menu</string>
+    <string name="action_select_keyboard">Select Keyboard</string>
     <!-- touch event -->
     <string name="action_double_tap">Double Tap</string>
     <string name="action_long_press">Long Press</string>

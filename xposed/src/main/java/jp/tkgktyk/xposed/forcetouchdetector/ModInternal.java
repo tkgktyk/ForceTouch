@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.view.KeyEvent;
+import android.view.inputmethod.InputMethodManager;
 
 import java.util.List;
 
@@ -100,6 +101,9 @@ public class ModInternal extends XposedModule {
                     killForegroundApp(context);
                 } else if (action.equals(FTD.ACTION_POWER_MENU)) {
                     showPowerMenu();
+                } else if (action.equals(FTD.ACTION_SELECT_KEYBOARD)) {
+                    InputMethodManager imeManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imeManager.showInputMethodPicker();
                 }
             } catch (Throwable t) {
                 logE(t);

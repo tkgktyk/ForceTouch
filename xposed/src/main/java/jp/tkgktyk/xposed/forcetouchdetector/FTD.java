@@ -29,6 +29,7 @@ import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -39,9 +40,11 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
@@ -77,6 +80,7 @@ public class FTD {
     // other internal functions
     public static final String ACTION_KILL = PREFIX_ACTION + "KILL";
     public static final String ACTION_POWER_MENU = PREFIX_ACTION + "POWER_MENU";
+    public static final String ACTION_SELECT_KEYBOARD = PREFIX_ACTION + "SWITCH_KEYBOARD";
     // touch event
     public static final String ACTION_DOUBLE_TAP = PREFIX_ACTION + "DOUBLE_TAP" + SUFFIX_TOUCH_ACTION;
     public static final String ACTION_LONG_PRESS = PREFIX_ACTION + "LONG_PRESS" + SUFFIX_TOUCH_ACTION;
@@ -88,6 +92,60 @@ public class FTD {
 
     public static final IntentFilter INTERNAL_ACTION_FILTER;
 
+    private static class Entry {
+        final int nameId;
+        final int iconId;
+
+        Entry(@StringRes int nameId, @DrawableRes int iconId) {
+            this.nameId = nameId;
+            this.iconId = iconId;
+        }
+    }
+    private static final Map<String, Entry> ENTRIES = Maps.newHashMap();
+
+    /**
+     * Entry actions
+     */
+    static {
+        //
+        // key action
+        //
+        ENTRIES.put(ACTION_BACK, new Entry(R.string.action_back, R.drawable.ic_sysbar_back));
+        ENTRIES.put(ACTION_HOME, new Entry(R.string.action_home, R.drawable.ic_sysbar_home));
+        ENTRIES.put(ACTION_RECENTS, new Entry(R.string.action_recents, R.drawable.ic_sysbar_recent));
+        ENTRIES.put(ACTION_FORWARD, new Entry(R.string.action_forward, R.drawable.ic_arrow_forward_white_24dp));
+        ENTRIES.put(ACTION_REFRESH, new Entry(R.string.action_refresh, R.drawable.ic_refresh_white_24dp));
+        ENTRIES.put(ACTION_SCROLL_UP_GLOBAL, new Entry(R.string.action_scroll_up, R.drawable.ic_vertical_align_top_white_24dp));
+        ENTRIES.put(ACTION_SCROLL_DOWN_GLOBAL, new Entry(R.string.action_scroll_down, R.drawable.ic_vertical_align_bottom_white_24dp));
+        ENTRIES.put(ACTION_VOLUME_UP, new Entry(R.string.action_volume_up, R.drawable.ic_volume_up_white_24dp));
+        ENTRIES.put(ACTION_VOLUME_DOWN, new Entry(R.string.action_volume_down, R.drawable.ic_volume_down_white_24dp));
+        ENTRIES.put(ACTION_SCREENSHOT, new Entry(R.string.action_screenshot, R.drawable.ic_camera_enhance_white_24dp));
+        ENTRIES.put(ACTION_LOCK_SCREEN, new Entry(R.string.action_lock_screen, R.drawable.ic_phonelink_lock_white_24dp));
+        ENTRIES.put(ACTION_LAST_APP, new Entry(R.string.action_last_app, R.drawable.ic_swap_horiz_white_24dp));
+        ENTRIES.put(ACTION_MENU, new Entry(R.string.action_menu, R.drawable.ic_menu_white_24dp));
+        //
+        // status bar
+        //
+        ENTRIES.put(ACTION_NOTIFICATIONS, new Entry(R.string.action_notifications, R.drawable.ic_notifications_none_white_24dp));
+        ENTRIES.put(ACTION_QUICK_SETTINGS, new Entry(R.string.action_quick_settings, R.drawable.ic_settings_white_24dp));
+        //
+        // internal function
+        //
+        ENTRIES.put(ACTION_KILL, new Entry(R.string.action_kill, R.drawable.ic_close_white_24dp));
+        ENTRIES.put(ACTION_POWER_MENU, new Entry(R.string.action_power_menu, R.drawable.ic_power_settings_new_white_24dp));
+        ENTRIES.put(ACTION_SELECT_KEYBOARD, new Entry(R.string.action_select_keyboard, R.drawable.ic_keyboard_white_24dp));
+        //
+        // touch action
+        ENTRIES.put(ACTION_DOUBLE_TAP, new Entry(R.string.action_double_tap, 0));
+        ENTRIES.put(ACTION_LONG_PRESS, new Entry(R.string.action_long_press, 0));
+        ENTRIES.put(ACTION_LONG_PRESS_FULL, new Entry(R.string.action_long_press_full, 0));
+        ENTRIES.put(ACTION_SCROLL_UP, new Entry(R.string.action_scroll_up, R.drawable.ic_vertical_align_top_white_24dp));
+        ENTRIES.put(ACTION_SCROLL_DOWN, new Entry(R.string.action_scroll_down, R.drawable.ic_vertical_align_bottom_white_24dp));
+        //
+        // local action
+        //
+        ENTRIES.put(ACTION_FLOATING_ACTION, new Entry(R.string.action_floating_action, R.drawable.ic_floating_action));
+    }
     /**
      * IntentFilters initialization
      */
@@ -113,6 +171,7 @@ public class FTD {
         // other internal
         INTERNAL_ACTION_FILTER.addAction(ACTION_KILL);
         INTERNAL_ACTION_FILTER.addAction(ACTION_POWER_MENU);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_SELECT_KEYBOARD);
     }
 
     public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
@@ -122,143 +181,19 @@ public class FTD {
 
     @NonNull
     public static String getActionName(Context context, String action) {
-        Context mod = getModContext(context);
-        //
-        // Key action
-        //
-        if (action.equals(ACTION_BACK)) {
-            return mod.getString(R.string.action_back);
-        } else if (action.equals(ACTION_HOME)) {
-            return mod.getString(R.string.action_home);
-        } else if (action.equals(ACTION_RECENTS)) {
-            return mod.getString(R.string.action_recents);
-        } else if (action.equals(ACTION_FORWARD)) {
-            return mod.getString(R.string.action_forward);
-        } else if (action.equals(ACTION_REFRESH)) {
-            return mod.getString(R.string.action_refresh);
-        } else if (action.equals(ACTION_SCROLL_UP_GLOBAL)) {
-            return mod.getString(R.string.action_scroll_up);
-        } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
-            return mod.getString(R.string.action_scroll_down);
-        } else if (action.equals(ACTION_VOLUME_UP)) {
-            return mod.getString(R.string.action_volume_up);
-        } else if (action.equals(ACTION_VOLUME_DOWN)) {
-            return mod.getString(R.string.action_volume_down);
-        } else if (action.equals(ACTION_SCREENSHOT)) {
-            return mod.getString(R.string.action_screenshot);
-        } else if (action.equals(ACTION_LOCK_SCREEN)) {
-            return mod.getString(R.string.action_lock_screen);
-        } else if (action.equals(ACTION_LAST_APP)) {
-            return mod.getString(R.string.action_last_app);
-        } else if (action.equals(ACTION_MENU)) {
-            return mod.getString(R.string.action_menu);
-
-            //
-            // status bar
-            //
-        } else if (action.equals(ACTION_NOTIFICATIONS)) {
-            return mod.getString(R.string.action_notifications);
-        } else if (action.equals(ACTION_QUICK_SETTINGS)) {
-            return mod.getString(R.string.action_quick_settings);
-
-            //
-            // Other internal functions
-            //
-        } else if (action.equals(ACTION_KILL)) {
-            return mod.getString(R.string.action_kill);
-        } else if (action.equals(ACTION_POWER_MENU)) {
-            return mod.getString(R.string.action_power_menu);
-
-            //
-            // Touch action
-            //
-        } else if (action.equals(ACTION_DOUBLE_TAP)) {
-            return mod.getString(R.string.action_double_tap);
-        } else if (action.equals(ACTION_LONG_PRESS)) {
-            return mod.getString(R.string.action_long_press);
-        } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
-            return mod.getString(R.string.action_long_press_full);
-        } else if (action.equals(ACTION_SCROLL_UP)) {
-            return mod.getString(R.string.action_scroll_up);
-        } else if (action.equals(ACTION_SCROLL_DOWN)) {
-            return mod.getString(R.string.action_scroll_down);
-
-            //
-            // other local function
-            //
-        } else if (action.equals(ACTION_FLOATING_ACTION)) {
-            return mod.getString(R.string.action_floating_action);
+        Entry entry = ENTRIES.get(action);
+        if (entry != null) {
+            Context mod = getModContext(context);
+            return mod.getString(ENTRIES.get(action).nameId);
         }
         return "";
     }
 
     @DrawableRes
     public static int getActionIconResource(String action) {
-        //
-        // Key
-        //
-        if (action.equals(ACTION_BACK)) {
-            return R.drawable.ic_sysbar_back;
-        } else if (action.equals(ACTION_HOME)) {
-            return R.drawable.ic_sysbar_home;
-        } else if (action.equals(ACTION_RECENTS)) {
-            return R.drawable.ic_sysbar_recent;
-        } else if (action.equals(ACTION_FORWARD)) {
-            return R.drawable.ic_arrow_forward_white_24dp;
-        } else if (action.equals(ACTION_REFRESH)) {
-            return R.drawable.ic_refresh_white_24dp;
-        } else if (action.equals(ACTION_SCROLL_UP_GLOBAL)) {
-            return R.drawable.ic_vertical_align_top_white_24dp;
-        } else if (action.equals(ACTION_SCROLL_DOWN_GLOBAL)) {
-            return R.drawable.ic_vertical_align_bottom_white_24dp;
-        } else if (action.equals(ACTION_VOLUME_UP)) {
-            return R.drawable.ic_volume_up_white_24dp;
-        } else if (action.equals(ACTION_VOLUME_DOWN)) {
-            return R.drawable.ic_volume_down_white_24dp;
-        } else if (action.equals(ACTION_SCREENSHOT)) {
-            return R.drawable.ic_camera_enhance_white_24dp;
-        } else if (action.equals(ACTION_LOCK_SCREEN)) {
-            return R.drawable.ic_phonelink_lock_white_24dp;
-        } else if (action.equals(ACTION_LAST_APP)) {
-            return R.drawable.ic_swap_horiz_white_24dp;
-        } else if (action.equals(ACTION_MENU)) {
-            return R.drawable.ic_menu_white_24dp;
-
-            //
-            // status bar
-            //
-        } else if (action.equals(ACTION_NOTIFICATIONS)) {
-            return R.drawable.ic_notifications_none_white_24dp;
-        } else if (action.equals(ACTION_QUICK_SETTINGS)) {
-            return R.drawable.ic_settings_white_24dp;
-
-            //
-            // other internal function
-            //
-        } else if (action.equals(ACTION_KILL)) {
-            return R.drawable.ic_close_white_24dp;
-        } else if (action.equals(ACTION_POWER_MENU)) {
-            return R.drawable.ic_power_settings_new_white_24dp;
-
-            //
-            // touch aciton
-            //
-        } else if (action.equals(ACTION_DOUBLE_TAP)) {
-            return 0;
-        } else if (action.equals(ACTION_LONG_PRESS)) {
-            return 0;
-        } else if (action.equals(ACTION_LONG_PRESS_FULL)) {
-            return 0;
-        } else if (action.equals(ACTION_SCROLL_UP)) {
-            return R.drawable.ic_vertical_align_top_white_24dp;
-        } else if (action.equals(ACTION_SCROLL_DOWN)) {
-            return R.drawable.ic_vertical_align_bottom_white_24dp;
-
-            //
-            // other local action
-            //
-        } else if (action.equals(ACTION_FLOATING_ACTION)) {
-            return R.drawable.ic_floating_action;
+        Entry entry = ENTRIES.get(action);
+        if (entry != null) {
+            return entry.iconId;
         }
         return 0;
     }

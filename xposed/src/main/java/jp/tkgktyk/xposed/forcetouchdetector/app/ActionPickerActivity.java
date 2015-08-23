@@ -234,6 +234,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 // other
                 FTD.ACTION_KILL,
                 FTD.ACTION_POWER_MENU,
+                FTD.ACTION_SELECT_KEYBOARD,
                 // touch
                 FTD.ACTION_DOUBLE_TAP,
                 FTD.ACTION_LONG_PRESS,
@@ -269,6 +270,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 // status bar
                 FTD.ACTION_NOTIFICATIONS,
                 FTD.ACTION_QUICK_SETTINGS,
+                FTD.ACTION_SELECT_KEYBOARD,
                 // other
                 FTD.ACTION_KILL,
                 FTD.ACTION_POWER_MENU,
