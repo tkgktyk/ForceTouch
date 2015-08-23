@@ -138,6 +138,9 @@ public class MyApp extends BaseApplication {
                 record.intentUri = prefs.getString(key, "");
                 ActionInfo info = new ActionInfo(record);
                 Intent intent = info.getIntent();
+                if (intent == null) {
+                    continue;
+                }
                 if (Objects.equal(intent.getAction(), FTD.PREFIX_ACTION + "FLOATING_NAVIGATION")) {
                     intent.setAction(FTD.ACTION_FLOATING_ACTION);
                 }
