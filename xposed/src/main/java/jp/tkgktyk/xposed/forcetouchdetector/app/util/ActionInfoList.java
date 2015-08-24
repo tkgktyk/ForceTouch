@@ -27,16 +27,6 @@ import java.util.ArrayList;
  * Created by tkgktyk on 2015/07/05.
  */
 public class ActionInfoList extends ArrayList<ActionInfo> {
-    private static class RecordList extends ArrayList<ActionInfo.Record> {
-        public RecordList(int capacity) {
-            super(capacity);
-        }
-
-        public RecordList() {
-            super();
-        }
-    }
-
     public String toStringForPreference() {
         ArrayList<ActionInfo.Record> records = Lists.newArrayListWithCapacity(size());
         for (ActionInfo info : this) {
@@ -48,13 +38,13 @@ public class ActionInfoList extends ArrayList<ActionInfo> {
 
     @NonNull
     public static ActionInfoList fromPreference(String stringFromPreference) {
-        // RecordList.class doesn't work
-        RecordList records = new Gson().fromJson(stringFromPreference, new RecordList().getClass());
+        // cannot use List<ActionInfo> directly when Gson parses List<ActionInfo>.
+        ActionInfo.Record[] records = new Gson().fromJson(stringFromPreference, ActionInfo.Record[].class);
         if (records == null) {
             return new ActionInfoList();
         }
 
-        ActionInfoList actions = new ActionInfoList(records.size());
+        ActionInfoList actions = new ActionInfoList(records.length);
         for (ActionInfo.Record record : records) {
             actions.add(new ActionInfo(record));
         }
