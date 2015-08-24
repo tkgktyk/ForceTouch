@@ -30,6 +30,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
 
 /**
  * Created by tkgktyk on 2015/06/06.
@@ -200,6 +201,14 @@ public class MyApp extends BaseApplication {
                             prefs.getString(getString(R.string.key_size_threshold),
                                     ModForceTouch.Detector.DEFAULT_THRESHOLD))
                     .apply();
+        }
+        if (old.isOlderThan("0.4.2")) {
+            try {
+                ActionInfoList actions = ActionInfoList.fromPreference(
+                        prefs.getString(getString(R.string.key_floating_action_list), ""));
+            } catch (Exception e) {
+                prefs.edit().remove(getString(R.string.key_floating_action_list)).apply();
+            }
         }
     }
 
