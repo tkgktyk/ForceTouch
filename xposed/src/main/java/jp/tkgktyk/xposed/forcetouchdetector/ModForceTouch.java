@@ -350,7 +350,6 @@ public class ModForceTouch extends XposedModule {
     public static abstract class BaseForceGestureDetector extends Detector
             implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
         protected final GestureDetector mGestureDetector;
-        protected boolean mUseDoubleTap;
 
         private final int mDefaultTouchSlopSquare;
         private final int mDefaultDoubleTapTouchSlopSquare;
@@ -537,7 +536,7 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if (!mUseDoubleTap) {
+            if (!mSettings.useDoubleTap) {
                 // usually e is ACTION_UP event
                 return onSingleTapConfirmed(
                         (MotionEvent) XposedHelpers.getObjectField(mGestureDetector, "mCurrentDownEvent"));
