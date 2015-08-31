@@ -85,7 +85,7 @@ public class MyApp extends BaseApplication {
         }
 
         SharedPreferences prefs = getDefaultSharedPreferences();
-        setParameter(prefs.getBoolean(getString(R.string.key_use_pressure), false));
+        setMethod(prefs.getString(getString(R.string.key_detector_method), ""));
     }
 
     @Override
@@ -95,43 +95,43 @@ public class MyApp extends BaseApplication {
             prefs.edit()
                     .putBoolean("key_pressure_enabled",
                             prefs.getBoolean("key_enabled", false))
-                    .putString(getString(R.string.key_pressure_action_tap),
+                    .putString("key_pressure_action_tap",
                             prefs.getString("key_action_tap", ""))
-                    .putString(getString(R.string.key_pressure_action_double_tap),
+                    .putString("key_pressure_action_double_tap",
                             prefs.getString("key_action_double_tap", ""))
-                    .putString(getString(R.string.key_pressure_action_long_press),
+                    .putString("key_pressure_action_long_press",
                             prefs.getString("key_action_long_press", ""))
-                    .putString(getString(R.string.key_pressure_action_flick_left),
+                    .putString("key_pressure_action_flick_left",
                             prefs.getString("key_action_flick_left", ""))
-                    .putString(getString(R.string.key_pressure_action_flick_right),
+                    .putString("key_pressure_action_flick_right",
                             prefs.getString("key_action_flick_right", ""))
-                    .putString(getString(R.string.key_pressure_action_flick_up),
+                    .putString("key_pressure_action_flick_up",
                             prefs.getString("key_action_flick_up", ""))
-                    .putString(getString(R.string.key_pressure_action_flick_down),
+                    .putString("key_pressure_action_flick_down",
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
         }
         if (old.isOlderThan("0.2.1")) {
             prefs.edit()
-                    .putString(getString(R.string.key_pressure_action_flick_down),
+                    .putString("key_pressure_action_flick_down",
                             prefs.getString("key_action_flick_down", ""))
                     .apply();
         }
         String[] keys = {
-                getString(R.string.key_pressure_action_tap),
-                getString(R.string.key_pressure_action_double_tap),
-                getString(R.string.key_pressure_action_long_press),
-                getString(R.string.key_pressure_action_flick_left),
-                getString(R.string.key_pressure_action_flick_right),
-                getString(R.string.key_pressure_action_flick_up),
-                getString(R.string.key_pressure_action_flick_down),
-                getString(R.string.key_size_action_tap),
-                getString(R.string.key_size_action_double_tap),
-                getString(R.string.key_size_action_long_press),
-                getString(R.string.key_size_action_flick_left),
-                getString(R.string.key_size_action_flick_right),
-                getString(R.string.key_size_action_flick_up),
-                getString(R.string.key_size_action_flick_down),
+                "key_pressure_action_tap",
+                "key_pressure_action_double_tap",
+                "key_pressure_action_long_press",
+                "key_pressure_action_flick_left",
+                "key_pressure_action_flick_right",
+                "key_pressure_action_flick_up",
+                "key_pressure_action_flick_down",
+                "key_size_action_tap",
+                "key_size_action_double_tap",
+                "key_size_action_long_press",
+                "key_size_action_flick_left",
+                "key_size_action_flick_right",
+                "key_size_action_flick_up",
+                "key_size_action_flick_down",
         };
         if (old.isOlderThan("0.3.0")) {
             for (String key : keys) {
@@ -184,21 +184,21 @@ public class MyApp extends BaseApplication {
         if (old.isOlderThan("0.3.5")) {
             // rename enabled to enable
             prefs.edit()
-                    .putBoolean(getString(R.string.key_pressure_enable),
+                    .putBoolean("key_pressure_enable",
                             prefs.getBoolean("key_pressure_enabled", false))
-                    .putBoolean(getString(R.string.key_size_enable),
+                    .putBoolean("key_size_enable",
                             prefs.getBoolean("key_size_enabled", false))
-                    .putBoolean(getString(R.string.key_floating_action_enable),
+                    .putBoolean("key_floating_action_enable",
                             prefs.getBoolean("key_floating_action_enabled", false))
                     .apply();
         }
         if (old.isOlderThan("0.3.6")) {
             prefs.edit()
-                    .putString(getString(R.string.key_pressure_threshold_charging),
-                            prefs.getString(getString(R.string.key_pressure_threshold),
+                    .putString("key_pressure_threshold_charging",
+                            prefs.getString("key_pressure_threshold",
                                     ModForceTouch.Detector.DEFAULT_THRESHOLD))
-                    .putString(getString(R.string.key_size_threshold_charging),
-                            prefs.getString(getString(R.string.key_size_threshold),
+                    .putString("key_size_threshold_charging",
+                            prefs.getString("key_size_threshold",
                                     ModForceTouch.Detector.DEFAULT_THRESHOLD))
                     .apply();
         }
@@ -210,22 +210,89 @@ public class MyApp extends BaseApplication {
                 prefs.edit().remove(getString(R.string.key_floating_action_list)).apply();
             }
         }
+        if (old.isOlderThan("0.4.3")) {
+            boolean usePressure = prefs.getBoolean("key_use_pressure", false);
+            boolean pressure = prefs.getBoolean("key_pressure_enable", false);
+            boolean size = prefs.getBoolean("key_size_enable", false);
+            boolean largeTouch = prefs.getBoolean("key_large_touch_enable", false);
+            
+            if (pressure || (!size && usePressure && !largeTouch)) {
+                prefs.edit()
+                        .putString(getString(R.string.key_detector_method), FTD.METHOD_PRESSURE.toString())
+                        .putBoolean(getString(R.string.key_force_touch_enable), pressure)
+                        .putString(getString(R.string.key_force_touch_threshold),
+                                prefs.getString("key_pressure_threshold", ""))
+                        .putString(getString(R.string.key_force_touch_threshold_charging),
+                                prefs.getString("key_pressure_threshold_charging", ""))
+                        .putString(getString(R.string.key_force_touch_action_tap),
+                                prefs.getString("key_pressure_action_tap", ""))
+                        .putString(getString(R.string.key_force_touch_action_long_press),
+                                prefs.getString("key_pressure_action_long_press", ""))
+                        .putString(getString(R.string.key_force_touch_action_double_tap),
+                                prefs.getString("key_pressure_action_double_tap", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_left),
+                                prefs.getString("key_pressure_action_flick_left", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_right),
+                                prefs.getString("key_pressure_action_flick_right", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_up),
+                                prefs.getString("key_pressure_action_flick_up", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_down),
+                                prefs.getString("key_pressure_action_flick_down", ""))
+                        .apply();
+            } else if (size || (!pressure && !usePressure && !largeTouch)) {
+                prefs.edit()
+                        .putString(getString(R.string.key_detector_method), FTD.METHOD_SIZE.toString())
+                        .putBoolean(getString(R.string.key_force_touch_enable), size)
+                        .putString(getString(R.string.key_force_touch_threshold),
+                                prefs.getString("key_size_threshold", ""))
+                        .putString(getString(R.string.key_force_touch_threshold_charging),
+                                prefs.getString("key_size_threshold_charging", ""))
+                        .putString(getString(R.string.key_force_touch_action_tap),
+                                prefs.getString("key_size_action_tap", ""))
+                        .putString(getString(R.string.key_force_touch_action_long_press),
+                                prefs.getString("key_size_action_long_press", ""))
+                        .putString(getString(R.string.key_force_touch_action_double_tap),
+                                prefs.getString("key_size_action_double_tap", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_left),
+                                prefs.getString("key_size_action_flick_left", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_right),
+                                prefs.getString("key_size_action_flick_right", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_up),
+                                prefs.getString("key_size_action_flick_up", ""))
+                        .putString(getString(R.string.key_force_touch_action_flick_down),
+                                prefs.getString("key_size_action_flick_down", ""))
+                        .apply();
+            } else {
+                prefs.edit()
+                        .putString(getString(R.string.key_detector_method),
+                                usePressure ? FTD.METHOD_PRESSURE.toString() : FTD.METHOD_SIZE.toString())
+                        .putBoolean(getString(R.string.key_force_touch_enable), largeTouch)
+                        .putString(getString(R.string.key_force_touch_threshold),
+                                prefs.getString("key_large_touch_threshold", ""))
+                        .putString(getString(R.string.key_force_touch_threshold_charging),
+                                prefs.getString("key_large_touch_threshold_charging", ""))
+                        .putString(getString(R.string.key_force_touch_action_tap),
+                                prefs.getString("key_large_touch_action_tap", ""))
+                        .putString(getString(R.string.key_force_touch_action_long_press),
+                                prefs.getString("key_large_touch_action_long_press", ""))
+                        .apply();
+            }
+        }
     }
 
     public static void updateService(Context context, SharedPreferences prefs) {
         FTD.Settings settings = new FTD.Settings(context, prefs);
-        updateService(context, settings.pressure.enable, settings.size.enable,
-                settings.largeTouchEnable, settings.knuckleTouchEnable,
+        updateService(context, settings.forceTouchEnable, settings.knuckleTouchEnable,
                 settings.wiggleTouchEnable, settings.floatingActionEnable,
                 settings.showNotification);
     }
 
-    public static void updateService(Context context, boolean pressure, boolean size,
-                                     boolean large, boolean knuckle, boolean wiggle,
-                                     boolean floatingAction, boolean showNotification) {
+    public static void updateService(Context context, boolean force, boolean knuckle,
+                                     boolean wiggle, boolean floatingAction,
+                                     boolean showNotification) {
         Intent em = new Intent(context, EmergencyService.class);
         Intent fa = new Intent(context, FloatingActionService.class);
-        boolean ftdEnable = pressure || size || large || knuckle || wiggle;
+        boolean ftdEnable = force || knuckle || wiggle;
         if (ftdEnable) {
             if (floatingAction) {
                 context.stopService(em);
@@ -243,13 +310,21 @@ public class MyApp extends BaseApplication {
         }
     }
 
-    private static boolean mPressure;
+    private static int mMethod;
 
-    public static void setParameter(boolean pressure) {
-        mPressure = pressure;
+    public static void setMethod(String methodString) {
+        int method = FTD.METHOD_SIZE;
+        if (!Strings.isNullOrEmpty(methodString)) {
+            method = Integer.parseInt(methodString);
+        }
+        setMethod(method);
     }
 
-    public static float getParameter(MotionEvent event) {
-        return mPressure ? event.getPressure() : event.getSize();
+    public static void setMethod(int method) {
+        mMethod = method;
+    }
+
+    public static float readMethodParameter(MotionEvent event) {
+        return mMethod == FTD.METHOD_PRESSURE ? event.getPressure() : event.getSize();
     }
 }

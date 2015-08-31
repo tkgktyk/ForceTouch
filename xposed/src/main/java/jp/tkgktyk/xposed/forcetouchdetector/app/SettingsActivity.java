@@ -116,45 +116,32 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_header_settings);
 
             changeScreen(R.string.key_header_general, GeneralSettingsFragment.class);
-            changeScreen(R.string.key_header_pressure, PressureSettingsFragment.class);
-            changeScreen(R.string.key_header_size, SizeSettingsFragment.class);
-            changeScreen(R.string.key_header_large_touch, LargeTouchSettingsFragment.class,
-                    new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            MyApp.showToast(R.string.message_parameter);
-                            return true;
-                        }
-                    });
-            changeScreen(R.string.key_header_knuckle_touch, KnuckleTouchSettingsFragment.class,
-                    new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            MyApp.showToast(R.string.message_parameter);
-                            return true;
-                        }
-                    });
+            showListSummary(R.string.key_detector_method, new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    MyApp.setMethod((String) newValue);
+                    return true;
+                }
+            });
+            changeScreen(R.string.key_header_floating_action, FloatingActionSettingsFragment.class);
+            changeScreen(R.string.key_header_force_touch, ForceTouchSettingsFragment.class);
+            changeScreen(R.string.key_header_knuckle_touch, KnuckleTouchSettingsFragment.class);
             changeScreen(R.string.key_header_wiggle_touch, WiggleTouchSettingsFragment.class,
                     new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            if (MyApp.isDonated()) {
-                                MyApp.showToast(R.string.message_parameter);
-                                return true;
+                            if (!MyApp.isDonated()) {
+                                MyApp.showToast(R.string.message_unlock);
+                                return false;
                             }
-
-                            MyApp.showToast(R.string.message_unlock);
-                            return false;
+                            return true;
                         }
                     });
-            changeScreen(R.string.key_header_floating_action, FloatingActionSettingsFragment.class);
 
-            updateState(R.string.key_header_pressure, R.string.key_pressure_enable);
-            updateState(R.string.key_header_size, R.string.key_size_enable);
-            updateState(R.string.key_header_large_touch, R.string.key_large_touch_enable);
+            updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
+            updateState(R.string.key_header_force_touch, R.string.key_force_touch_enable);
             updateState(R.string.key_header_knuckle_touch, R.string.key_knuckle_touch_enable);
             updateState(R.string.key_header_wiggle_touch, R.string.key_wiggle_touch_enable);
-            updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -169,14 +156,12 @@ public class SettingsActivity extends BaseSettingsActivity {
         protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
             if (Objects.equal(key, getString(R.string.key_show_notification))) {
                 MyApp.updateService(getActivity(), sharedPreferences);
-            } else if (Objects.equal(key, getString(R.string.key_pressure_enable))) {
-                updateState(R.string.key_header_pressure, key);
-                MyApp.updateService(getActivity(), sharedPreferences);
-            } else if (Objects.equal(key, getString(R.string.key_size_enable))) {
-                updateState(R.string.key_header_size, key);
-                MyApp.updateService(getActivity(), sharedPreferences);
-            } else if (Objects.equal(key, getString(R.string.key_large_touch_enable))) {
-                updateState(R.string.key_header_large_touch, key);
+            } else if (Objects.equal(key, getString(R.string.key_floating_action_enable))) {
+                updateState(R.string.key_header_floating_action, key);
+//                MyApp.updateService(getActivity(), false, false, false, false, false, false, false);
+//                MyApp.updateService(getActivity(), sharedPreferences);
+            } else if (Objects.equal(key, getString(R.string.key_force_touch_enable))) {
+                updateState(R.string.key_header_force_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_knuckle_touch_enable))) {
                 updateState(R.string.key_header_knuckle_touch, key);
@@ -184,10 +169,6 @@ public class SettingsActivity extends BaseSettingsActivity {
             } else if (Objects.equal(key, getString(R.string.key_wiggle_touch_enable))) {
                 updateState(R.string.key_header_wiggle_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
-            } else if (Objects.equal(key, getString(R.string.key_floating_action_enable))) {
-                updateState(R.string.key_header_floating_action, key);
-//                MyApp.updateService(getActivity(), false, false, false, false, false, false, false);
-//                MyApp.updateService(getActivity(), sharedPreferences);
             }
         }
 
@@ -224,6 +205,9 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_general_settings);
 
             openActivity(R.string.key_detection_area, AreaActivity.class);
+            showTextSummary(R.string.key_detection_sensitivity);
+            showTextSummary(R.string.key_detection_window, R.string.unit_millisecond);
+            showTextSummary(R.string.key_extra_long_press_timeout, R.string.unit_millisecond);
             openActivityForResult(R.string.key_blacklist, AppSelectActivity.class,
                     REQUEST_BLACKLIST, new ExtraPutter() {
                         @Override
@@ -235,14 +219,16 @@ public class SettingsActivity extends BaseSettingsActivity {
                                     preference.getTitle(), blacklist);
                         }
                     });
-            setUpSwitch(R.string.key_show_notification);
-            showTextSummary(R.string.key_detection_sensitivity);
-            showTextSummary(R.string.key_detection_window, R.string.unit_millisecond);
-            showTextSummary(R.string.key_extra_long_press_timeout, R.string.unit_millisecond);
-            setUpSwitch(R.string.key_use_pressure, new OnSwitchChangeListener() {
+            showListSummary(R.string.key_ripple_color, new Preference.OnPreferenceChangeListener() {
                 @Override
-                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    MyApp.setParameter(enabled);
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int color = Color.parseColor((String) newValue);
+                    GradientDrawable drawable = new GradientDrawable();
+                    drawable.setColor(color);
+                    int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+                    drawable.setSize(size, size);
+                    preference.setIcon(drawable);
+                    return true;
                 }
             });
         }
@@ -264,6 +250,53 @@ public class SettingsActivity extends BaseSettingsActivity {
                 default:
                     super.onActivityResult(requestCode, resultCode, data);
             }
+        }
+    }
+
+    public static class FloatingActionSettingsFragment extends XposedFragment {
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_floating_action);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_floating_action_settings);
+
+            openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
+            showListSummary(R.string.key_floating_action_color, new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int color = Color.parseColor((String) newValue);
+                    GradientDrawable drawable = new GradientDrawable();
+                    drawable.setColor(color);
+                    int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+                    drawable.setSize(size, size);
+                    preference.setIcon(drawable);
+                    return true;
+                }
+            });
+            showTextSummary(R.string.key_floating_action_alpha);
+            showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
+            setUpSwitch(R.string.key_floating_action_recents, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
+                    if (fromUser && enabled &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                        startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
+            super.onSettingsChanged(sharedPreferences, key);
+            MyApp.updateService(getActivity(), false, false, false, false, false);
+            MyApp.updateService(getActivity(), FTD.getSharedPreferences(getActivity()));
         }
     }
 
@@ -330,85 +363,31 @@ public class SettingsActivity extends BaseSettingsActivity {
 
     }
 
-    public static class PressureSettingsFragment extends SettingsFragment {
+    public static class ForceTouchSettingsFragment extends SettingsFragment {
 
-        public PressureSettingsFragment() {
+        public ForceTouchSettingsFragment() {
         }
 
         @Override
         protected String getTitle() {
-            return getString(R.string.header_pressure);
+            return getString(R.string.header_force_touch);
         }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_pressure_settings);
+            addPreferencesFromResource(R.xml.pref_force_touch_settings);
 
             // Setting
-            setUpSwitch(R.string.key_pressure_enable);
-            openActivity(R.string.key_pressure_threshold, PressureThresholdActivity.class);
+            openActivity(R.string.key_force_touch_threshold, ThresholdActivity.ForceTouch.class);
             // Action
-            pickAction(R.string.key_pressure_action_tap);
-            pickAction(R.string.key_pressure_action_double_tap);
-            pickAction(R.string.key_pressure_action_long_press);
-            pickAction(R.string.key_pressure_action_flick_left);
-            pickAction(R.string.key_pressure_action_flick_right);
-            pickAction(R.string.key_pressure_action_flick_up);
-            pickAction(R.string.key_pressure_action_flick_down);
-        }
-    }
-
-    public static class SizeSettingsFragment extends SettingsFragment {
-
-        public SizeSettingsFragment() {
-        }
-
-        @Override
-        protected String getTitle() {
-            return getString(R.string.header_size);
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_size_settings);
-
-            // Setting
-            setUpSwitch(R.string.key_size_enable);
-            openActivity(R.string.key_size_threshold, SizeThresholdActivity.class);
-            // Action
-            pickAction(R.string.key_size_action_tap);
-            pickAction(R.string.key_size_action_double_tap);
-            pickAction(R.string.key_size_action_long_press);
-            pickAction(R.string.key_size_action_flick_left);
-            pickAction(R.string.key_size_action_flick_right);
-            pickAction(R.string.key_size_action_flick_up);
-            pickAction(R.string.key_size_action_flick_down);
-        }
-    }
-
-    public static class LargeTouchSettingsFragment extends SettingsFragment {
-
-        public LargeTouchSettingsFragment() {
-        }
-
-        @Override
-        protected String getTitle() {
-            return getString(R.string.header_large_touch);
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_large_touch_settings);
-
-            // Setting
-            setUpSwitch(R.string.key_large_touch_enable);
-            openActivity(R.string.key_large_touch_threshold, LargeThresholdActivity.class);
-            // Action
-            pickAction(R.string.key_large_touch_action_tap);
-            pickAction(R.string.key_large_touch_action_long_press);
+            pickAction(R.string.key_force_touch_action_tap);
+            pickAction(R.string.key_force_touch_action_double_tap);
+            pickAction(R.string.key_force_touch_action_long_press);
+            pickAction(R.string.key_force_touch_action_flick_left);
+            pickAction(R.string.key_force_touch_action_flick_right);
+            pickAction(R.string.key_force_touch_action_flick_up);
+            pickAction(R.string.key_force_touch_action_flick_down);
         }
     }
 
@@ -428,8 +407,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_knuckle_touch_settings);
 
             // Setting
-            setUpSwitch(R.string.key_knuckle_touch_enable);
-            openActivity(R.string.key_knuckle_touch_threshold, KnuckleThresholdActivity.class);
+            openActivity(R.string.key_knuckle_touch_threshold, ThresholdActivity.KnuckleTouch.class);
             // Action
             pickAction(R.string.key_knuckle_touch_action_tap);
             pickAction(R.string.key_knuckle_touch_action_long_press);
@@ -452,59 +430,10 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_wiggle_touch_settings);
 
             // Setting
-            setUpSwitch(R.string.key_wiggle_touch_enable);
             showTextSummary(R.string.key_wiggle_touch_magnification);
             // Action
             pickAction(R.string.key_wiggle_touch_action_tap);
             pickAction(R.string.key_wiggle_touch_action_long_press);
-        }
-    }
-
-    public static class FloatingActionSettingsFragment extends XposedFragment {
-
-        @Override
-        protected String getTitle() {
-            return getString(R.string.header_floating_action);
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_floating_action_settings);
-
-            setUpSwitch(R.string.key_floating_action_enable);
-            openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
-            showListSummary(R.string.key_floating_action_color, new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    int color = Color.parseColor((String) newValue);
-                    GradientDrawable drawable = new GradientDrawable();
-                    drawable.setColor(color);
-                    int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-                    drawable.setSize(size, size);
-                    preference.setIcon(drawable);
-                    return true;
-                }
-            });
-            showTextSummary(R.string.key_floating_action_alpha);
-            showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
-            setUpSwitch(R.string.key_floating_action_recents, new OnSwitchChangeListener() {
-                @Override
-                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    if (fromUser && enabled &&
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-                        startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
-            super.onSettingsChanged(sharedPreferences, key);
-            MyApp.updateService(getActivity(), false, false, false, false, false, false, false);
-            MyApp.updateService(getActivity(), FTD.getSharedPreferences(getActivity()));
         }
     }
 

@@ -38,10 +38,9 @@ import com.google.common.base.Strings;
 
 import java.util.Collections;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
-import jp.tkgktyk.lib.ConfirmDialogFragment;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
@@ -50,8 +49,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
 /**
  * Created by tkgktyk on 2015/07/02.
  */
-public class FloatingActionActivity extends AppCompatActivity
-        implements ConfirmDialogFragment.OnConfirmedListener {
+public class FloatingActionActivity extends AppCompatActivity {
 
     private static final int REQUEST_ACTION = 1;
 
@@ -171,37 +169,16 @@ public class FloatingActionActivity extends AppCompatActivity
 
     @OnClick(R.id.add_fab)
     void onAddClicked(FloatingActionButton button) {
-        if (mAlreadySupported) {
-            openActionPicker();
-        } else {
-            ConfirmDialogFragment.newInstance(getSupportActionBar().getTitle().toString(),
-                    getString(R.string.message_supported), getString(R.string.already_supported),
-                    getString(R.string.back), null, CONFIRMED_SUPPORTED)
-                    .show(getSupportFragmentManager(), "add");
-        }
-    }
-
-    private void openActionPicker() {
         Intent intent = new Intent(this, ActionPickerActivity.class);
         ActionPickerActivity.putExtras(intent, getSupportActionBar().getTitle(), false);
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
-    @Override
-    public void onConfirmed(int requestCode, Bundle extras) {
-        switch (requestCode) {
-            case CONFIRMED_SUPPORTED:
-                mAlreadySupported = true;
-                openActionPicker();
-                break;
-        }
-    }
-
     @OnClick(R.id.test_button)
     void onTestClicked(Button button) {
         boolean saved = saveActionList();
-        if (mSettings.pressure.enable || mSettings.size.enable ||
-                mSettings.knuckleTouchEnable || mSettings.wiggleTouchEnable) {
+        if (mSettings.forceTouchEnable || mSettings.knuckleTouchEnable ||
+                mSettings.wiggleTouchEnable) {
             if (saved) {
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override

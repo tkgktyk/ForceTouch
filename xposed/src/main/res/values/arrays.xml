@@ -16,8 +16,7 @@
   -->
 
 <resources>
-    <!-- Boundary Color -->
-    <string-array name="colors_900">
+    <string-array name="color_names" translatable="false">
         <item>@string/red</item>
         <item>@string/pink</item>
         <item>@string/purple</item>
@@ -38,7 +37,34 @@
         <item>@string/grey</item>
         <item>@string/blue_grey</item>
         <item>@string/black</item>
+        <item>@string/transparent</item>
     </string-array>
+    <!-- Color 300 -->
+    <string-array name="color_values_300" translatable="false">
+        <item>#E57373</item>
+        <item>#F06292</item>
+        <item>#BA68C8</item>
+        <item>#9575CD</item>
+        <item>#7986CB</item>
+        <item>#64B5F6</item>
+        <item>#4FC3F7</item>
+        <item>#4DD0E1</item>
+        <item>#4DB6AC</item>
+        <item>#81C784</item>
+        <item>#AED581</item>
+        <item>#DCE775</item>
+        <item>#FFF176</item>
+        <item>#FFD54F</item>
+        <item>#FFB74D</item>
+        <item>#FF8A65</item>
+        <item>#A1887F</item>
+        <item>#E0E0E0</item>
+        <item>#90A4AE</item>
+        <item>#000000</item>
+        <item>#00000000</item>
+    </string-array>
+    <string name="default_ripple_color" translatable="false">#4FC3F7</string>
+    <!-- Color 900 -->
     <string-array name="color_values_900" translatable="false">
         <item>#B71C1C</item>
         <item>#880E4F</item>
@@ -60,6 +86,17 @@
         <item>#212121</item>
         <item>#263238</item>
         <item>#000000</item>
+        <item>#00000000</item>
     </string-array>
-    <string name="default_floating_action_color">#000000</string>
+    <string name="default_floating_action_color" translatable="false">#000000</string>
+    <!-- Detector Method -->
+    <string-array name="detector_methods" translatable="false">
+        <item>@string/size</item>
+        <item>@string/pressure</item>
+    </string-array>
+    <string-array name="detector_method_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string name="default_detector_method_value" translatable="false">0</string>
 </resources>

@@ -38,6 +38,7 @@ import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -226,18 +227,28 @@ public class FloatingAction implements View.OnClickListener {
         mContainer = (MovableLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
         mContainer.getBackground().setAlpha(mSettings.floatingActionAlpha);
-        mContainer.setCallback(new MovableLayout.Callback() {
-            @Override
-            public void move(MovableLayout layout, float dx, float dy) {
-                mCircleLayout.addOffset(dx, dy);
-                mCircleLayout.requestLayout();
-            }
+        if (mSettings.floatingActionMovable) {
+            mContainer.setCallback(new MovableLayout.Callback() {
+                @Override
+                public void move(MovableLayout layout, float dx, float dy) {
+                    mCircleLayout.addOffset(dx, dy);
+                    mCircleLayout.requestLayout();
+                }
 
-            @Override
-            public void onClick(MovableLayout layout) {
-                hide();
-            }
-        });
+                @Override
+                public void onClick(MovableLayout layout) {
+                    hide();
+                }
+            });
+        } else {
+            mContainer.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    hide();
+                    return true;
+                }
+            });
+        }
         mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
         setUpAnimator();
         // force hide

@@ -101,6 +101,7 @@ public class FTD {
             this.iconId = iconId;
         }
     }
+
     private static final Map<String, Entry> ENTRIES = Maps.newHashMap();
 
     /**
@@ -146,6 +147,7 @@ public class FTD {
         //
         ENTRIES.put(ACTION_FLOATING_ACTION, new Entry(R.string.action_floating_action, R.drawable.ic_floating_action));
     }
+
     /**
      * IntentFilters initialization
      */
@@ -428,45 +430,55 @@ public class FTD {
         return modContext;
     }
 
+    public static final Integer METHOD_SIZE = 0;
+    public static final Integer METHOD_PRESSURE = 1;
+
     public static class Settings implements Serializable {
         static final long serialVersionUID = 1L;
 
         private final boolean isCharging;
-        public final boolean useDoubleTap;
-        public final boolean useGesture;
 
         // General
+        // Detector
         public final ScaleRect detectionArea;
         public final boolean detectionAreaMirror;
         public final boolean detectionAreaReverse;
-        public final Set<String> blacklist;
-        public final boolean showDisabledActionToast;
-        public final boolean showEnabledActionToast;
-        public final boolean showNotification;
         public final int detectionSensitivity;
         public final int detectionWindow;
         public final int extraLongPressTimeout;
-        public final boolean usePressure;
-
-        // Pressure
-        public final Holder pressure = new Holder();
-
-        // Size
-        public final Holder size = new Holder();
+        public final Set<String> blacklist;
+        // Feedback
+        public final boolean vibration;
+        public final int rippleColor;
+        // Display
+        public final boolean showDisabledActionToast;
+        public final boolean showEnabledActionToast;
+        public final boolean showNotification;
 
         // Floating Action
         public final boolean floatingActionEnable;
         public final int floatingActionColor;
         public final int floatingActionAlpha;
         public final int floatingActionTimeout;
+        public final boolean floatingActionMovable;
         public final boolean floatingActionRecents;
         public final boolean useLocalFAB;
 
-        // Large Touch
-        public final boolean largeTouchEnable;
-        public final float largeTouchThreshold;
-        public final ActionInfo.Record largeTouchActionTap;
-        public final ActionInfo.Record largeTouchActionLongPress;
+        // Detector
+        public final int detectorMethod;
+
+        // Force Touch
+        // Setting
+        public final boolean forceTouchEnable;
+        public final float forceTouchThreshold;
+        // Action
+        public final ActionInfo.Record forceTouchActionTap;
+        public final ActionInfo.Record forceTouchActionDoubleTap;
+        public final ActionInfo.Record forceTouchActionLongPress;
+        public final ActionInfo.Record forceTouchActionFlickLeft;
+        public final ActionInfo.Record forceTouchActionFlickRight;
+        public final ActionInfo.Record forceTouchActionFlickUp;
+        public final ActionInfo.Record forceTouchActionFlickDown;
 
         // Knuckle Touch
         public final boolean knuckleTouchEnable;
@@ -492,59 +504,47 @@ public class FTD {
             }
 
             // General
+            // Detector
             detectionArea = ScaleRect.fromPreference(prefs.getString("key_detection_area", ""));
             detectionAreaMirror = prefs.getBoolean("key_detection_area_mirror", false);
             detectionAreaReverse = prefs.getBoolean("key_detection_area_reverse", false);
+            detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "9"));
+            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
+            extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "300"));
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
+            // Feedback
+            vibration = prefs.getBoolean("key_vibration", true);
+            rippleColor = Color.parseColor(getStringToParse(prefs, "key_ripple_color", "#212121"));
+            // Display
             showDisabledActionToast = prefs.getBoolean("key_show_disabled_action_toast", true);
             showEnabledActionToast = prefs.getBoolean("key_show_enabled_action_toast", true);
             showNotification = prefs.getBoolean("key_show_notification", true);
-            detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "7"));
-            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
-            extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "0"));
-            usePressure = prefs.getBoolean("key_use_pressure", false);
 
-            // Pressure
-            pressure.enable = prefs.getBoolean("key_pressure_enable", false);
-            pressure.threshold = Float.parseFloat(getStringToParse(prefs,
-                    isCharging ? "key_pressure_threshold_charging" : "key_pressure_threshold",
+            // Floating Action
+            floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
+            floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
+            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
+            floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
+            floatingActionMovable = prefs.getBoolean("key_floating_action_movable", false);
+            floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
+            useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
+
+            // Detector
+            detectorMethod = Integer.parseInt(getStringToParse(prefs, "key_detector_method", "0"));
+
+            // Force Touch
+            forceTouchEnable = prefs.getBoolean("key_force_touch_enable", false);
+            forceTouchThreshold = Float.parseFloat(getStringToParse(prefs,
+                    isCharging ? "key_force_touch_threshold_charging" : "key_force_touch_threshold",
                     ModForceTouch.Detector.DEFAULT_THRESHOLD));
 
-            pressure.actionTap = getActionRecord(prefs, "key_pressure_action_tap");
-            pressure.actionDoubleTap = getActionRecord(prefs, "key_pressure_action_double_tap");
-            pressure.actionLongPress = getActionRecord(prefs, "key_pressure_action_long_press");
-            pressure.actionFlickLeft = getActionRecord(prefs, "key_pressure_action_flick_left");
-            pressure.actionFlickRight = getActionRecord(prefs, "key_pressure_action_flick_right");
-            pressure.actionFlickUp = getActionRecord(prefs, "key_pressure_action_flick_up");
-            pressure.actionFlickDown = getActionRecord(prefs, "key_pressure_action_flick_down");
-
-            // Size
-            size.enable = prefs.getBoolean("key_size_enable", false);
-            size.threshold = Float.parseFloat(getStringToParse(prefs,
-                    isCharging ? "key_size_threshold_charging" : "key_size_threshold",
-                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
-
-            size.actionTap = getActionRecord(prefs, "key_size_action_tap");
-            size.actionDoubleTap = getActionRecord(prefs, "key_size_action_double_tap");
-            size.actionLongPress = getActionRecord(prefs, "key_size_action_long_press");
-            size.actionFlickLeft = getActionRecord(prefs, "key_size_action_flick_left");
-            size.actionFlickRight = getActionRecord(prefs, "key_size_action_flick_right");
-            size.actionFlickUp = getActionRecord(prefs, "key_size_action_flick_up");
-            size.actionFlickDown = getActionRecord(prefs, "key_size_action_flick_down");
-
-            // double tap
-            useDoubleTap = doubleTap(pressure) || doubleTap(size);
-
-            // gesture
-            useGesture = gesture(pressure) || gesture(size);
-
-            // Large Touch
-            largeTouchEnable = prefs.getBoolean("key_large_touch_enable", false);
-            largeTouchThreshold = Float.parseFloat(getStringToParse(prefs,
-                    isCharging ? "key_large_touch_threshold_charging" : "key_large_touch_threshold",
-                    ModForceTouch.Detector.DEFAULT_THRESHOLD));
-            largeTouchActionTap = getActionRecord(prefs, "key_large_touch_action_tap");
-            largeTouchActionLongPress = getActionRecord(prefs, "key_large_touch_action_long_press");
+            forceTouchActionTap = getActionRecord(prefs, "key_force_touch_action_tap");
+            forceTouchActionDoubleTap = getActionRecord(prefs, "key_force_touch_action_double_tap");
+            forceTouchActionLongPress = getActionRecord(prefs, "key_force_touch_action_long_press");
+            forceTouchActionFlickLeft = getActionRecord(prefs, "key_force_touch_action_flick_left");
+            forceTouchActionFlickRight = getActionRecord(prefs, "key_force_touch_action_flick_right");
+            forceTouchActionFlickUp = getActionRecord(prefs, "key_force_touch_action_flick_up");
+            forceTouchActionFlickDown = getActionRecord(prefs, "key_force_touch_action_flick_down");
 
             // Knuckle Touch
             knuckleTouchEnable = prefs.getBoolean("key_knuckle_touch_enable", false);
@@ -559,14 +559,6 @@ public class FTD {
             wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
             wiggleTouchActionTap = getActionRecord(prefs, "key_wiggle_touch_action_tap");
             wiggleTouchActionLongPress = getActionRecord(prefs, "key_wiggle_touch_action_long_press");
-
-            // Floating Action
-            floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
-            floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
-            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
-            floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
-            floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
-            useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {
@@ -579,36 +571,6 @@ public class FTD {
 
         private ActionInfo.Record getActionRecord(SharedPreferences prefs, String key) {
             return ActionInfo.Record.fromPreference(prefs.getString(key, ""));
-        }
-
-        private boolean doubleTap(Holder holder) {
-            return holder.enable &&
-                    holder.actionDoubleTap.type != ActionInfo.TYPE_NONE;
-        }
-
-        private boolean gesture(Holder holder) {
-            return holder.enable &&
-                    holder.actionDoubleTap.type != ActionInfo.TYPE_NONE &&
-                    holder.actionFlickLeft.type != ActionInfo.TYPE_NONE &&
-                    holder.actionFlickUp.type != ActionInfo.TYPE_NONE &&
-                    holder.actionFlickRight.type != ActionInfo.TYPE_NONE &&
-                    holder.actionFlickDown.type != ActionInfo.TYPE_NONE;
-        }
-
-        public class Holder implements Serializable {
-            static final long serialVersionUID = 1L;
-
-            // Setting
-            public boolean enable;
-            public float threshold;
-            // Action
-            public ActionInfo.Record actionTap;
-            public ActionInfo.Record actionDoubleTap;
-            public ActionInfo.Record actionLongPress;
-            public ActionInfo.Record actionFlickLeft;
-            public ActionInfo.Record actionFlickRight;
-            public ActionInfo.Record actionFlickUp;
-            public ActionInfo.Record actionFlickDown;
         }
     }
 }

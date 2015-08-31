@@ -2,64 +2,56 @@
 <resources>
     <!-- Header -->
     <string name="key_header_general" translatable="false">key_header_general</string>
-    <string name="key_header_pressure" translatable="false">key_header_pressure</string>
-    <string name="key_header_size" translatable="false">key_header_size</string>
-    <string name="key_header_large_touch" translatable="false">key_header_large_touch</string>
+    <string name="key_header_floating_action" translatable="false">key_header_floating_action</string>
+    <string name="key_detector_method" translatable="false">key_detector_method</string>
+    <string name="key_header_force_touch" translatable="false">key_header_force_touch</string>
     <string name="key_header_knuckle_touch" translatable="false">key_header_knuckle_touch</string>
     <string name="key_header_wiggle_touch" translatable="false">key_header_wiggle_touch</string>
-    <string name="key_header_floating_action" translatable="false">key_header_floating_action</string>
     <string name="key_information" translatable="false">key_information</string>
     <string name="key_about" translatable="false">key_about</string>
     <string name="key_support" translatable="false">key_support</string>
     <string name="key_donate" translatable="false">key_donate</string>
 
     <!-- General -->
+    <!-- Detector -->
     <string name="key_detection_area" translatable="false">key_detection_area</string>
     <string name="key_detection_area_mirror" translatable="false">key_detection_area_mirror</string>
     <string name="key_detection_area_reverse" translatable="false">key_detection_area_reverse</string>
-    <string name="key_blacklist" translatable="false">key_blacklist</string>
-    <string name="key_show_disabled_action_toast" translatable="false">key_show_disabled_action_toast</string>
-    <string name="key_show_enabled_action_toast" translatable="false">key_show_enabled_action_toast</string>
-    <string name="key_show_notification" translatable="false">key_show_notification</string>
     <string name="key_detection_sensitivity" translatable="false">key_detection_sensitivity</string>
     <string name="key_detection_window" translatable="false">key_detection_window</string>
     <string name="key_extra_long_press_timeout" translatable="false">key_extra_long_press_timeout</string>
-    <string name="key_use_pressure" translatable="false">key_use_pressure</string>
+    <string name="key_blacklist" translatable="false">key_blacklist</string>
+    <!-- Feedback -->
+    <string name="key_vibration" translatable="false">key_vibration</string>
+    <string name="key_ripple_color" translatable="false">key_ripple_color</string>
+    <!-- Display -->
+    <string name="key_show_disabled_action_toast" translatable="false">key_show_disabled_action_toast</string>
+    <string name="key_show_enabled_action_toast" translatable="false">key_show_enabled_action_toast</string>
+    <string name="key_show_notification" translatable="false">key_show_notification</string>
 
-    <!-- Pressure -->
+    <!-- Floating Action -->
+    <string name="key_floating_action_enable" translatable="false">key_floating_action_enable</string>
+    <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
+    <string name="key_floating_action_color" translatable="false">key_floating_action_color</string>
+    <string name="key_floating_action_alpha" translatable="false">key_floating_action_alpha</string>
+    <string name="key_floating_action_timeout" translatable="false">key_floating_action_timeout</string>
+    <string name="key_floating_action_movable" translatable="false">key_floating_action_movable</string>
+    <string name="key_floating_action_recents" translatable="false">key_floating_action_recents</string>
+    <string name="key_use_local_fab" translatable="false">key_use_local_fab</string>
+
+    <!-- Force Touch -->
     <!-- Setting -->
-    <string name="key_pressure_enable" translatable="false">key_pressure_enable</string>
-    <string name="key_pressure_threshold" translatable="false">key_pressure_threshold</string>
-    <string name="key_pressure_threshold_charging" translatable="false">key_pressure_threshold_charging</string>
+    <string name="key_force_touch_enable" translatable="false">key_force_touch_enable</string>
+    <string name="key_force_touch_threshold" translatable="false">key_force_touch_threshold</string>
+    <string name="key_force_touch_threshold_charging" translatable="false">key_force_touch_threshold_charging</string>
     <!-- Action -->
-    <string name="key_pressure_action_tap" translatable="false">key_pressure_action_tap</string>
-    <string name="key_pressure_action_double_tap" translatable="false">key_pressure_action_double_tap</string>
-    <string name="key_pressure_action_long_press" translatable="false">key_pressure_action_long_press</string>
-    <string name="key_pressure_action_flick_left" translatable="false">key_pressure_action_flick_left</string>
-    <string name="key_pressure_action_flick_right" translatable="false">key_pressure_action_flick_right</string>
-    <string name="key_pressure_action_flick_up" translatable="false">key_pressure_action_flick_up</string>
-    <string name="key_pressure_action_flick_down" translatable="false">key_pressure_action_flick_down</string>
-
-    <!-- Size -->
-    <!-- Setting -->
-    <string name="key_size_enable" translatable="false">key_size_enable</string>
-    <string name="key_size_threshold" translatable="false">key_size_threshold</string>
-    <string name="key_size_threshold_charging" translatable="false">key_size_threshold_charging</string>
-    <!-- Action -->
-    <string name="key_size_action_tap" translatable="false">key_size_action_tap</string>
-    <string name="key_size_action_double_tap" translatable="false">key_size_action_double_tap</string>
-    <string name="key_size_action_long_press" translatable="false">key_size_action_long_press</string>
-    <string name="key_size_action_flick_left" translatable="false">key_size_action_flick_left</string>
-    <string name="key_size_action_flick_right" translatable="false">key_size_action_flick_right</string>
-    <string name="key_size_action_flick_up" translatable="false">key_size_action_flick_up</string>
-    <string name="key_size_action_flick_down" translatable="false">key_size_action_flick_down</string>
-
-    <!-- Large Touch -->
-    <string name="key_large_touch_enable" translatable="false">key_large_touch_enable</string>
-    <string name="key_large_touch_threshold" translatable="false">key_large_touch_threshold</string>
-    <string name="key_large_touch_threshold_charging" translatable="false">key_large_touch_threshold_charging</string>
-    <string name="key_large_touch_action_tap" translatable="false">key_large_touch_action_tap</string>
-    <string name="key_large_touch_action_long_press" translatable="false">key_large_touch_action_long_press</string>
+    <string name="key_force_touch_action_tap" translatable="false">key_force_touch_action_tap</string>
+    <string name="key_force_touch_action_double_tap" translatable="false">key_force_touch_action_double_tap</string>
+    <string name="key_force_touch_action_long_press" translatable="false">key_force_touch_action_long_press</string>
+    <string name="key_force_touch_action_flick_left" translatable="false">key_force_touch_action_flick_left</string>
+    <string name="key_force_touch_action_flick_right" translatable="false">key_force_touch_action_flick_right</string>
+    <string name="key_force_touch_action_flick_up" translatable="false">key_force_touch_action_flick_up</string>
+    <string name="key_force_touch_action_flick_down" translatable="false">key_force_touch_action_flick_down</string>
 
     <!-- Knuckle Touch -->
     <string name="key_knuckle_touch_enable" translatable="false">key_knuckle_touch_enable</string>
@@ -73,14 +65,5 @@
     <string name="key_wiggle_touch_magnification" translatable="false">key_wiggle_touch_magnification</string>
     <string name="key_wiggle_touch_action_tap" translatable="false">key_wiggle_touch_action_tap</string>
     <string name="key_wiggle_touch_action_long_press" translatable="false">key_wiggle_touch_action_long_press</string>
-    
-    <!-- Floating Action -->
-    <string name="key_floating_action_enable" translatable="false">key_floating_action_enable</string>
-    <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
-    <string name="key_floating_action_color" translatable="false">key_floating_action_color</string>
-    <string name="key_floating_action_alpha" translatable="false">key_floating_action_alpha</string>
-    <string name="key_floating_action_timeout" translatable="false">key_floating_action_timeout</string>
-    <string name="key_floating_action_recents" translatable="false">key_floating_action_recents</string>
-    <string name="key_use_local_fab" translatable="false">key_use_local_fab</string>
 
 </resources>

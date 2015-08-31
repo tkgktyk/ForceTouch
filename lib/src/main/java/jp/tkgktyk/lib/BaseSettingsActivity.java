@@ -216,10 +216,6 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             boolean onChange(EditTextPreference edit, String text);
         }
 
-        protected void setUpSwitch(@StringRes int id) {
-            setUpSwitch(id, null);
-        }
-
         protected void setUpSwitch(@StringRes int id, final OnSwitchChangeListener listener) {
             SwitchPreference sw = (SwitchPreference) findPreference(id);
             sw.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

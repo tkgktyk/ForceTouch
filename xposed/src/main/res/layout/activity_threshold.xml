@@ -43,23 +43,24 @@
         <RelativeLayout
             android:id="@+id/input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
 
             <TextView
-                android:id="@+id/pressure_threshold_description"
+                android:id="@+id/threshold_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/description_threshold"/>
 
             <!-- Pressure Threshold -->
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/pressure_threshold_container"
+                android:id="@+id/threshold_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/pressure_threshold_description">
+                android:layout_below="@id/threshold_description">
 
                 <EditText
-                    android:id="@+id/pressure_threshold"
+                    android:id="@+id/threshold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_threshold"
@@ -71,13 +72,13 @@
 
             <!-- Pressure Threshold (Charging) -->
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/pressure_threshold_charging_container"
+                android:id="@+id/threshold_charging_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/pressure_threshold_container">
+                android:layout_below="@id/threshold_container">
 
                 <EditText
-                    android:id="@+id/pressure_threshold_charging"
+                    android:id="@+id/threshold_charging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_threshold_charging"
@@ -86,58 +87,63 @@
         </RelativeLayout>
 
         <!-- Practice -->
-        <RelativeLayout
-            android:id="@+id/practice"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/input">
-            <!-- for tap -->
-            <TextView
-                android:id="@+id/max_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/max_f1_default"
-                android:textColor="?attr/colorAccent"/>
+            android:layout_height="0dp"
+            android:layout_above="@id/input"
+            android:layout_alignParentTop="true">
 
-            <TextView
-                android:id="@+id/tap_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:text="@string/parameter_f1_default"/>
-
-            <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
-                android:id="@+id/tap_button"
+            <RelativeLayout
+                android:id="@+id/practice"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_below="@id/max_pressure"
-                android:text="@string/please_tap_d1"/>
+                android:layout_height="wrap_content">
+                <!-- for tap -->
+                <TextView
+                    android:id="@+id/filtered_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/parameter_default"
+                    android:textColor="?attr/colorAccent"/>
 
-            <!-- for Force Touch -->
-            <TextView
-                android:id="@+id/ave_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tap_button"
-                android:text="@string/min_f1_default"
-                android:textColor="?attr/colorAccent"/>
+                <TextView
+                    android:id="@+id/raw_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/parameter_default"/>
 
-            <TextView
-                android:id="@+id/force_touch_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@id/tap_button"
-                android:text="@string/parameter_f1_default"/>
+                <Button
+                    android:id="@+id/button_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_below="@id/filtered_small"
+                    android:text="@string/please_tap_d1"/>
 
-            <jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton
-                android:id="@+id/force_touch_button"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@id/ave_pressure"
-                android:text="@string/please_force_touch_d1"/>
-        </RelativeLayout>
+                <!-- for Force Touch -->
+                <TextView
+                    android:id="@+id/filtered_large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/button_small"
+                    android:text="@string/parameter_default"
+                    android:textColor="?attr/colorAccent"/>
 
+                <TextView
+                    android:id="@+id/raw_large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/button_small"
+                    android:text="@string/parameter_default"/>
+
+                <Button
+                    android:id="@+id/button_large"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/filtered_large"
+                    android:text="@string/please_force_touch_d1"/>
+            </RelativeLayout>
+        </ScrollView>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -23,30 +23,18 @@
 
     <!-- Threshold Activity -->
     <string name="please_tap_d1">Tap this\n%1$d times or more</string>
-    <string name="max_f1">Max: %1$.04f</string>
-    <string name="max_f1_default">Max: ------</string>
     <string name="please_force_touch_d1">Force Touch this\n(press with flat thumb)\n%1$d times or more</string>
-    <string name="ave_f1">Ave: %1$.04f</string>
-    <string name="ave_f1_default">Ave: ------</string>
-    <string name="description_threshold">Input a number between Max and Ave by trial and error</string>
+    <string name="parameter_default">-----------</string>
+    <string name="max_f1">Max: %1$.04f</string>
+    <string name="min_f1">Min: %1$.04f</string>
+    <string name="raw_f1">Raw: %1$.04f</string>
+    <string name="description_threshold">Input number between Max and Min by trial and error</string>
     <string name="hint_threshold">Threshold</string>
     <string name="hint_threshold_charging">Threshold (charging)</string>
-    <!-- Pressure -->
-    <string name="label_pressure_threshold">Pressure Threshold</string>
-    <string name="pressure_f1">Pressure: %1$.04f</string>
-    <string name="pressure_f1_default">Pressure: ------</string>
-    <!-- Size -->
-    <string name="label_size_threshold">Size Threshold</string>
-    <string name="size_f1">Size: %1$.04f</string>
-    <string name="size_f1_default">Size: ------</string>
-    <!-- Large -->
-    <string name="label_large_threshold">Large Threshold</string>
-    <string name="parameter_f1">Parameter: %1$.04f</string>
-    <string name="parameter_f1_default">Parameter: ------</string>
-    <string name="min_f1">Min: %1$.04f</string>
-    <string name="min_f1_default">Min: ------</string>
+    <!-- Force Touch -->
+    <string name="label_force_touch_threshold">Upper Threshold</string>
     <!-- Knuckle -->
-    <string name="label_knuckle_threshold">Knuckle Threshold</string>
+    <string name="label_knuckle_touch_threshold">Lower Threshold</string>
     <string name="please_knuckle_touch_d1">Touch with Knuckle\n%1$d times or more</string>
 
     <!-- Action Picker -->
@@ -91,26 +79,21 @@
     <!-- Floating Action -->
     <string name="label_floating_action">@string/header_floating_action</string>
     <string name="test">Test</string>
-    <string name="note_floating_action">Enable pressure and/or size at first</string>
-    <string name="message_supported">This feature, customizing Floating Action, is in return for your support, discussion, donation and so on.</string>
-    <string name="back">Back</string>
-    <string name="already_supported">Already support</string>
+    <string name="note_floating_action">Enable at least one detector</string>
 
     <!-- Header -->
     <!-- Setting -->
     <string name="category_setting">Setting</string>
-    <string name="category_method1">Method1</string>
-    <string name="category_method2">Method2</string>
-    <string name="category_method3">Method3</string>
-    <string name="message_parameter">Note: choose parameter at general setting</string>
-    <string name="message_unlock">You have to get a key from donate button to unlock this feature.</string>
     <string name="header_general">General</string>
-    <string name="header_pressure">Pressure</string>
-    <string name="header_size">Size</string>
-    <string name="header_large_touch">Large Touch</string>
+    <string name="header_floating_action">Floating Action</string>
+    <string name="category_detector">Detector</string>
+    <string name="title_detector_method">Method</string>
+    <string name="size">Size</string>
+    <string name="pressure">Pressure</string>
+    <string name="header_force_touch">Force Touch</string>
     <string name="header_knuckle_touch">Knuckle Touch</string>
     <string name="header_wiggle_touch">Wiggle Touch</string>
-    <string name="header_floating_action">Floating Action</string>
+    <string name="message_unlock">You have to get a key app from donate button to unlock this feature.</string>
     <!-- Information -->
     <string name="category_information">Information</string>
     <string name="title_about">About</string>
@@ -122,42 +105,23 @@
     <string name="unit_millisecond">msec</string>
 
     <!-- General -->
+    <!-- Detector -->
     <string name="title_detection_area">Detection Area</string>
-    <string name="unit_detection_area">% from bottom of screen</string>
+    <string name="title_detection_window">Detection Window</string>
+    <string name="title_detection_sensitivity">Detection Sensitivity</string>
+    <string name="message_detection_sensitivity">0 to about 20 depending on hardware.\nIf 0, Force Touch is always interpreted as a flick. If too high value, it is always tap.</string>
+    <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
     <string name="title_blacklist">Blacklist</string>
     <string name="summary_blacklist">Stop app process for changes to take effect</string>
+    <!-- Feedback -->
+    <string name="category_feedback">Feedback</string>
+    <string name="title_vibration">Vibration</string>
+    <string name="title_ripple_color">Ripple Color</string>
+    <!-- Display -->
+    <string name="category_display">Display</string>
     <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
     <string name="title_show_notification">Notification</string>
-    <string name="title_detection_sensitivity">Detection Sensitivity</string>
-    <string name="message_detection_sensitivity">0 to about 20 depending on hardware.\nIf 0, Force Touch is always interpreted as a flick. If too high value, it is always tap.</string>
-    <string name="title_detection_window">Detection Window (Method1/3)</string>
-    <string name="title_extra_long_press_timeout">Extra Long Press Timeout (Method1/3)</string>
-    <string name="title_use_pressure">Use Pressure (Method2/3)</string>
-
-    <!-- Threshold -->
-    <string name="title_enable">Master Switch</string>
-    <string name="title_threshold">Threshold</string>
-    <string name="summary_threshold">Practice and adjust Force Touch</string>
-    <!-- Action -->
-    <string name="category_action">Action</string>
-    <string name="title_action_tap">Tap</string>
-    <string name="title_action_double_tap">Double Tap</string>
-    <string name="title_action_long_press">Long Press</string>
-    <string name="title_action_flick_left">Flick Left</string>
-    <string name="title_action_flick_right">Flick Right</string>
-    <string name="title_action_flick_up">Flick Up</string>
-    <string name="title_action_flick_down">Flick Down</string>
-
-    <!-- Large Touch -->
-    <string name="title_large_touch_action">Action</string>
-
-    <!-- Knuckle Touch -->
-    <string name="title_knuckle_touch_action">Action</string>
-
-    <!-- Wiggle Touch -->
-    <string name="title_wiggle_touch_magnification">Magnification</string>
-    <string name="title_wiggle_touch_action">Action</string>
 
     <!-- Floating Action -->
     <string name="title_floating_action_list">Actions</string>
@@ -183,14 +147,36 @@
     <string name="grey">Grey</string>
     <string name="blue_grey">Blue Grey</string>
     <string name="black">Black</string>
+    <string name="transparent">Transparent</string>
     <!-- Color END -->
     <string name="title_floating_action_alpha">Background Alpha</string>
     <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
     <string name="title_floating_action_timeout">Timeout</string>
     <string name="message_floating_action_timeout">Millisecond\n\"0\" is to disable</string>
+    <string name="title_floating_action_movable">Movable</string>
     <string name="title_floating_action_recents">Show Recent Apps</string>
     <string name="summary_floating_action_recents">Fill the arc with recent apps</string>
-    <string name="title_use_local_fab">Another Method</string>
+    <string name="title_use_local_fab">Use Another Method</string>
     <string name="summary_use_local_fab">Switch if you get force close</string>
+
+    <!-- Force Touch -->
+    <string name="title_large_touch_action">Action</string>
+    <!-- Threshold -->
+    <string name="title_enable">Master Switch</string>
+    <string name="title_threshold">Threshold</string>
+    <string name="summary_threshold">Practice and adjust Force Touch</string>
+    <!-- Action -->
+    <string name="category_action">Action</string>
+    <string name="title_action_tap">Tap</string>
+    <string name="title_action_long_press">Long Press</string>
+    <string name="category_gesture">Gesture</string>
+    <string name="title_action_double_tap">Double Tap</string>
+    <string name="title_action_flick_left">Flick Left</string>
+    <string name="title_action_flick_right">Flick Right</string>
+    <string name="title_action_flick_up">Flick Up</string>
+    <string name="title_action_flick_down">Flick Down</string>
+
+    <!-- Wiggle Touch -->
+    <string name="title_wiggle_touch_magnification">Magnification</string>
 
 </resources>

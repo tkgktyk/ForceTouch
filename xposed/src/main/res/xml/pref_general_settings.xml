@@ -16,62 +16,81 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Force Touch Area -->
-    <Preference
-        android:icon="@null"
-        android:key="@string/key_detection_area"
-        android:title="@string/title_detection_area"/>
-    <!-- Detection Window -->
-    <EditTextPreference
-        android:defaultValue="1000"
-        android:dialogMessage="@string/unit_millisecond"
-        android:icon="@null"
-        android:inputType="numberSigned"
-        android:key="@string/key_detection_window"
-        android:title="@string/title_detection_window"/>
-    <!-- Detector Sensitivity -->
-    <EditTextPreference
-        android:defaultValue="7"
-        android:icon="@null"
-        android:inputType="number"
-        android:dialogMessage="@string/message_detection_sensitivity"
-        android:key="@string/key_detection_sensitivity"
-        android:title="@string/title_detection_sensitivity"/>
-    <!-- Extra Long Press Timeout -->
-    <EditTextPreference
-        android:defaultValue="0"
-        android:dialogMessage="@string/unit_millisecond"
-        android:icon="@null"
-        android:inputType="number"
-        android:key="@string/key_extra_long_press_timeout"
-        android:title="@string/title_extra_long_press_timeout"/>
-    <!-- Blacklist -->
-    <Preference
-        android:icon="@null"
-        android:key="@string/key_blacklist"
-        android:summary="@string/summary_blacklist"
-        android:title="@string/title_blacklist"/>
-    <!-- Toast -->
-    <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="true"
-        android:icon="@null"
-        android:key="@string/key_show_disabled_action_toast"
-        android:title="@string/title_show_disabled_action_toast"/>
-    <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="true"
-        android:icon="@null"
-        android:key="@string/key_show_enabled_action_toast"
-        android:title="@string/title_show_enabled_action_toast"/>
-    <!-- Show Notification -->
-    <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="true"
-        android:icon="@null"
-        android:key="@string/key_show_notification"
-        android:title="@string/title_show_notification"/>
-    <!-- Use Pressure -->
-    <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="false"
-        android:icon="@null"
-        android:key="@string/key_use_pressure"
-        android:title="@string/title_use_pressure"/>
+    <!-- Detector -->
+    <PreferenceCategory
+        android:title="@string/category_detector">
+        <!-- Force Touch Area -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_detection_area"
+            android:title="@string/title_detection_area"/>
+        <!-- Detection Window -->
+        <EditTextPreference
+            android:defaultValue="1000"
+            android:dialogMessage="@string/unit_millisecond"
+            android:icon="@null"
+            android:inputType="numberSigned"
+            android:key="@string/key_detection_window"
+            android:title="@string/title_detection_window"/>
+        <!-- Detector Sensitivity -->
+        <EditTextPreference
+            android:defaultValue="9"
+            android:dialogMessage="@string/message_detection_sensitivity"
+            android:icon="@null"
+            android:inputType="number"
+            android:key="@string/key_detection_sensitivity"
+            android:title="@string/title_detection_sensitivity"/>
+        <!-- Extra Long Press Timeout -->
+        <EditTextPreference
+            android:defaultValue="300"
+            android:dialogMessage="@string/unit_millisecond"
+            android:icon="@null"
+            android:inputType="number"
+            android:key="@string/key_extra_long_press_timeout"
+            android:title="@string/title_extra_long_press_timeout"/>
+        <!-- Blacklist -->
+        <Preference
+            android:icon="@null"
+            android:key="@string/key_blacklist"
+            android:summary="@string/summary_blacklist"
+            android:title="@string/title_blacklist"/>
+    </PreferenceCategory>
+    <!-- Feedback -->
+    <PreferenceCategory
+        android:title="@string/category_feedback">
+        <!-- Vibration -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="true"
+            android:icon="@null"
+            android:key="@string/key_vibration"
+            android:title="@string/title_vibration"/>
+        <!-- Ripple Color -->
+        <ListPreference
+            android:defaultValue="@string/default_ripple_color"
+            android:entries="@array/color_names"
+            android:entryValues="@array/color_values_300"
+            android:key="@string/key_ripple_color"
+            android:title="@string/title_ripple_color"/>
+    </PreferenceCategory>
+    <!-- Display -->
+    <PreferenceCategory
+        android:title="@string/category_display">
+        <!-- Toast -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="true"
+            android:icon="@null"
+            android:key="@string/key_show_disabled_action_toast"
+            android:title="@string/title_show_disabled_action_toast"/>
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="true"
+            android:icon="@null"
+            android:key="@string/key_show_enabled_action_toast"
+            android:title="@string/title_show_enabled_action_toast"/>
+        <!-- Show Notification -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="true"
+            android:icon="@null"
+            android:key="@string/key_show_notification"
+            android:title="@string/title_show_notification"/>
+    </PreferenceCategory>
 </PreferenceScreen>

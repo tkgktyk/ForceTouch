@@ -30,37 +30,27 @@
             android:key="@string/key_header_floating_action"
             android:title="@string/header_floating_action"/>
     </PreferenceCategory>
-    <!-- Method1  -->
+    <!-- Detector  -->
     <PreferenceCategory
-        android:title="@string/category_method1">
-        <!-- Pressure -->
+        android:title="@string/category_detector">
+        <!-- Method -->
+        <ListPreference
+            android:defaultValue="@string/default_detector_method_value"
+            android:icon="@null"
+            android:key="@string/key_detector_method"
+            android:title="@string/title_detector_method"
+            android:entries="@array/detector_methods"
+            android:entryValues="@array/detector_method_values"/>
+        <!-- Force Touch -->
         <Preference
             android:icon="@null"
-            android:key="@string/key_header_pressure"
-            android:title="@string/header_pressure"/>
-        <!-- Size -->
-        <Preference
-            android:icon="@null"
-            android:key="@string/key_header_size"
-            android:title="@string/header_size"/>
-    </PreferenceCategory>
-    <!-- Method2  -->
-    <PreferenceCategory
-        android:title="@string/category_method2">
-        <!-- Large Touch -->
-        <Preference
-            android:icon="@null"
-            android:key="@string/key_header_large_touch"
-            android:title="@string/header_large_touch"/>
+            android:key="@string/key_header_force_touch"
+            android:title="@string/header_force_touch"/>
         <!-- Knuckle Touch -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_knuckle_touch"
             android:title="@string/header_knuckle_touch"/>
-    </PreferenceCategory>
-    <!-- Method3  -->
-    <PreferenceCategory
-        android:title="@string/category_method3">
         <!-- Wiggle Touch -->
         <Preference
             android:icon="@null"

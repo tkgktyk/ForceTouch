@@ -25,6 +25,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -33,136 +35,88 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.ModForceTouch;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
-import jp.tkgktyk.xposed.forcetouchdetector.app.util.PressureButton;
 
 /**
  * Created by tkgktyk on 2015/06/07.
  */
 public abstract class ThresholdActivity extends AppCompatActivity {
 
-    private static final int MAX_COUNT = 5;
-    private static final int AVERAGE_COUNT = 5;
+    private static final int FILTER_COUNT = 5;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.max_pressure)
-    TextView mMaxPressureText;
-    @Bind(R.id.tap_pressure)
-    TextView mTapPressureText;
-    @Bind(R.id.tap_button)
-    PressureButton mTapButton;
-    @Bind(R.id.ave_pressure)
-    TextView mAvePressureText;
-    @Bind(R.id.force_touch_pressure)
-    TextView mForceTouchPressureText;
-    @Bind(R.id.force_touch_button)
-    PressureButton mForceTouchButton;
-    @Bind(R.id.pressure_threshold)
-    EditText mPressureThreshold;
-    @Bind(R.id.pressure_threshold_charging)
-    EditText mPressureThresholdCharging;
+    @Bind(R.id.filtered_small)
+    TextView mFilteredSmallText;
+    @Bind(R.id.raw_small)
+    TextView mRawSmallText;
+    @Bind(R.id.button_small)
+    Button mSmallButton;
+    @Bind(R.id.filtered_large)
+    TextView mFilteredLargeText;
+    @Bind(R.id.raw_large)
+    TextView mRawLargeText;
+    @Bind(R.id.button_large)
+    Button mLargeButton;
+    @Bind(R.id.threshold)
+    EditText mThresholdEdit;
+    @Bind(R.id.threshold_charging)
+    EditText mThresholdChargingEdit;
 
     private boolean mIsChanged;
 
-    private final LinkedList<Float> mMaxPressureList = Lists.newLinkedList();
-    private final LinkedList<Float> mAvePressureList = Lists.newLinkedList();
-
-    protected abstract int getPressureResource();
+    protected final LinkedList<Float> mSmallList = Lists.newLinkedList();
+    protected final LinkedList<Float> mLargeList = Lists.newLinkedList();
 
     protected abstract String getThresholdKey();
 
     protected abstract String getThresholdChargingKey();
 
-    protected abstract float getParameter(MotionEvent event);
+    protected abstract void updateSmallText(float parameter);
+    protected abstract void updateLargeText(float parameter);
 
-    private void updateTapPressureText(float pressure) {
-        // size limited queue
-        mMaxPressureList.add(pressure);
-        if (mMaxPressureList.size() > MAX_COUNT) {
-            mMaxPressureList.remove();
-        }
-
-        mMaxPressureText.setText(getString(R.string.max_f1, getMaxPressure()));
-        mTapPressureText.setText(getString(getPressureResource(), pressure));
-    }
-
-    private float getMaxPressure() {
-        return Collections.max(mMaxPressureList);
-    }
-
-    private void updateForceTouchPressureText(float pressure) {
-        // size limited queue
-        mAvePressureList.add(pressure);
-        if (mAvePressureList.size() > AVERAGE_COUNT) {
-            mAvePressureList.remove();
-        }
-
-        mAvePressureText.setText(getString(R.string.ave_f1, getAvePressure()));
-        mForceTouchPressureText.setText(getString(getPressureResource(), pressure));
-    }
-
-    private float getAvePressure() {
-        float sum = 0;
-        for (float v : mAvePressureList) {
-            sum += v;
-        }
-        return sum / mAvePressureList.size();
-    }
+    protected abstract void setButtonText(int filterCount);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pressure_threshold);
+        setContentView(R.layout.activity_threshold);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mTapButton.setText(getString(R.string.please_tap_d1, MAX_COUNT));
-        mForceTouchButton.setText(getString(R.string.please_force_touch_d1, AVERAGE_COUNT));
+        setButtonText(FILTER_COUNT);
 
-        long detectionWindow = Long.parseLong(FTD.getSharedPreferences(this)
-                .getString(getString(R.string.key_detection_window), "0"));
-        mTapButton.setDetectionWindow(detectionWindow);
-        mTapButton.setOnPressedListener(new PressureButton.OnPressedListener() {
-            private float mPressure;
-
+        mSmallButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onStart(MotionEvent event) {
-                mPressure = getParameter(event);
-            }
-
-            @Override
-            public void onUpdate(MotionEvent event) {
-                mPressure = Math.max(mPressure, getParameter(event));
-            }
-
-            @Override
-            public void onStop() {
-                updateTapPressureText(mPressure);
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    float parameter = MyApp.readMethodParameter(event);
+                    mSmallList.add(parameter);
+                    if (mSmallList.size() > FILTER_COUNT) {
+                        mSmallList.remove();
+                    }
+                    updateSmallText(parameter);
+                }
+                return false;
             }
         });
-        mForceTouchButton.setDetectionWindow(detectionWindow);
-        mForceTouchButton.setOnPressedListener(new PressureButton.OnPressedListener() {
-            private float mPressure;
-
+        mLargeButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onStart(MotionEvent event) {
-                mPressure = getParameter(event);
-            }
-
-            @Override
-            public void onUpdate(MotionEvent event) {
-                mPressure = Math.max(mPressure, getParameter(event));
-            }
-
-            @Override
-            public void onStop() {
-                updateForceTouchPressureText(mPressure);
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    float parameter = MyApp.readMethodParameter(event);
+                    mLargeList.add(parameter);
+                    if (mLargeList.size() > FILTER_COUNT) {
+                        mLargeList.remove();
+                    }
+                    updateLargeText(parameter);
+                }
+                return false;
             }
         });
 
@@ -181,12 +135,12 @@ public abstract class ThresholdActivity extends AppCompatActivity {
                 mIsChanged = true;
             }
         };
-        mPressureThreshold.setText(prefs.getString(getThresholdKey(),
+        mThresholdEdit.setText(prefs.getString(getThresholdKey(),
                 ModForceTouch.Detector.DEFAULT_THRESHOLD));
-        mPressureThreshold.addTextChangedListener(textWatcher);
-        mPressureThresholdCharging.setText(prefs.getString(getThresholdChargingKey(),
+        mThresholdEdit.addTextChangedListener(textWatcher);
+        mThresholdChargingEdit.setText(prefs.getString(getThresholdChargingKey(),
                 ModForceTouch.Detector.DEFAULT_THRESHOLD));
-        mPressureThresholdCharging.addTextChangedListener(textWatcher);
+        mThresholdChargingEdit.addTextChangedListener(textWatcher);
     }
 
     @Override
@@ -217,10 +171,72 @@ public abstract class ThresholdActivity extends AppCompatActivity {
         if (mIsChanged) {
             FTD.getSharedPreferences(this)
                     .edit()
-                    .putString(getThresholdKey(), mPressureThreshold.getText().toString())
-                    .putString(getThresholdChargingKey(), mPressureThresholdCharging.getText().toString())
+                    .putString(getThresholdKey(), mThresholdEdit.getText().toString())
+                    .putString(getThresholdChargingKey(), mThresholdChargingEdit.getText().toString())
                     .apply();
             MyApp.showToast(R.string.saved);
+        }
+    }
+
+    public static class ForceTouch extends ThresholdActivity {
+
+        @Override
+        protected String getThresholdKey() {
+            return getString(R.string.key_force_touch_threshold);
+        }
+
+        @Override
+        protected String getThresholdChargingKey() {
+            return getString(R.string.key_force_touch_threshold_charging);
+        }
+
+        @Override
+        protected void updateSmallText(float parameter) {
+            mFilteredSmallText.setText(getString(R.string.max_f1, Collections.max(mSmallList)));
+            mRawSmallText.setText(getString(R.string.raw_f1, parameter));
+        }
+
+        @Override
+        protected void updateLargeText(float parameter) {
+            mFilteredLargeText.setText(getString(R.string.min_f1, Collections.min(mLargeList)));
+            mRawLargeText.setText(getString(R.string.raw_f1, parameter));
+        }
+
+        @Override
+        protected void setButtonText(int filterCount) {
+            mSmallButton.setText(getString(R.string.please_tap_d1, filterCount));
+            mLargeButton.setText(getString(R.string.please_force_touch_d1, filterCount));
+        }
+    }
+
+    public static class KnuckleTouch extends ThresholdActivity {
+
+        @Override
+        protected String getThresholdKey() {
+            return getString(R.string.key_knuckle_touch_threshold);
+        }
+
+        @Override
+        protected String getThresholdChargingKey() {
+            return getString(R.string.key_knuckle_touch_threshold_charging);
+        }
+
+        @Override
+        protected void updateSmallText(float parameter) {
+            mFilteredSmallText.setText(getString(R.string.max_f1, Collections.max(mSmallList)));
+            mRawSmallText.setText(getString(R.string.raw_f1, parameter));
+        }
+
+        @Override
+        protected void updateLargeText(float parameter) {
+            mFilteredLargeText.setText(getString(R.string.min_f1, Collections.min(mLargeList)));
+            mRawLargeText.setText(getString(R.string.raw_f1, parameter));
+        }
+
+        @Override
+        protected void setButtonText(int filterCount) {
+            mSmallButton.setText(getString(R.string.please_knuckle_touch_d1, filterCount));
+            mLargeButton.setText(getString(R.string.please_tap_d1, filterCount));
         }
     }
 }

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.view.GestureDetector;
@@ -84,10 +85,7 @@ public class ModForceTouch extends XposedModule {
                         return;
                     }
                     List<Detector> detectors = Lists.newArrayList();
-                    detectors.add(
-                            settings.detectionWindow > 0 ?
-                                    new ForceGestureDetector(decorView, settings) :
-                                    new SimpleForceGestureDetector(decorView, settings));
+                    detectors.add(new ForceGestureDetector(decorView, settings));
                     detectors.add(new LargeTouchDetector(decorView, settings));
                     detectors.add(new KnuckleTouchDetector(decorView, settings));
                     detectors.add(new WiggleTouchDetector(decorView, settings));
@@ -218,8 +216,9 @@ public class ModForceTouch extends XposedModule {
             mRippleSize = getContext().getResources().getDimensionPixelSize(android.R.dimen.app_icon_size) *
                     RIPPLE_SIZE;
             mRippleView.setLayoutParams(new ViewGroup.LayoutParams(mRippleSize, mRippleSize));
-            Context mod = FTD.getModContext(getContext());
-            mRippleView.setBackground(mod.getResources().getDrawable(R.drawable.force_touch_ripple));
+            GradientDrawable ripple = new GradientDrawable();
+            ripple.setShape(GradientDrawable.OVAL);
+            mRippleView.setBackground(ripple);
 
             PropertyValuesHolder holderScaleX = PropertyValuesHolder.ofFloat("scaleX", START_SCALE, 1.0f);
             PropertyValuesHolder holderScaleY = PropertyValuesHolder.ofFloat("scaleY", START_SCALE, 1.0f);
@@ -267,10 +266,17 @@ public class ModForceTouch extends XposedModule {
 
         public final void onSettingsLoaded(FTD.Settings settings) {
             mSettings = settings;
+            ((GradientDrawable) mRippleView.getBackground()).setColor(settings.rippleColor);
             onSettingsLoaded();
         }
 
         protected abstract void onSettingsLoaded();
+
+        protected float getMethodParameter(MotionEvent event, int index) {
+            return mSettings.detectorMethod == FTD.METHOD_PRESSURE ?
+                    ForceTouchDetector.getPressure(event, index) :
+                    ForceTouchDetector.getSize(event, index);
+        }
 
         protected Context getContext() {
             return mTargetView.getContext();
@@ -345,9 +351,27 @@ public class ModForceTouch extends XposedModule {
                 }
             }, 1);
         }
+
+        protected void performHapticFeedback() {
+            if (mSettings.vibration) {
+                mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+        }
     }
 
-    public static abstract class BaseForceGestureDetector extends Detector
+    private static boolean gesture(FTD.Settings settings) {
+        return settings.forceTouchActionDoubleTap.type != ActionInfo.TYPE_NONE ||
+                settings.forceTouchActionFlickLeft.type != ActionInfo.TYPE_NONE ||
+                settings.forceTouchActionFlickUp.type != ActionInfo.TYPE_NONE ||
+                settings.forceTouchActionFlickRight.type != ActionInfo.TYPE_NONE ||
+                settings.forceTouchActionFlickDown.type != ActionInfo.TYPE_NONE;
+    }
+
+    private static boolean doubleTap(FTD.Settings settings) {
+        return settings.forceTouchActionDoubleTap.type != ActionInfo.TYPE_NONE;
+    }
+
+    private static abstract class BaseForceGestureDetector extends Detector
             implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
         protected final GestureDetector mGestureDetector;
 
@@ -358,6 +382,9 @@ public class ModForceTouch extends XposedModule {
 
         private final Handler mDefaultGestureHandler;
         private final GestureHandler mGestureHandler;
+
+        private boolean mUseDoubleTap;
+        protected boolean mUseGesture;
 
         private long mDownTime;
 
@@ -424,33 +451,17 @@ public class ModForceTouch extends XposedModule {
             XposedHelpers.setIntField(mGestureDetector, "mMinimumFlingVelocity",
                     mDefaultMinimumFlingVelocity * n); // 50 * density
 
-            if (mSettings.useDoubleTap) {
-                mGestureDetector.setOnDoubleTapListener(this);
-            } else {
-                mGestureDetector.setOnDoubleTapListener(null);
-            }
+            mUseDoubleTap = doubleTap(mSettings);
+            mGestureDetector.setOnDoubleTapListener(mUseDoubleTap ? this : null);
+
+            mUseGesture = gesture(mSettings);
         }
 
-        protected FTD.Settings.Holder judgeForceTouch(MotionEvent event) {
-//            logD("index=" + event.getActionIndex());
-//            logD(event.toString());
-//            logD("pressure=" + event.getPressure());
-//            logD("size=" + event.getSize());
-            return judgeForceTouch(event, event.getActionIndex());
-        }
-
-        protected FTD.Settings.Holder judgeForceTouch(MotionEvent event, int index) {
+        protected boolean judgeForceTouch(MotionEvent event, int index) {
             if (isInDetectionArea(event.getX(index), event.getY(index))) {
-                // pressure and size
-                if (mSettings.pressure.enable &&
-                        event.getPressure(index) > mSettings.pressure.threshold) {
-                    return mSettings.pressure;
-                } else if (mSettings.size.enable &&
-                        event.getSize(index) > mSettings.size.threshold) {
-                    return mSettings.size;
-                }
+                return getMethodParameter(event, index) > mSettings.forceTouchThreshold;
             }
-            return null;
+            return false;
         }
 
         protected void consumeTouchEvent(int action, MotionEvent base, int pointerId) {
@@ -474,18 +485,6 @@ public class ModForceTouch extends XposedModule {
             event.recycle();
         }
 
-        protected boolean judgeAndStartForceTouch(MotionEvent event) {
-            int index = event.getActionIndex();
-            FTD.Settings.Holder holder = judgeForceTouch(event);
-            if (holder != null) {
-                // feedback
-                mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                startRipple(event, index);
-                return true;
-            }
-            return false;
-        }
-
         protected void cancelOriginalTouchEvent(MotionEvent event,
                                                 XC_MethodHook.MethodHookParam methodHookParam) {
             // cancel other touch events
@@ -504,19 +503,13 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (holder != null) {
-                performAction(holder.actionTap, e, "force tap");
-            }
+            performAction(mSettings.forceTouchActionTap, e, "force tap");
             return true;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (holder != null) {
-                performAction(holder.actionDoubleTap, e, "force double tap");
-            }
+            performAction(mSettings.forceTouchActionDoubleTap, e, "force double tap");
             return true;
         }
 
@@ -536,7 +529,7 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if (!mSettings.useDoubleTap) {
+            if (!mUseDoubleTap) {
                 // usually e is ACTION_UP event
                 return onSingleTapConfirmed(
                         (MotionEvent) XposedHelpers.getObjectField(mGestureDetector, "mCurrentDownEvent"));
@@ -552,122 +545,33 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            FTD.Settings.Holder holder = judgeForceTouch(e);
-            if (holder != null) {
-                performAction(holder.actionLongPress, e, "force long press");
-            }
+            performHapticFeedback();
+            performAction(mSettings.forceTouchActionLongPress, e, "force long press");
         }
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            FTD.Settings.Holder holder = judgeForceTouch(e1);
-            if (holder != null) {
-                float x = e2.getX() - e1.getX();
-                float y = e2.getY() - e1.getY();
-                if (Math.abs(x) > Math.abs(y)) {
-                    if (x > 0) {
-                        performAction(holder.actionFlickRight, e2, "force flick right");
-                    } else {
-                        performAction(holder.actionFlickLeft, e2, "force flick left");
-                    }
+            performHapticFeedback();
+            float x = e2.getX() - e1.getX();
+            float y = e2.getY() - e1.getY();
+            if (Math.abs(x) > Math.abs(y)) {
+                if (x > 0) {
+                    performAction(mSettings.forceTouchActionFlickRight, e2, "force flick right");
                 } else {
-                    if (y > 0) {
-                        performAction(holder.actionFlickDown, e2, "force flick down");
-                    } else {
-                        performAction(holder.actionFlickUp, e2, "force flick up");
-                    }
+                    performAction(mSettings.forceTouchActionFlickLeft, e2, "force flick left");
+                }
+            } else {
+                if (y > 0) {
+                    performAction(mSettings.forceTouchActionFlickDown, e2, "force flick down");
+                } else {
+                    performAction(mSettings.forceTouchActionFlickUp, e2, "force flick up");
                 }
             }
             return true;
         }
     }
 
-    public static class SimpleForceGestureDetector extends BaseForceGestureDetector {
-        protected int mActivePointerId = INVALIDE_POINTER_ID;
-        protected boolean mIntercepted;
-
-        public SimpleForceGestureDetector(ViewGroup targetView, FTD.Settings settings) {
-            super(targetView, settings);
-        }
-
-        @Override
-        protected boolean dispatchTouchEvent(MotionEvent event) {
-            if (!mSettings.pressure.enable && !mSettings.size.enable) {
-                return false;
-            }
-
-            boolean consumed = mIntercepted;
-            switch (event.getActionMasked()) {
-                case MotionEvent.ACTION_DOWN: {
-                    if (judgeAndStartForceTouch(event)) {
-                        cancelOriginalTouchEvent(event, mMethodHookParam);
-                        // start force touch, intercept touch events
-                        mIntercepted = true;
-                        int index = event.getActionIndex();
-                        mActivePointerId = event.getPointerId(index);
-                        consumeTouchEvent(MotionEvent.ACTION_DOWN, event, mActivePointerId);
-                        consumed = true;
-                    }
-                    break;
-                }
-                case MotionEvent.ACTION_MOVE:
-                    // cannot get ActivePointer when ACTION_MODE
-//                    logD("getActionIndex = " + event.getActionIndex());
-//                    logD("getAction = " + ((event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
-//                            MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-//                    if (isActivePointer(event)) {
-                    if (mIntercepted) {
-                        consumeTouchEvent(MotionEvent.ACTION_MOVE, event, mActivePointerId);
-                    }
-//                        consumed = true;
-//                    }
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                case MotionEvent.ACTION_UP:
-                    if (mActivePointerId != INVALIDE_POINTER_ID) {
-                        // stop force touch
-                        consumeTouchEvent(MotionEvent.ACTION_UP, event, mActivePointerId);
-                        consumed = true;
-                        mActivePointerId = INVALIDE_POINTER_ID;
-                    }
-                    // finalize this (multi-)touch stroke
-                    mIntercepted = false;
-                    break;
-                case MotionEvent.ACTION_POINTER_DOWN:
-                    if (mActivePointerId == INVALIDE_POINTER_ID) {
-                        if (judgeAndStartForceTouch(event)) {
-                            cancelOriginalTouchEvent(event, mMethodHookParam);
-                            // start force touch, intercept touch events
-                            mIntercepted = true;
-                            int index = event.getActionIndex();
-                            mActivePointerId = event.getPointerId(index);
-                            consumeTouchEvent(MotionEvent.ACTION_DOWN, event, mActivePointerId);
-                            consumed = true;
-                        }
-                    }
-                    break;
-                case MotionEvent.ACTION_POINTER_UP:
-                    int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
-                            MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    int pointerId = event.getPointerId(pointerIndex);
-                    if (pointerId == mActivePointerId) {
-                        // stop force touch
-                        consumeTouchEvent(MotionEvent.ACTION_UP, event, mActivePointerId);
-                        consumed = true;
-                        mActivePointerId = INVALIDE_POINTER_ID;
-                    }
-                    break;
-            }
-
-            // intercept ACTION_UP and ACTION_CANCEL too when intercepted
-            // because already send ACTION_CANCEL to target view when force touch is started.
-            return consumed || mIntercepted;
-        }
-    }
-
-    public static class ForceGestureDetector extends BaseForceGestureDetector {
+    private static class ForceGestureDetector extends BaseForceGestureDetector {
         protected int mActivePointerId = INVALIDE_POINTER_ID;
         protected boolean mIntercepted;
 
@@ -686,7 +590,7 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            if (!mSettings.pressure.enable && !mSettings.size.enable) {
+            if (!mSettings.forceTouchEnable || !mUseGesture) {
                 return false;
             }
             boolean consumed = mIntercepted;
@@ -704,16 +608,16 @@ public class ModForceTouch extends XposedModule {
             }
             if (mIsDetectionWindowOpened) {
                 int count = event.getPointerCount();
-                FTD.Settings.Holder holder = null;
+                boolean forceTouch = false;
                 int index = 0;
                 for (; index < count; ++index) {
-                    holder = judgeForceTouch(event, index);
-                    if (holder != null) {
+                    forceTouch = judgeForceTouch(event, index);
+                    if (forceTouch) {
                         break;
                     }
                 }
-                if (holder != null) {
-                    mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                if (forceTouch) {
+                    performHapticFeedback();
                     startRipple(event, index);
 
                     mHandler.removeCallbacks(mStopDetector);
@@ -770,7 +674,7 @@ public class ModForceTouch extends XposedModule {
         }
     }
 
-    static abstract class BaseForceTouchDetector extends Detector
+    private static abstract class BaseForceTouchDetector extends Detector
             implements ForceTouchDetector.Callback {
         protected final ForceTouchDetector mForceTouchDetector;
 
@@ -795,14 +699,14 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public float getParameter(MotionEvent event, int index) {
-            return mSettings.usePressure ?
-                    ForceTouchDetector.getPressure(event, index) :
-                    ForceTouchDetector.getSize(event, index);
+            return getMethodParameter(event, index);
         }
     }
 
-    static class LargeTouchDetector extends BaseForceTouchDetector
+    private static class LargeTouchDetector extends BaseForceTouchDetector
             implements ForceTouchDetector.Callback {
+
+        private boolean mUseGesture;
 
         public LargeTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
@@ -817,12 +721,15 @@ public class ModForceTouch extends XposedModule {
             mForceTouchDetector.setBlockDragging(true);
             mForceTouchDetector.setMagnification(0);
             mForceTouchDetector.setMultipleForceTouch(false);
-            mForceTouchDetector.setLongClickable(mSettings.largeTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+            mForceTouchDetector.setLongClickable(mSettings.forceTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+
+            mUseGesture = gesture(mSettings);
         }
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.largeTouchEnable && mForceTouchDetector.onTouchEvent(event);
+            return mSettings.forceTouchEnable && !mUseGesture &&
+                    mForceTouchDetector.onTouchEvent(event);
         }
 
         @Override
@@ -832,17 +739,19 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onForceTap(float x, float y) {
-            performAction(mSettings.largeTouchActionTap, x, y, "large tap");
+            performAction(mSettings.forceTouchActionTap, x, y, "large tap");
         }
 
         @Override
         public void onForceLongPress(float x, float y) {
-            performAction(mSettings.largeTouchActionLongPress, x, y, "large long press");
+            performHapticFeedback();
+            performAction(mSettings.forceTouchActionLongPress, x, y, "large long press");
         }
 
         @Override
         public boolean onTouchDown(float x, float y, float size) {
-            if (isInDetectionArea(x, y) && size > mSettings.largeTouchThreshold) {
+            if (isInDetectionArea(x, y) && size > mSettings.forceTouchThreshold) {
+                performHapticFeedback();
                 startRipple(x, y);
                 return true;
             }
@@ -850,7 +759,7 @@ public class ModForceTouch extends XposedModule {
         }
     }
 
-    static class KnuckleTouchDetector extends BaseForceTouchDetector
+    private static class KnuckleTouchDetector extends BaseForceTouchDetector
             implements ForceTouchDetector.Callback {
 
         public KnuckleTouchDetector(ViewGroup targetView, FTD.Settings settings) {
@@ -886,12 +795,14 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onForceLongPress(float x, float y) {
+            performHapticFeedback();
             performAction(mSettings.knuckleTouchActionLongPress, x, y, "knuckle long press");
         }
 
         @Override
         public boolean onTouchDown(float x, float y, float size) {
             if (isInDetectionArea(x, y) && size < mSettings.knuckleTouchThreshold) {
+                performHapticFeedback();
                 startRipple(x, y);
                 return true;
             }
@@ -899,7 +810,7 @@ public class ModForceTouch extends XposedModule {
         }
     }
 
-    static class WiggleTouchDetector extends BaseForceTouchDetector
+    private static class WiggleTouchDetector extends BaseForceTouchDetector
             implements ForceTouchDetector.Callback {
 
         public WiggleTouchDetector(ViewGroup targetView, FTD.Settings settings) {
@@ -933,6 +844,7 @@ public class ModForceTouch extends XposedModule {
         @Override
         public boolean onForceTouch(float x, float y) {
             if (isInDetectionArea(x, y)) {
+                performHapticFeedback();
                 startRipple(x, y);
                 return true;
             }
@@ -946,6 +858,7 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onForceLongPress(float x, float y) {
+            performHapticFeedback();
             performAction(mSettings.wiggleTouchActionLongPress, x, y, "wiggle long press");
         }
 

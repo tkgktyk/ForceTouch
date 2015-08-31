@@ -31,7 +31,7 @@
     <!-- Color -->
     <ListPreference
         android:defaultValue="@string/default_floating_action_color"
-        android:entries="@array/colors_900"
+        android:entries="@array/color_names"
         android:entryValues="@array/color_values_900"
         android:key="@string/key_floating_action_color"
         android:title="@string/title_floating_action_color"/>
@@ -51,6 +51,12 @@
         android:inputType="number"
         android:key="@string/key_floating_action_timeout"
         android:title="@string/title_floating_action_timeout"/>
+    <!-- Movable -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="false"
+        android:icon="@null"
+        android:key="@string/key_floating_action_movable"
+        android:title="@string/title_floating_action_movable"/>
     <!-- Show Recents -->
     <jp.tkgktyk.lib.SwitchPreference
         android:defaultValue="false"
