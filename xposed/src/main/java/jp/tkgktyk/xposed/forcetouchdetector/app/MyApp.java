@@ -283,16 +283,16 @@ public class MyApp extends BaseApplication {
     public static void updateService(Context context, SharedPreferences prefs) {
         FTD.Settings settings = new FTD.Settings(context, prefs);
         updateService(context, settings.forceTouchEnable, settings.knuckleTouchEnable,
-                settings.wiggleTouchEnable, settings.floatingActionEnable,
-                settings.showNotification);
+                settings.wiggleTouchEnable, settings.scratchTouchEnable,
+                settings.floatingActionEnable, settings.showNotification);
     }
 
     public static void updateService(Context context, boolean force, boolean knuckle,
-                                     boolean wiggle, boolean floatingAction,
+                                     boolean wiggle, boolean scratch, boolean floatingAction,
                                      boolean showNotification) {
         Intent em = new Intent(context, EmergencyService.class);
         Intent fa = new Intent(context, FloatingActionService.class);
-        boolean ftdEnable = force || knuckle || wiggle;
+        boolean ftdEnable = force || knuckle || wiggle || scratch;
         if (ftdEnable) {
             if (floatingAction) {
                 context.stopService(em);
@@ -308,6 +308,13 @@ public class MyApp extends BaseApplication {
             context.stopService(em);
             context.stopService(fa);
         }
+    }
+
+    public static void stopService(Context context) {
+        Intent em = new Intent(context, EmergencyService.class);
+        Intent fa = new Intent(context, FloatingActionService.class);
+        context.stopService(em);
+        context.stopService(fa);
     }
 
     private static int mMethod;

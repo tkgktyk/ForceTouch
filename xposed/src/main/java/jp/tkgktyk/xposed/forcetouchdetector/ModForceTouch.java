@@ -89,6 +89,7 @@ public class ModForceTouch extends XposedModule {
                     detectors.add(new LargeTouchDetector(decorView, settings));
                     detectors.add(new KnuckleTouchDetector(decorView, settings));
                     detectors.add(new WiggleTouchDetector(decorView, settings));
+                    detectors.add(new ScratchTouchDetector(decorView, settings));
                     XposedHelpers.setAdditionalInstanceField(decorView,
                             FIELD_DETECTORS, detectors);
                 } catch (Throwable t) {
@@ -836,6 +837,7 @@ public class ModForceTouch extends XposedModule {
                 mForceTouchDetector.setMagnification(mSettings.wiggleTouchMagnification);
                 mForceTouchDetector.setMultipleForceTouch(false);
                 mForceTouchDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+                mForceTouchDetector.setType(ForceTouchDetector.TYPE_WIGGLE);
             }
         }
 
@@ -863,6 +865,65 @@ public class ModForceTouch extends XposedModule {
         public void onForceLongPress(float x, float y) {
             performHapticFeedback();
             performAction(mSettings.wiggleTouchActionLongPress, x, y, "wiggle long press");
+        }
+
+        @Override
+        public boolean onTouchDown(float x, float y, float size) {
+            return false;
+        }
+    }
+    
+    private static class ScratchTouchDetector extends BaseForceTouchDetector
+            implements ForceTouchDetector.Callback {
+
+        public ScratchTouchDetector(ViewGroup targetView, FTD.Settings settings) {
+            super(targetView, settings);
+        }
+
+        @Override
+        public void onSettingsLoaded() {
+            if (mForceTouchDetector != null) {
+                final int delay = 100;
+                int window = mSettings.detectionWindow - delay;
+                if (window < 0) {
+                    window = 0;
+                }
+                mForceTouchDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
+                mForceTouchDetector.setWindowTimeInMillis(window);
+                mForceTouchDetector.setWindowDelayInMillis(delay);
+                mForceTouchDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+                mForceTouchDetector.setBlockDragging(true);
+                mForceTouchDetector.setMagnification(mSettings.scratchTouchMagnification);
+                mForceTouchDetector.setMultipleForceTouch(false);
+                mForceTouchDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+                mForceTouchDetector.setType(ForceTouchDetector.TYPE_SCRATCH);
+            }
+        }
+
+        @Override
+        protected boolean dispatchTouchEvent(MotionEvent event) {
+            return mSettings.scratchTouchEnable && mForceTouchDetector.onTouchEvent(event);
+        }
+
+        @Override
+        public boolean onForceTouch(float x, float y) {
+            if (isInDetectionArea(x, y)) {
+                performHapticFeedback();
+                startRipple(x, y);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onForceTap(float x, float y) {
+            performAction(mSettings.scratchTouchActionTap, x, y, "scratch tap");
+        }
+
+        @Override
+        public void onForceLongPress(float x, float y) {
+            performHapticFeedback();
+            performAction(mSettings.scratchTouchActionLongPress, x, y, "scratch long press");
         }
 
         @Override

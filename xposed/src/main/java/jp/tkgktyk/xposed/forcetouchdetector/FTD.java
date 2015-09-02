@@ -492,6 +492,12 @@ public class FTD {
         public final ActionInfo.Record wiggleTouchActionTap;
         public final ActionInfo.Record wiggleTouchActionLongPress;
 
+        // Scratch Touch
+        public final boolean scratchTouchEnable;
+        public final float scratchTouchMagnification;
+        public final ActionInfo.Record scratchTouchActionTap;
+        public final ActionInfo.Record scratchTouchActionLongPress;
+
         public Settings(Context context, SharedPreferences prefs) {
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = context.registerReceiver(null, ifilter);
@@ -559,6 +565,12 @@ public class FTD {
             wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
             wiggleTouchActionTap = getActionRecord(prefs, "key_wiggle_touch_action_tap");
             wiggleTouchActionLongPress = getActionRecord(prefs, "key_wiggle_touch_action_long_press");
+            
+            // Scratch Touch
+            scratchTouchEnable = prefs.getBoolean("key_scratch_touch_enable", false);
+            scratchTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_scratch_touch_magnification", "1.5"));
+            scratchTouchActionTap = getActionRecord(prefs, "key_scratch_touch_action_tap");
+            scratchTouchActionLongPress = getActionRecord(prefs, "key_scratch_touch_action_long_press");
         }
 
         private String getStringToParse(SharedPreferences prefs, String key, String defValue) {

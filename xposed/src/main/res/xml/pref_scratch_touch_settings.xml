@@ -23,14 +23,14 @@
         <jp.tkgktyk.lib.SwitchPreference
             android:defaultValue="false"
             android:icon="@null"
-            android:key="@string/key_wiggle_touch_enable"
+            android:key="@string/key_scratch_touch_enable"
             android:title="@string/title_enable"/>
         <!-- Magnification -->
         <EditTextPreference
             android:defaultValue="1.5"
             android:icon="@null"
             android:inputType="number"
-            android:key="@string/key_wiggle_touch_magnification"
+            android:key="@string/key_scratch_touch_magnification"
             android:title="@string/title_magnification"/>
     </PreferenceCategory>
 
@@ -40,12 +40,12 @@
         <!-- Tap -->
         <Preference
             android:defaultValue=""
-            android:key="@string/key_wiggle_touch_action_tap"
+            android:key="@string/key_scratch_touch_action_tap"
             android:title="@string/title_action_tap"/>
         <!-- Long Press -->
         <Preference
             android:defaultValue=""
-            android:key="@string/key_wiggle_touch_action_long_press"
+            android:key="@string/key_scratch_touch_action_long_press"
             android:title="@string/title_action_long_press"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -93,6 +93,7 @@
     <string name="header_force_touch">Force Touch</string>
     <string name="header_knuckle_touch">Knuckle Touch</string>
     <string name="header_wiggle_touch">Wiggle Touch</string>
+    <string name="header_scratch_touch">Scratch Touch</string>
     <string name="message_unlock">You have to get a key app from donate button to unlock this feature.</string>
     <!-- Information -->
     <string name="category_information">Information</string>
@@ -177,6 +178,6 @@
     <string name="title_action_flick_down">Flick Down</string>
 
     <!-- Wiggle Touch -->
-    <string name="title_wiggle_touch_magnification">Magnification</string>
+    <string name="title_magnification">Magnification</string>
 
 </resources>

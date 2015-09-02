@@ -137,11 +137,23 @@ public class SettingsActivity extends BaseSettingsActivity {
                             return true;
                         }
                     });
+            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class,
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            if (!MyApp.isDonated()) {
+                                MyApp.showToast(R.string.message_unlock);
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
 
             updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
             updateState(R.string.key_header_force_touch, R.string.key_force_touch_enable);
             updateState(R.string.key_header_knuckle_touch, R.string.key_knuckle_touch_enable);
             updateState(R.string.key_header_wiggle_touch, R.string.key_wiggle_touch_enable);
+            updateState(R.string.key_header_scratch_touch, R.string.key_scratch_touch_enable);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -168,6 +180,9 @@ public class SettingsActivity extends BaseSettingsActivity {
                 MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_wiggle_touch_enable))) {
                 updateState(R.string.key_header_wiggle_touch, key);
+                MyApp.updateService(getActivity(), sharedPreferences);
+            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
+                updateState(R.string.key_header_scratch_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
             }
         }
@@ -295,7 +310,7 @@ public class SettingsActivity extends BaseSettingsActivity {
         @Override
         protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
             super.onSettingsChanged(sharedPreferences, key);
-            MyApp.updateService(getActivity(), false, false, false, false, false);
+            MyApp.stopService(getActivity());
             MyApp.updateService(getActivity(), FTD.getSharedPreferences(getActivity()));
         }
     }
@@ -437,4 +452,26 @@ public class SettingsActivity extends BaseSettingsActivity {
         }
     }
 
+    public static class ScratchTouchSettingsFragment extends SettingsFragment {
+
+        public ScratchTouchSettingsFragment() {
+        }
+
+        @Override
+        protected String getTitle() {
+            return getString(R.string.header_scratch_touch);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_scratch_touch_settings);
+
+            // Setting
+            showTextSummary(R.string.key_scratch_touch_magnification);
+            // Action
+            pickAction(R.string.key_scratch_touch_action_tap);
+            pickAction(R.string.key_scratch_touch_action_long_press);
+        }
+    }
 }
