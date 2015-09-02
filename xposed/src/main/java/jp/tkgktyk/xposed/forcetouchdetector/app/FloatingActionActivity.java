@@ -53,8 +53,6 @@ public class FloatingActionActivity extends AppCompatActivity {
 
     private static final int REQUEST_ACTION = 1;
 
-    private static final int CONFIRMED_SUPPORTED = 1;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.recycler_view)
@@ -65,9 +63,6 @@ public class FloatingActionActivity extends AppCompatActivity {
     private boolean mIsChanged;
 
     private FTD.Settings mSettings;
-
-    private static final String KEY_ALREADY_SUPPORTED = "ALREADY_SUPPORTED";
-    private boolean mAlreadySupported = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,19 +106,6 @@ public class FloatingActionActivity extends AppCompatActivity {
         helper.attachToRecyclerView(mRecyclerView);
 
         mSettings = new FTD.Settings(this, FTD.getSharedPreferences(this));
-
-        if (savedInstanceState == null) {
-            mAlreadySupported = MyApp.isDonated();
-        } else {
-            mAlreadySupported = savedInstanceState.getBoolean(KEY_ALREADY_SUPPORTED);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(KEY_ALREADY_SUPPORTED, mAlreadySupported);
     }
 
     @Override

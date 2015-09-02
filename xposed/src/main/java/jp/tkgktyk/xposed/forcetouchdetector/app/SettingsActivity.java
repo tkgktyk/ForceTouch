@@ -130,7 +130,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                     new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            if (!MyApp.isDonated()) {
+                            if (!MyApp.isDonated(getActivity())) {
                                 MyApp.showToast(R.string.message_unlock);
                                 return false;
                             }
@@ -141,7 +141,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                     new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            if (!MyApp.isDonated()) {
+                            if (!MyApp.isDonated(getActivity())) {
                                 MyApp.showToast(R.string.message_unlock);
                                 return false;
                             }
@@ -158,7 +158,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Information
             Preference about = findPreference(R.string.key_about);
             about.setSummary(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME);
-            if (MyApp.isDonated()) {
+            if (MyApp.isDonated(getActivity())) {
                 ((PreferenceCategory) findPreference(R.string.key_information))
                         .removePreference(findPreference(R.string.key_donate));
             }

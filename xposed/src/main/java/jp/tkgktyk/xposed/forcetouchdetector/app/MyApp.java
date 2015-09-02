@@ -19,6 +19,7 @@ package jp.tkgktyk.xposed.forcetouchdetector.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.view.MotionEvent;
 
 import com.google.common.base.Objects;
@@ -59,30 +60,35 @@ public class MyApp extends BaseApplication {
         return BuildConfig.VERSION_NAME;
     }
 
-    private static boolean mIsDonated;
+    public static boolean isDonated(Context context) {
+        return isDonatedImpl(context) || (BuildConfig.DEBUG && DONATED);
+    }
 
-    public static boolean isDonated() {
-        return mIsDonated || (BuildConfig.DEBUG && DONATED);
+    private static boolean isDonatedImpl(Context context) {
+        PackageManager pm = context.getPackageManager();
+        String installer = null;
+        try {
+            installer = pm.getInstallerPackageName("jp.tkgktyk.key.forcetouchdetector");
+        } catch (IllegalArgumentException e) {
+            // not installed
+        }
+        logD("Installer of key = " + installer);
+        boolean donated = Objects.equal("com.android.vending", installer);
+        if (!donated) {
+            try {
+                installer = pm.getInstallerPackageName(FTD.PACKAGE_NAME);
+            } catch (IllegalArgumentException e) {
+                // not installed
+            }
+            logD("Installer of FTD = " + installer);
+            donated = Objects.equal("com.android.vending", installer);
+        }
+        return donated;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        String installer = null;
-        try {
-            installer = getPackageManager().getInstallerPackageName(
-                    "jp.tkgktyk.key.forcetouchdetector");
-        } catch (IllegalArgumentException e) {
-            // not installed
-        }
-        logD("Installer of key = " + installer);
-        mIsDonated = Objects.equal("com.android.vending", installer);
-        if (!mIsDonated) {
-            installer = getPackageManager().getInstallerPackageName(FTD.PACKAGE_NAME);
-            logD("Installer of FTD = " + installer);
-            mIsDonated = Objects.equal("com.android.vending", installer);
-        }
 
         SharedPreferences prefs = getDefaultSharedPreferences();
         setMethod(prefs.getString(getString(R.string.key_detector_method), ""));
@@ -215,7 +221,7 @@ public class MyApp extends BaseApplication {
             boolean pressure = prefs.getBoolean("key_pressure_enable", false);
             boolean size = prefs.getBoolean("key_size_enable", false);
             boolean largeTouch = prefs.getBoolean("key_large_touch_enable", false);
-            
+
             if (pressure || (!size && usePressure && !largeTouch)) {
                 prefs.edit()
                         .putString(getString(R.string.key_detector_method), FTD.METHOD_PRESSURE.toString())
