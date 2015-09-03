@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.os.IBinder;
 
 import jp.tkgktyk.lib.ServiceNotification;
+import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 
 /**
@@ -41,16 +42,32 @@ public class FloatingActionService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        mServiceNotification = new ServiceNotification(this, R.drawable.ic_stat_floating_action,
-                R.string.app_name, SettingsActivity.class);
-        mServiceNotification.update(R.string.state_floating_action);
-
-        mFloatingAction = new FloatingAction(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+        FTD.Settings settings = new FTD.Settings(this, FTD.getSharedPreferences(this));
+
+        if (settings.showNotification) {
+            if (mServiceNotification == null) {
+                mServiceNotification = new ServiceNotification(this, R.drawable.ic_stat_floating_action,
+                        R.string.app_name, SettingsActivity.class);
+                mServiceNotification.update(R.string.state_floating_action);
+            }
+        } else {
+            if (mServiceNotification != null) {
+                mServiceNotification.stop();
+                mServiceNotification = null;
+            }
+        }
+
+        if (mFloatingAction != null) {
+            mFloatingAction.onDestroy();
+            mFloatingAction = null;
+        }
+        mFloatingAction = new FloatingAction(this, settings);
         return START_STICKY;
     }
 
@@ -65,8 +82,11 @@ public class FloatingActionService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        mServiceNotification.stop();
+        if (mServiceNotification != null) {
+            mServiceNotification.stop();
+            mServiceNotification = null;
+        }
 
-        mFloatingAction.onDestroy(this);
+        mFloatingAction.onDestroy();
     }
 }

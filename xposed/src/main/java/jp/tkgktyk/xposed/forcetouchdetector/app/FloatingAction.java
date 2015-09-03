@@ -220,9 +220,9 @@ public class FloatingAction implements View.OnClickListener {
         }
     }
 
-    public FloatingAction(Context context) {
+    public FloatingAction(Context context, FTD.Settings settings) {
         mContext = context;
-        mSettings = new FTD.Settings(context, FTD.getSharedPreferences(context));
+        mSettings = settings;
         context.setTheme(R.style.AppTheme);
         mContainer = (MovableLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
@@ -457,9 +457,11 @@ public class FloatingAction implements View.OnClickListener {
         }
     }
 
-    public void onDestroy(Context context) {
+    public void onDestroy() {
         hide();
         mWindowManager.removeView(mContainer);
-        context.unregisterReceiver(mBroadcastReceiver);
+        mContext.unregisterReceiver(mBroadcastReceiver);
+
+        mContext = null;
     }
 }

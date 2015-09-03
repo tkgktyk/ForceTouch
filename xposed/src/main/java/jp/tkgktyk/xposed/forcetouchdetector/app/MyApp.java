@@ -316,13 +316,6 @@ public class MyApp extends BaseApplication {
         }
     }
 
-    public static void stopService(Context context) {
-        Intent em = new Intent(context, EmergencyService.class);
-        Intent fa = new Intent(context, FloatingActionService.class);
-        context.stopService(em);
-        context.stopService(fa);
-    }
-
     private static int mMethod;
 
     public static void setMethod(String methodString) {

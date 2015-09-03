@@ -173,8 +173,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_floating_action_enable))) {
                 updateState(R.string.key_header_floating_action, key);
-//                MyApp.stopService(getActivity());
-//                MyApp.updateService(getActivity(), sharedPreferences);
+                MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_force_touch_enable))) {
                 updateState(R.string.key_header_force_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
@@ -324,13 +323,6 @@ public class SettingsActivity extends BaseSettingsActivity {
                     }
                 }
             });
-        }
-
-        @Override
-        protected void onSettingsChanged(SharedPreferences sharedPreferences, String key) {
-            super.onSettingsChanged(sharedPreferences, key);
-            MyApp.stopService(getActivity());
-            MyApp.updateService(getActivity(), FTD.getSharedPreferences(getActivity()));
         }
     }
 
