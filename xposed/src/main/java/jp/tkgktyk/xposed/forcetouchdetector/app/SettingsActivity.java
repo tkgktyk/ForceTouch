@@ -137,23 +137,23 @@ public class SettingsActivity extends BaseSettingsActivity {
                             return true;
                         }
                     });
-            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class,
-                    new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            if (!MyApp.isDonated(getActivity())) {
-                                MyApp.showToast(R.string.message_unlock);
-                                return false;
-                            }
-                            return true;
-                        }
-                    });
+//            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class,
+//                    new Preference.OnPreferenceClickListener() {
+//                        @Override
+//                        public boolean onPreferenceClick(Preference preference) {
+//                            if (!MyApp.isDonated(getActivity())) {
+//                                MyApp.showToast(R.string.message_unlock);
+//                                return false;
+//                            }
+//                            return true;
+//                        }
+//                    });
 
             updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
             updateState(R.string.key_header_force_touch, R.string.key_force_touch_enable);
             updateState(R.string.key_header_knuckle_touch, R.string.key_knuckle_touch_enable);
             updateState(R.string.key_header_wiggle_touch, R.string.key_wiggle_touch_enable);
-            updateState(R.string.key_header_scratch_touch, R.string.key_scratch_touch_enable);
+//            updateState(R.string.key_header_scratch_touch, R.string.key_scratch_touch_enable);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -170,7 +170,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                 MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_floating_action_enable))) {
                 updateState(R.string.key_header_floating_action, key);
-//                MyApp.updateService(getActivity(), false, false, false, false, false, false, false);
+//                MyApp.stopService(getActivity());
 //                MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_force_touch_enable))) {
                 updateState(R.string.key_header_force_touch, key);
@@ -181,9 +181,9 @@ public class SettingsActivity extends BaseSettingsActivity {
             } else if (Objects.equal(key, getString(R.string.key_wiggle_touch_enable))) {
                 updateState(R.string.key_header_wiggle_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
-            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
-                updateState(R.string.key_header_scratch_touch, key);
-                MyApp.updateService(getActivity(), sharedPreferences);
+//            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
+//                updateState(R.string.key_header_scratch_touch, key);
+//                MyApp.updateService(getActivity(), sharedPreferences);
             }
         }
 

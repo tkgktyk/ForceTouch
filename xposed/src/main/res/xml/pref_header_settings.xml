@@ -56,11 +56,11 @@
             android:icon="@null"
             android:key="@string/key_header_wiggle_touch"
             android:title="@string/header_wiggle_touch"/>
-        <!-- Scratch Touch -->
+        <!-- Scratch Touch
         <Preference
             android:icon="@null"
             android:key="@string/key_header_scratch_touch"
-            android:title="@string/header_scratch_touch"/>
+            android:title="@string/header_scratch_touch"/> -->
     </PreferenceCategory>
 
     <!-- Information -->
