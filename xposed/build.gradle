@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '23.0.0'
     defaultConfig {
         applicationId 'jp.tkgktyk.xposed.forcetouchdetector'
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 21
-        versionName '0.4.4'
+        versionCode 22
+        versionName '0.4.5'
     }
     buildTypes {
         release {
