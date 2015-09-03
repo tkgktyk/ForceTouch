@@ -226,7 +226,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_VOLUME_DOWN,
                 FTD.ACTION_SCREENSHOT,
                 FTD.ACTION_LOCK_SCREEN,
-//                FTD.ACTION_LAST_APP,
+                FTD.ACTION_LAST_APP,
                 FTD.ACTION_MENU,
                 // status bar
                 FTD.ACTION_NOTIFICATIONS,
@@ -265,7 +265,7 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_VOLUME_DOWN,
                 FTD.ACTION_SCREENSHOT,
                 FTD.ACTION_LOCK_SCREEN,
-//                FTD.ACTION_LAST_APP,
+                FTD.ACTION_LAST_APP,
                 FTD.ACTION_MENU,
                 // status bar
                 FTD.ACTION_NOTIFICATIONS,

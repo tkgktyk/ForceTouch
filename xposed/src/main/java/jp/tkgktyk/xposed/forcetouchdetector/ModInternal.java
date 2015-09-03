@@ -126,21 +126,21 @@ public class ModInternal extends XposedModule {
                 public void run() {
                     long downTime = SystemClock.uptimeMillis();
                     long eventTime = SystemClock.uptimeMillis() + 100;
-//                    KeyEvent alt = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ALT_LEFT, 0, 0);
-//                    Instrumentation ist = new Instrumentation();
-//                    ist.sendKeySync(alt);
-//                    ist.sendKeyDownUpSync(code);
-//                    alt = KeyEvent.changeAction(alt, KeyEvent.ACTION_UP);
-//                    eventTime = SystemClock.uptimeMillis() + 100;
-//                    alt = KeyEvent.changeTimeRepeat(alt, eventTime, 0);
-//                    ist.sendKeySync(alt);
-                    KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
+                    KeyEvent alt = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ALT_LEFT, 0, 0);
                     Instrumentation ist = new Instrumentation();
-                    ist.sendKeySync(key);
-                    key = KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
+                    ist.sendKeySync(alt);
+                    {
+                        KeyEvent key = new KeyEvent(downTime, eventTime, KeyEvent.ACTION_DOWN, code, 0, KeyEvent.META_ALT_ON);
+                        ist.sendKeySync(key);
+                        key = KeyEvent.changeAction(key, KeyEvent.ACTION_UP);
+                        eventTime = SystemClock.uptimeMillis() + 100;
+                        key = KeyEvent.changeTimeRepeat(key, eventTime, 0);
+                        ist.sendKeySync(key);
+                    }
+                    alt = KeyEvent.changeAction(alt, KeyEvent.ACTION_UP);
                     eventTime = SystemClock.uptimeMillis() + 100;
-                    key = KeyEvent.changeTimeRepeat(key, eventTime, 0);
-                    ist.sendKeySync(key);
+                    alt = KeyEvent.changeTimeRepeat(alt, eventTime, 0);
+                    ist.sendKeySync(alt);
                 }
             }.start();
         }
