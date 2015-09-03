@@ -16,8 +16,11 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -244,6 +247,22 @@ public class SettingsActivity extends BaseSettingsActivity {
                     drawable.setSize(size, size);
                     preference.setIcon(drawable);
                     return true;
+                }
+            });
+            setUpSwitch(R.string.key_hide_app_icon, new OnSwitchChangeListener() {
+                @Override
+                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
+                    if (fromUser) {
+                        Context context = sw.getContext();
+                        ComponentName alias = new ComponentName(context,
+                                SettingsActivity.class.getName() + ".Alias");
+                        PackageManager pm = context.getPackageManager();
+                            pm.setComponentEnabledSetting(alias,
+                                    enabled?
+                                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
+                                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                                    PackageManager.DONT_KILL_APP);
+                    }
                 }
             });
         }

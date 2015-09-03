@@ -123,6 +123,7 @@
     <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
     <string name="title_show_notification">Notification</string>
+    <string name="title_hide_app_icon">Hide App Icon</string>
 
     <!-- Floating Action -->
     <string name="title_floating_action_list">Actions</string>

@@ -92,5 +92,11 @@
             android:icon="@null"
             android:key="@string/key_show_notification"
             android:title="@string/title_show_notification"/>
+        <!-- Hide App Icon -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="false"
+            android:icon="@null"
+            android:key="@string/key_hide_app_icon"
+            android:title="@string/title_hide_app_icon"/>
     </PreferenceCategory>
 </PreferenceScreen>

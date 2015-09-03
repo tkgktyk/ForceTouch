@@ -29,6 +29,7 @@
     <string name="key_show_disabled_action_toast" translatable="false">key_show_disabled_action_toast</string>
     <string name="key_show_enabled_action_toast" translatable="false">key_show_enabled_action_toast</string>
     <string name="key_show_notification" translatable="false">key_show_notification</string>
+    <string name="key_hide_app_icon" translatable="false">key_hide_app_icon</string>
 
     <!-- Floating Action -->
     <string name="key_floating_action_enable" translatable="false">key_floating_action_enable</string>

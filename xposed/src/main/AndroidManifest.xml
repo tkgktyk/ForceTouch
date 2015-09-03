@@ -48,9 +48,18 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS"/>
             </intent-filter>
         </activity>
+        <activity-alias
+            android:name=".app.SettingsActivity.Alias"
+            android:targetActivity=".app.SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
 
         <service android:name=".app.EmergencyService"/>
         <service android:name=".app.FloatingActionService"/>
