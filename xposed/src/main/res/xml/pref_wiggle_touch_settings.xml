@@ -29,7 +29,8 @@
         <EditTextPreference
             android:defaultValue="1.5"
             android:icon="@null"
-            android:inputType="number"
+            android:inputType="numberDecimal"
+            android:dialogMessage="@string/message_magnification"
             android:key="@string/key_wiggle_touch_magnification"
             android:title="@string/title_magnification"/>
     </PreferenceCategory>

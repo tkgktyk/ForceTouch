@@ -179,5 +179,6 @@
 
     <!-- Wiggle Touch -->
     <string name="title_magnification">Magnification</string>
+    <string name="message_magnification">More than 1.0\nSmall value makes detector sensitive.</string>
 
 </resources>
