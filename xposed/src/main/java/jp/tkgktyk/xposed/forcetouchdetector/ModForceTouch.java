@@ -612,7 +612,7 @@ public class ModForceTouch extends XposedModule {
                 boolean forceTouch = false;
                 int index = 0;
                 for (; index < count; ++index) {
-                    if (event.getToolType(index) == MotionEvent.TOOL_TYPE_MOUSE) {
+                    if (event.getToolType(index) != MotionEvent.TOOL_TYPE_FINGER) {
                         continue;
                     }
                     forceTouch = judgeForceTouch(event, index);
