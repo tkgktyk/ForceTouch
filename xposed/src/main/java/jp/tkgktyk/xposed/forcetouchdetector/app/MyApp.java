@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.support.annotation.StringRes;
 import android.view.MotionEvent;
 
 import com.google.common.base.Objects;
@@ -90,8 +91,25 @@ public class MyApp extends BaseApplication {
     public void onCreate() {
         super.onCreate();
 
+        // after version up
         SharedPreferences prefs = getDefaultSharedPreferences();
+        setFloatingActionAsDefault(prefs, R.string.key_force_touch_action_tap);
+        setFloatingActionAsDefault(prefs, R.string.key_knuckle_touch_action_tap);
+        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
+        setFloatingActionAsDefault(prefs, R.string.key_scratch_touch_action_tap);
+
         setMethod(prefs.getString(getString(R.string.key_detector_method), ""));
+    }
+
+    private void setFloatingActionAsDefault(SharedPreferences prefs, @StringRes int id) {
+        String key = getString(id);
+        if (Strings.isNullOrEmpty(prefs.getString(key, ""))) {
+            prefs.edit()
+                    .putString(key,
+                            new ActionInfo(this, new Intent(FTD.ACTION_FLOATING_ACTION), ActionInfo.TYPE_TOOL)
+                                    .toStringForPreference())
+                    .apply();
+        }
     }
 
     @Override
@@ -195,7 +213,7 @@ public class MyApp extends BaseApplication {
                     .putBoolean("key_size_enable",
                             prefs.getBoolean("key_size_enabled", false))
                     .putBoolean("key_floating_action_enable",
-                            prefs.getBoolean("key_floating_action_enabled", false))
+                            prefs.getBoolean("key_floating_action_enabled", true))
                     .apply();
         }
         if (old.isOlderThan("0.3.6")) {

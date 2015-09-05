@@ -528,12 +528,12 @@ public class FTD {
             showNotification = prefs.getBoolean("key_show_notification", true);
 
             // Floating Action
-            floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
+            floatingActionEnable = prefs.getBoolean("key_floating_action_enable", true);
             floatingActionButtonColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_button_color", "#B71C1C"));
             floatingActionBackgroundColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_background_color", "#90A4AE"));
             floatingActionBackgroundAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_background_alpha", "64"));
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
-            floatingActionMovable = prefs.getBoolean("key_floating_action_movable", false);
+            floatingActionMovable = prefs.getBoolean("key_floating_action_movable", true);
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
 

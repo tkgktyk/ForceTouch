@@ -18,7 +18,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Floating Action -->
     <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:icon="@null"
         android:key="@string/key_floating_action_enable"
         android:title="@string/title_enable"/>
@@ -60,7 +60,7 @@
         android:title="@string/title_floating_action_timeout"/>
     <!-- Movable -->
     <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:icon="@null"
         android:key="@string/key_floating_action_movable"
         android:title="@string/title_floating_action_movable"/>
