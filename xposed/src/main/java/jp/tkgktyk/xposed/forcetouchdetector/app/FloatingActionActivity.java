@@ -233,7 +233,7 @@ public class FloatingActionActivity extends AppCompatActivity {
                 }
             }
             holder.icon.setImageBitmap(icon);
-            holder.icon.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
+            holder.icon.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionButtonColor));
             holder.name.setText(name);
             switch (info.getType()) {
                 case ActionInfo.TYPE_TOOL:

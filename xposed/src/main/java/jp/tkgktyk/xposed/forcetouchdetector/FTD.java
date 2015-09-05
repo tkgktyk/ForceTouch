@@ -457,8 +457,9 @@ public class FTD {
 
         // Floating Action
         public final boolean floatingActionEnable;
-        public final int floatingActionColor;
-        public final int floatingActionAlpha;
+        public final int floatingActionButtonColor;
+        public final int floatingActionBackgroundColor;
+        public final int floatingActionBackgroundAlpha;
         public final int floatingActionTimeout;
         public final boolean floatingActionMovable;
         public final boolean floatingActionRecents;
@@ -528,8 +529,9 @@ public class FTD {
 
             // Floating Action
             floatingActionEnable = prefs.getBoolean("key_floating_action_enable", false);
-            floatingActionColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_color", "#000000"));
-            floatingActionAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_alpha", "64"));
+            floatingActionButtonColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_button_color", "#B71C1C"));
+            floatingActionBackgroundColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_background_color", "#90A4AE"));
+            floatingActionBackgroundAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_background_alpha", "64"));
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
             floatingActionMovable = prefs.getBoolean("key_floating_action_movable", false);
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);

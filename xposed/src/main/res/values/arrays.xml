@@ -64,6 +64,7 @@
         <item>#00000000</item>
     </string-array>
     <string name="default_ripple_color" translatable="false">#4FC3F7</string>
+    <string name="default_floating_action_background_color" translatable="false">#90A4AE</string>
     <!-- Color 900 -->
     <string-array name="color_values_900" translatable="false">
         <item>#B71C1C</item>
@@ -88,7 +89,7 @@
         <item>#000000</item>
         <item>#00000000</item>
     </string-array>
-    <string name="default_floating_action_color" translatable="false">#B71C1C</string>
+    <string name="default_floating_action_button_color" translatable="false">#B71C1C</string>
     <!-- Detector Method -->
     <string-array name="detector_methods" translatable="false">
         <item>@string/size</item>

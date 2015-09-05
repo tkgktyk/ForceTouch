@@ -28,21 +28,28 @@
         android:icon="@null"
         android:key="@string/key_floating_action_list"
         android:title="@string/title_floating_action_list"/>
-    <!-- Color -->
+    <!-- Button Color -->
     <ListPreference
-        android:defaultValue="@string/default_floating_action_color"
+        android:defaultValue="@string/default_floating_action_button_color"
         android:entries="@array/color_names"
         android:entryValues="@array/color_values_900"
-        android:key="@string/key_floating_action_color"
-        android:title="@string/title_floating_action_color"/>
+        android:key="@string/key_floating_action_button_color"
+        android:title="@string/title_floating_action_button_color"/>
+    <!-- Background Color -->
+    <ListPreference
+        android:defaultValue="@string/default_floating_action_background_color"
+        android:entries="@array/color_names"
+        android:entryValues="@array/color_values_300"
+        android:key="@string/key_floating_action_background_color"
+        android:title="@string/title_floating_action_background_color"/>
     <!-- Alpha -->
     <EditTextPreference
         android:defaultValue="64"
-        android:dialogMessage="@string/message_floating_action_alpha"
+        android:dialogMessage="@string/message_floating_action_background_alpha"
         android:icon="@null"
         android:inputType="number"
-        android:key="@string/key_floating_action_alpha"
-        android:title="@string/title_floating_action_alpha"/>
+        android:key="@string/key_floating_action_background_alpha"
+        android:title="@string/title_floating_action_background_alpha"/>
     <!-- Timeout -->
     <EditTextPreference
         android:defaultValue="3000"

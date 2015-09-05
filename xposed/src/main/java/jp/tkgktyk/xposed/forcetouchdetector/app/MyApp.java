@@ -284,6 +284,14 @@ public class MyApp extends BaseApplication {
                         .apply();
             }
         }
+        if (old.isOlderThan("0.4.5")) {
+            prefs.edit()
+                    .putString(getString(R.string.key_floating_action_button_color),
+                            prefs.getString("key_floating_action_color", "#B71C1C"))
+                    .putString(getString(R.string.key_floating_action_background_alpha),
+                            prefs.getString("key_floating_action_alpha", "64"))
+                    .apply();
+        }
     }
 
     public static void updateService(Context context, SharedPreferences prefs) {

@@ -226,7 +226,8 @@ public class FloatingAction implements View.OnClickListener {
         context.setTheme(R.style.AppTheme);
         mContainer = (MovableLayout) LayoutInflater.from(context)
                 .inflate(R.layout.view_floating_action_container, null);
-        mContainer.getBackground().setAlpha(mSettings.floatingActionAlpha);
+        mContainer.setBackgroundColor(settings.floatingActionBackgroundColor);
+        mContainer.getBackground().setAlpha(mSettings.floatingActionBackgroundAlpha);
         if (mSettings.floatingActionMovable) {
             mContainer.setCallback(new MovableLayout.Callback() {
                 @Override
@@ -349,11 +350,11 @@ public class FloatingAction implements View.OnClickListener {
         if (mSettings.useLocalFAB) {
             LocalFloatingActionButton fab = new LocalFloatingActionButton(context,
                     actionInfo.getType() != ActionInfo.TYPE_TOOL);
-            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
+            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionButtonColor));
             button = fab;
         } else {
             FloatingActionButton fab = new FloatingActionButton(context);
-            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionColor));
+            fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionButtonColor));
             button = fab;
         }
         button.setLayoutParams(lp);

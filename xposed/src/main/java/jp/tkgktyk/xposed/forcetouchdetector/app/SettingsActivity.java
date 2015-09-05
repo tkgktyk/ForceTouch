@@ -299,7 +299,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             addPreferencesFromResource(R.xml.pref_floating_action_settings);
 
             openActivity(R.string.key_floating_action_list, FloatingActionActivity.class);
-            showListSummary(R.string.key_floating_action_color, new Preference.OnPreferenceChangeListener() {
+            showListSummary(R.string.key_floating_action_button_color, new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     int color = Color.parseColor((String) newValue);
@@ -311,7 +311,19 @@ public class SettingsActivity extends BaseSettingsActivity {
                     return true;
                 }
             });
-            showTextSummary(R.string.key_floating_action_alpha);
+            showListSummary(R.string.key_floating_action_background_color, new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int color = Color.parseColor((String) newValue);
+                    GradientDrawable drawable = new GradientDrawable();
+                    drawable.setColor(color);
+                    int size = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+                    drawable.setSize(size, size);
+                    preference.setIcon(drawable);
+                    return true;
+                }
+            });
+            showTextSummary(R.string.key_floating_action_background_alpha);
             showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
             setUpSwitch(R.string.key_floating_action_recents, new OnSwitchChangeListener() {
                 @Override

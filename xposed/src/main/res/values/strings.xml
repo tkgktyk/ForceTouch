@@ -105,30 +105,7 @@
 
     <string name="unit_millisecond">msec</string>
 
-    <!-- General -->
-    <!-- Detector -->
-    <string name="title_detection_area">Detection Area</string>
-    <string name="title_detection_window">Detection Window</string>
-    <string name="title_detection_sensitivity">Detection Sensitivity</string>
-    <string name="message_detection_sensitivity">0 to about 20 depending on hardware.\nIf 0, Force Touch is always interpreted as a flick. If too high value, it is always tap.</string>
-    <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
-    <string name="title_blacklist">Blacklist</string>
-    <string name="summary_blacklist">Stop app process for changes to take effect</string>
-    <!-- Feedback -->
-    <string name="category_feedback">Feedback</string>
-    <string name="title_vibration">Vibration</string>
-    <string name="title_ripple_color">Ripple Color</string>
-    <!-- Display -->
-    <string name="category_display">Display</string>
-    <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
-    <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
-    <string name="title_show_notification">Notification</string>
-    <string name="title_hide_app_icon">Hide App Icon</string>
-
-    <!-- Floating Action -->
-    <string name="title_floating_action_list">Actions</string>
     <!-- Color BEGIN -->
-    <string name="title_floating_action_color">Button Color</string>
     <string name="red">Red</string>
     <string name="pink">Pink</string>
     <string name="purple">Purple</string>
@@ -151,8 +128,33 @@
     <string name="black">Black</string>
     <string name="transparent">Transparent</string>
     <!-- Color END -->
-    <string name="title_floating_action_alpha">Background Alpha</string>
-    <string name="message_floating_action_alpha">0(transparent) to 255(opaque)</string>
+
+    <!-- General -->
+    <!-- Detector -->
+    <string name="title_detection_area">Detection Area</string>
+    <string name="title_detection_window">Detection Window</string>
+    <string name="title_detection_sensitivity">Detection Sensitivity</string>
+    <string name="message_detection_sensitivity">0 to about 20 depending on hardware.\nIf 0, Force Touch is always interpreted as a flick. If too high value, it is always tap.</string>
+    <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
+    <string name="title_blacklist">Blacklist</string>
+    <string name="summary_blacklist">Stop app process for changes to take effect</string>
+    <!-- Feedback -->
+    <string name="category_feedback">Feedback</string>
+    <string name="title_vibration">Vibration</string>
+    <string name="title_ripple_color">Ripple Color</string>
+    <!-- Display -->
+    <string name="category_display">Display</string>
+    <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
+    <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
+    <string name="title_show_notification">Notification</string>
+    <string name="title_hide_app_icon">Hide App Icon</string>
+
+    <!-- Floating Action -->
+    <string name="title_floating_action_list">Actions</string>
+    <string name="title_floating_action_button_color">Button Color</string>
+    <string name="title_floating_action_background_color">Background Color</string>
+    <string name="title_floating_action_background_alpha">Background Alpha</string>
+    <string name="message_floating_action_background_alpha">0(transparent) to 255(opaque)</string>
     <string name="title_floating_action_timeout">Timeout</string>
     <string name="message_floating_action_timeout">Millisecond\n\"0\" is to disable</string>
     <string name="title_floating_action_movable">Movable</string>

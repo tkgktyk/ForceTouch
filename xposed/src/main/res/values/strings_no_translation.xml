@@ -34,8 +34,9 @@
     <!-- Floating Action -->
     <string name="key_floating_action_enable" translatable="false">key_floating_action_enable</string>
     <string name="key_floating_action_list" translatable="false">key_floating_action_list</string>
-    <string name="key_floating_action_color" translatable="false">key_floating_action_color</string>
-    <string name="key_floating_action_alpha" translatable="false">key_floating_action_alpha</string>
+    <string name="key_floating_action_button_color" translatable="false">key_floating_action_button_color</string>
+    <string name="key_floating_action_background_color" translatable="false">key_floating_action_background_color</string>
+    <string name="key_floating_action_background_alpha" translatable="false">key_floating_action_background_alpha</string>
     <string name="key_floating_action_timeout" translatable="false">key_floating_action_timeout</string>
     <string name="key_floating_action_movable" translatable="false">key_floating_action_movable</string>
     <string name="key_floating_action_recents" translatable="false">key_floating_action_recents</string>
