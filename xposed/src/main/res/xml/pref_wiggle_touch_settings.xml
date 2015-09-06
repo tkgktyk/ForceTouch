@@ -27,7 +27,7 @@
             android:title="@string/title_enable"/>
         <!-- Magnification -->
         <EditTextPreference
-            android:defaultValue="1.5"
+            android:defaultValue="1.4"
             android:icon="@null"
             android:inputType="numberDecimal"
             android:dialogMessage="@string/message_magnification"

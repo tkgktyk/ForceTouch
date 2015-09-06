@@ -566,7 +566,7 @@ public class FTD {
 
             // Wiggle Touch
             wiggleTouchEnable = prefs.getBoolean("key_wiggle_touch_enable", false);
-            wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.5"));
+            wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.4"));
             wiggleTouchActionTap = getActionRecord(prefs, "key_wiggle_touch_action_tap");
             wiggleTouchActionLongPress = getActionRecord(prefs, "key_wiggle_touch_action_long_press");
             
