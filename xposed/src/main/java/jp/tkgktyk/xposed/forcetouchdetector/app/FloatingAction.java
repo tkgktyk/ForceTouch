@@ -232,6 +232,7 @@ public class FloatingAction implements View.OnClickListener {
             mContainer.setCallback(new MovableLayout.Callback() {
                 @Override
                 public void move(MovableLayout layout, float dx, float dy) {
+                    resetAutoHide();
                     mCircleLayout.addOffset(dx, dy);
                     mCircleLayout.requestLayout();
                 }
@@ -368,7 +369,19 @@ public class FloatingAction implements View.OnClickListener {
     public void onClick(View v) {
         // get action before erasing recent apps by hide()
         ActionInfo action = (ActionInfo) v.getTag();
-        hide();
+        boolean sticky = false;
+        if (mSettings.floatingActionStickyNavigation &&
+                action.getType() == ActionInfo.TYPE_TOOL) {
+            String str = action.getIntent().getAction();
+            if (str.equals(FTD.ACTION_BACK) || str.equals(FTD.ACTION_FORWARD)) {
+                sticky = true;
+            }
+        }
+        if (sticky) {
+            resetAutoHide();
+        } else {
+            hide();
+        }
         action.launch(v.getContext());
     }
 
@@ -397,13 +410,17 @@ public class FloatingAction implements View.OnClickListener {
         mDimAnimation.start();
         mContainer.setVisibility(View.VISIBLE);
 
-        mContainer.removeCallbacks(mAutoHide);
-        if (mSettings.floatingActionTimeout > 0) {
-            mContainer.postDelayed(mAutoHide, mSettings.floatingActionTimeout);
-        }
+        resetAutoHide();
 
         if (mSettings.floatingActionRecents) {
             loadRecents();
+        }
+    }
+
+    private void resetAutoHide() {
+        mContainer.removeCallbacks(mAutoHide);
+        if (mSettings.floatingActionTimeout > 0) {
+            mContainer.postDelayed(mAutoHide, mSettings.floatingActionTimeout);
         }
     }
 

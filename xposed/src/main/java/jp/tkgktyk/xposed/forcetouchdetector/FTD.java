@@ -463,6 +463,7 @@ public class FTD {
         public final int floatingActionTimeout;
         public final boolean floatingActionMovable;
         public final boolean floatingActionRecents;
+        public final boolean floatingActionStickyNavigation;
         public final boolean useLocalFAB;
 
         // Detector
@@ -535,6 +536,7 @@ public class FTD {
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
             floatingActionMovable = prefs.getBoolean("key_floating_action_movable", true);
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
+            floatingActionStickyNavigation = prefs.getBoolean("key_floating_action_sticky_navigation", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);
 
             // Detector

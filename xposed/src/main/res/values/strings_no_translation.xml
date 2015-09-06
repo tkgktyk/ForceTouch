@@ -40,6 +40,7 @@
     <string name="key_floating_action_timeout" translatable="false">key_floating_action_timeout</string>
     <string name="key_floating_action_movable" translatable="false">key_floating_action_movable</string>
     <string name="key_floating_action_recents" translatable="false">key_floating_action_recents</string>
+    <string name="key_floating_action_sticky_navigation" translatable="false">key_floating_action_sticky_navigation</string>
     <string name="key_use_local_fab" translatable="false">key_use_local_fab</string>
 
     <!-- Force Touch -->

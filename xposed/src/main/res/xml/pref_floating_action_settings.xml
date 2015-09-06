@@ -71,6 +71,12 @@
         android:key="@string/key_floating_action_recents"
         android:title="@string/title_floating_action_recents"
         android:summary="@string/summary_floating_action_recents"/>
+    <!-- Sticky Navigation -->
+    <jp.tkgktyk.lib.SwitchPreference
+        android:defaultValue="false"
+        android:icon="@null"
+        android:key="@string/key_floating_action_sticky_navigation"
+        android:title="@string/title_floating_action_sticky_navigation"/>
     <!-- Use Local FAB -->
     <jp.tkgktyk.lib.SwitchPreference
         android:defaultValue="true"
