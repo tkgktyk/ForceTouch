@@ -129,28 +129,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             changeScreen(R.string.key_header_floating_action, FloatingActionSettingsFragment.class);
             changeScreen(R.string.key_header_force_touch, ForceTouchSettingsFragment.class);
             changeScreen(R.string.key_header_knuckle_touch, KnuckleTouchSettingsFragment.class);
-            changeScreen(R.string.key_header_wiggle_touch, WiggleTouchSettingsFragment.class,
-                    new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            if (!MyApp.isDonated(getActivity())) {
-                                MyApp.showToast(R.string.message_unlock);
-                                return false;
-                            }
-                            return true;
-                        }
-                    });
-//            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class,
-//                    new Preference.OnPreferenceClickListener() {
-//                        @Override
-//                        public boolean onPreferenceClick(Preference preference) {
-//                            if (!MyApp.isDonated(getActivity())) {
-//                                MyApp.showToast(R.string.message_unlock);
-//                                return false;
-//                            }
-//                            return true;
-//                        }
-//                    });
+            changeScreen(R.string.key_header_wiggle_touch, WiggleTouchSettingsFragment.class);
+//            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class);
 
             updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
             updateState(R.string.key_header_force_touch, R.string.key_force_touch_enable);
@@ -256,11 +236,11 @@ public class SettingsActivity extends BaseSettingsActivity {
                         ComponentName alias = new ComponentName(context,
                                 SettingsActivity.class.getName() + ".Alias");
                         PackageManager pm = context.getPackageManager();
-                            pm.setComponentEnabledSetting(alias,
-                                    enabled?
-                                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
-                                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                                    PackageManager.DONT_KILL_APP);
+                        pm.setComponentEnabledSetting(alias,
+                                enabled ?
+                                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
+                                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                                PackageManager.DONT_KILL_APP);
                     }
                 }
             });
@@ -476,8 +456,22 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Setting
             showTextSummary(R.string.key_wiggle_touch_magnification);
             // Action
-            pickAction(R.string.key_wiggle_touch_action_tap);
-            pickAction(R.string.key_wiggle_touch_action_long_press);
+            if (MyApp.isDonated(getActivity())) {
+                pickAction(R.string.key_wiggle_touch_action_tap);
+                pickAction(R.string.key_wiggle_touch_action_long_press);
+            } else {
+                Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        MyApp.showToast(R.string.message_unlock);
+                        return false;
+                    }
+                };
+                findPreference(R.string.key_wiggle_touch_action_tap)
+                        .setOnPreferenceClickListener(listener);
+                findPreference(R.string.key_wiggle_touch_action_long_press)
+                        .setOnPreferenceClickListener(listener);
+            }
         }
     }
 
@@ -499,8 +493,22 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Setting
             showTextSummary(R.string.key_scratch_touch_magnification);
             // Action
-            pickAction(R.string.key_scratch_touch_action_tap);
-            pickAction(R.string.key_scratch_touch_action_long_press);
+            if (MyApp.isDonated(getActivity())) {
+                pickAction(R.string.key_scratch_touch_action_tap);
+                pickAction(R.string.key_scratch_touch_action_long_press);
+            } else {
+                Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        MyApp.showToast(R.string.message_unlock);
+                        return false;
+                    }
+                };
+                findPreference(R.string.key_scratch_touch_action_tap)
+                        .setOnPreferenceClickListener(listener);
+                findPreference(R.string.key_scratch_touch_action_long_press)
+                        .setOnPreferenceClickListener(listener);
+            }
         }
     }
 }

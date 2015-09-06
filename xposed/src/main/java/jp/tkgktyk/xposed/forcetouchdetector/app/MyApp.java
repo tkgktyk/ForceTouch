@@ -95,8 +95,8 @@ public class MyApp extends BaseApplication {
         SharedPreferences prefs = getDefaultSharedPreferences();
         setFloatingActionAsDefault(prefs, R.string.key_force_touch_action_tap);
         setFloatingActionAsDefault(prefs, R.string.key_knuckle_touch_action_tap);
-        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
-        setFloatingActionAsDefault(prefs, R.string.key_scratch_touch_action_tap);
+//        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
+//        setFloatingActionAsDefault(prefs, R.string.key_scratch_touch_action_tap);
 
         setMethod(prefs.getString(getString(R.string.key_detector_method), ""));
     }
