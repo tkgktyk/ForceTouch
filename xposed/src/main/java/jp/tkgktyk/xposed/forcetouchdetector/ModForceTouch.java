@@ -597,7 +597,8 @@ public class ModForceTouch extends XposedModule {
             boolean consumed = mIntercepted;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
-                    mHandler.postDelayed(mStopDetector, Math.abs(mSettings.detectionWindow));
+                    int window = mSettings.wiggleTouchEnable? 0: Math.abs(mSettings.detectionWindow);
+                    mHandler.postDelayed(mStopDetector, window);
                     mIsDetectionWindowOpened = true;
                     break;
                 }
