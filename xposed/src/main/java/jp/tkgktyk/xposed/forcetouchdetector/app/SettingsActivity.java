@@ -16,6 +16,7 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -311,7 +312,11 @@ public class SettingsActivity extends BaseSettingsActivity {
                     if (fromUser && enabled &&
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-                        startActivity(intent);
+                        try {
+                            startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            // some manufacturer doesn't have this activity
+                        }
                     }
                 }
             });
