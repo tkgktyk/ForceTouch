@@ -117,7 +117,7 @@ public class FloatingAction implements View.OnClickListener {
                 mDefaultHomePackage = res.activityInfo.packageName;
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext
                         .getSystemService(Context.USAGE_STATS_SERVICE);
                 Calendar beginCal = Calendar.getInstance();
