@@ -378,7 +378,7 @@ public class FTD {
      * @param view - view object to compare
      * @return true if the points are within view bounds, false otherwise
      */
-    public static boolean isPointInsideView(float x, float y, View view) {
+    private static boolean isPointInsideView(float x, float y, View view) {
         int location[] = new int[2];
         view.getLocationOnScreen(location);
         int viewX = location[0];
@@ -493,6 +493,7 @@ public class FTD {
         public final float wiggleTouchMagnification;
         public final ActionInfo.Record wiggleTouchActionTap;
         public final ActionInfo.Record wiggleTouchActionLongPress;
+        public final boolean forceTouchScreenEnable;
 
         // Scratch Touch
         public final boolean scratchTouchEnable;
@@ -501,12 +502,16 @@ public class FTD {
         public final ActionInfo.Record scratchTouchActionLongPress;
 
         public Settings(Context context, SharedPreferences prefs) {
-            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-            Intent batteryStatus = context.registerReceiver(null, ifilter);
-            if (batteryStatus != null) {
-                int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-                isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
+            if (context != null) {
+                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                Intent batteryStatus = context.registerReceiver(null, ifilter);
+                if (batteryStatus != null) {
+                    int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                    isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
 //                    status == BatteryManager.BATTERY_STATUS_FULL;
+                } else {
+                    isCharging = false;
+                }
             } else {
                 isCharging = false;
             }
@@ -569,6 +574,7 @@ public class FTD {
             wiggleTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_wiggle_touch_magnification", "1.4"));
             wiggleTouchActionTap = getActionRecord(prefs, "key_wiggle_touch_action_tap");
             wiggleTouchActionLongPress = getActionRecord(prefs, "key_wiggle_touch_action_long_press");
+            forceTouchScreenEnable = prefs.getBoolean("key_force_touch_screen_enable", false);
             
             // Scratch Touch
             scratchTouchEnable = prefs.getBoolean("key_scratch_touch_enable", false);

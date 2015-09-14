@@ -691,9 +691,9 @@ public class ModForceTouch extends XposedModule {
         }
 
         @Override
-        public void cancelTouchEvent(MotionEvent cancel) {
+        public void performOriginalOnTouchEvent(MotionEvent event) {
             Object backup = mMethodHookParam.args[0];
-            mMethodHookParam.args[0] = cancel;
+            mMethodHookParam.args[0] = event;
             try {
                 invokeOriginalMethod(mMethodHookParam);
             } catch (Throwable t) {
@@ -727,6 +727,7 @@ public class ModForceTouch extends XposedModule {
             mForceTouchDetector.setMagnification(0);
             mForceTouchDetector.setMultipleForceTouch(false);
             mForceTouchDetector.setLongClickable(mSettings.forceTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+            mForceTouchDetector.setRewind(false);
 
             mUseGesture = gesture(mSettings);
         }
@@ -781,6 +782,7 @@ public class ModForceTouch extends XposedModule {
             mForceTouchDetector.setMagnification(0);
             mForceTouchDetector.setMultipleForceTouch(false);
             mForceTouchDetector.setLongClickable(mSettings.knuckleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+            mForceTouchDetector.setRewind(false);
         }
 
         @Override
@@ -839,6 +841,7 @@ public class ModForceTouch extends XposedModule {
                 mForceTouchDetector.setMultipleForceTouch(false);
                 mForceTouchDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mForceTouchDetector.setType(ForceTouchDetector.TYPE_WIGGLE);
+                mForceTouchDetector.setRewind(false);
             }
         }
 
@@ -898,6 +901,7 @@ public class ModForceTouch extends XposedModule {
                 mForceTouchDetector.setMultipleForceTouch(false);
                 mForceTouchDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mForceTouchDetector.setType(ForceTouchDetector.TYPE_SCRATCH);
+                mForceTouchDetector.setRewind(false);
             }
         }
 

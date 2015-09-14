@@ -28,7 +28,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
-import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.support.annotation.StringRes;
 import android.view.Menu;
@@ -164,6 +163,8 @@ public class SettingsActivity extends BaseSettingsActivity {
             } else if (Objects.equal(key, getString(R.string.key_wiggle_touch_enable))) {
                 updateState(R.string.key_header_wiggle_touch, key);
                 MyApp.updateService(getActivity(), sharedPreferences);
+            } else if (Objects.equal(key, getString(R.string.key_force_touch_screen_enable))) {
+                MyApp.updateService(getActivity(), sharedPreferences);
 //            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
 //                updateState(R.string.key_header_scratch_touch, key);
 //                MyApp.updateService(getActivity(), sharedPreferences);
@@ -229,20 +230,19 @@ public class SettingsActivity extends BaseSettingsActivity {
                     return true;
                 }
             });
-            setUpSwitch(R.string.key_hide_app_icon, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_hide_app_icon, new Preference.OnPreferenceChangeListener() {
                 @Override
-                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    if (fromUser) {
-                        Context context = sw.getContext();
-                        ComponentName alias = new ComponentName(context,
-                                SettingsActivity.class.getName() + ".Alias");
-                        PackageManager pm = context.getPackageManager();
-                        pm.setComponentEnabledSetting(alias,
-                                enabled ?
-                                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
-                                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                                PackageManager.DONT_KILL_APP);
-                    }
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    ComponentName alias = new ComponentName(context,
+                            SettingsActivity.class.getName() + ".Alias");
+                    PackageManager pm = context.getPackageManager();
+                    pm.setComponentEnabledSetting(alias,
+                            (Boolean) newValue ?
+                                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
+                                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                            PackageManager.DONT_KILL_APP);
+                    return true;
                 }
             });
         }
@@ -306,10 +306,10 @@ public class SettingsActivity extends BaseSettingsActivity {
             });
             showTextSummary(R.string.key_floating_action_background_alpha);
             showTextSummary(R.string.key_floating_action_timeout, R.string.unit_millisecond);
-            setUpSwitch(R.string.key_floating_action_recents, new OnSwitchChangeListener() {
+            setUpSwitch(R.string.key_floating_action_recents, new Preference.OnPreferenceChangeListener() {
                 @Override
-                public void onChange(SwitchPreference sw, boolean enabled, boolean fromUser) {
-                    if (fromUser && enabled &&
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if ((Boolean) newValue &&
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                         try {
@@ -318,6 +318,7 @@ public class SettingsActivity extends BaseSettingsActivity {
                             // some manufacturer doesn't have this activity
                         }
                     }
+                    return true;
                 }
             });
         }
@@ -472,6 +473,14 @@ public class SettingsActivity extends BaseSettingsActivity {
                         return false;
                     }
                 };
+                setUpSwitch(R.string.key_force_touch_screen_enable, new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        return false;
+                    }
+                });
+                findPreference(R.string.key_force_touch_screen_enable)
+                        .setOnPreferenceClickListener(listener);
                 findPreference(R.string.key_wiggle_touch_action_tap)
                         .setOnPreferenceClickListener(listener);
                 findPreference(R.string.key_wiggle_touch_action_long_press)

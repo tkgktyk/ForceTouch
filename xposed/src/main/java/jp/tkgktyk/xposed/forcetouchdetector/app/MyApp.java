@@ -98,6 +98,14 @@ public class MyApp extends BaseApplication {
 //        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
 //        setFloatingActionAsDefault(prefs, R.string.key_scratch_touch_action_tap);
 
+        //
+        if (!isDonated(this)) {
+            prefs.edit()
+                    .putBoolean(getString(R.string.key_force_touch_screen_enable), false)
+                    .apply();
+        }
+
+        // initialize
         setMethod(prefs.getString(getString(R.string.key_detector_method), ""));
     }
 

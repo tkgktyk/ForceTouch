@@ -37,7 +37,6 @@ import android.graphics.PointF;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +67,14 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButt
  */
 public class FloatingAction implements View.OnClickListener {
 
-    private static final String ACTION_SHOW_RECENTS = FTD.PREFIX_ACTION + "SHOW_RECENTS";
+    private static final String PREFIX_ACTION = FTD.PREFIX_ACTION + FloatingAction.class.getSimpleName() + ".";
+    private static final String PREFIX_EXTRA = FTD.PREFIX_EXTRA + FloatingAction.class.getSimpleName() + ".";
+    private static final String ACTION_SHOW_RECENTS = PREFIX_ACTION + "SHOW_RECENTS";
+    private static final String ACTION_HIDE = PREFIX_ACTION + "HIDE";
+    private static final String ACTION_PERFORM = PREFIX_ACTION + "PERFORM";
+
+    private static final String EXTRA_X = PREFIX_EXTRA + "X";
+    private static final String EXTRA_Y = PREFIX_EXTRA + "Y";
 
     private Context mContext;
     private FTD.Settings mSettings;
@@ -190,6 +196,28 @@ public class FloatingAction implements View.OnClickListener {
         context.sendBroadcast(intent);
     }
 
+    public static void showWithAbsolutePosition(Context context, float x, float y) {
+        Intent intent = new Intent(FTD.ACTION_FLOATING_ACTION);
+        Point size = new Point();
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getRealSize(size);
+        intent.putExtra(FTD.EXTRA_FRACTION_X, x / size.x);
+        intent.putExtra(FTD.EXTRA_FRACTION_Y, y / size.y);
+        context.sendBroadcast(intent);
+    }
+
+    public static void hide(Context context) {
+        Intent intent = new Intent(ACTION_HIDE);
+        context.sendBroadcast(intent);
+    }
+
+    public static void performAction(Context context, float x, float y) {
+        Intent intent = new Intent(ACTION_PERFORM);
+        intent.putExtra(EXTRA_X, x);
+        intent.putExtra(EXTRA_Y, y);
+        context.sendBroadcast(intent);
+    }
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -200,6 +228,12 @@ public class FloatingAction implements View.OnClickListener {
                 show();
             } else if (Objects.equal(action, ACTION_SHOW_RECENTS)) {
                 showRecents();
+            } else if (Objects.equal(action, ACTION_HIDE)) {
+                hide();
+            } else if (Objects.equal(action, ACTION_PERFORM)) {
+                float x = intent.getFloatExtra(EXTRA_X, 0.0f);
+                float y = intent.getFloatExtra(EXTRA_Y, 0.0f);
+                performAction(x, y);
             }
         }
     };
@@ -220,15 +254,79 @@ public class FloatingAction implements View.OnClickListener {
         }
     }
 
+    private void performAction(float x, float y) {
+        View view = findViewAtPosition(x, y);
+        if (view != null) {
+            ActionInfo actionInfo = (ActionInfo) view.getTag();
+            actionInfo.launch(mContext);
+        }
+    }
+
+    /**
+     * Determines if given points are inside view
+     *
+     * @param x    - x coordinate of point
+     * @param y    - y coordinate of point
+     * @param view - view object to compare
+     * @return true if the points are within view bounds, false otherwise
+     */
+    private boolean isPointInsideView(float x, float y, View view) {
+        int location[] = new int[2];
+        view.getLocationOnScreen(location);
+        int viewX = location[0];
+        int viewY = location[1];
+
+        //point is inside view bounds
+        if ((x > viewX && x < (viewX + view.getWidth())) &&
+                (y > viewY && y < (viewY + view.getHeight()))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private View findViewAtPosition(float x, float y) {
+        int count = mCircleLayout.getChildCount();
+        for (int i = count; i > 0; --i) {
+            View child = mCircleLayout.getChildAt(i - 1);
+            if (isPointInsideView(x, y, child)) {
+                if (child instanceof ViewGroup) {
+                    View v = findViewAtPosition(x, y);
+                    if (v != null) {
+                        return v;
+                    }
+                } else {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
     public FloatingAction(Context context, FTD.Settings settings) {
         mContext = context;
         mSettings = settings;
         context.setTheme(R.style.AppTheme);
-        mContainer = (MovableLayout) LayoutInflater.from(context)
-                .inflate(R.layout.view_floating_action_container, null);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mContainer = new MovableLayout(context);
+        mContainer.setLayoutParams(lp);
         mContainer.setBackgroundColor(settings.floatingActionBackgroundColor);
         mContainer.getBackground().setAlpha(mSettings.floatingActionBackgroundAlpha);
-        if (mSettings.floatingActionMovable) {
+        if (mSettings.forceTouchScreenEnable) {
+            mContainer.setCallback(new MovableLayout.Callback() {
+                @Override
+                public void move(MovableLayout layout, float dx, float dy) {
+                    // usually never reach
+                }
+
+                @Override
+                public void onClick(MovableLayout layout) {
+                    // usually never reach
+                    hide();
+                }
+            });
+        } else if (mSettings.floatingActionMovable) {
             mContainer.setCallback(new MovableLayout.Callback() {
                 @Override
                 public void move(MovableLayout layout, float dx, float dy) {
@@ -251,7 +349,9 @@ public class FloatingAction implements View.OnClickListener {
                 }
             });
         }
-        mCircleLayout = (CircleLayoutForFAB) mContainer.findViewById(R.id.circle_layout);
+        mCircleLayout = new CircleLayoutForFAB(mContext);
+        mCircleLayout.setLayoutParams(lp);
+        mContainer.addView(mCircleLayout);
         setUpAnimator();
         // force hide
         mNavigationShown = true;
@@ -275,6 +375,8 @@ public class FloatingAction implements View.OnClickListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTD.ACTION_FLOATING_ACTION);
         filter.addAction(ACTION_SHOW_RECENTS);
+        filter.addAction(ACTION_HIDE);
+        filter.addAction(ACTION_PERFORM);
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -419,7 +521,7 @@ public class FloatingAction implements View.OnClickListener {
 
     private void resetAutoHide() {
         mContainer.removeCallbacks(mAutoHide);
-        if (mSettings.floatingActionTimeout > 0) {
+        if (!mSettings.forceTouchScreenEnable && mSettings.floatingActionTimeout > 0) {
             mContainer.postDelayed(mAutoHide, mSettings.floatingActionTimeout);
         }
     }
@@ -452,7 +554,7 @@ public class FloatingAction implements View.OnClickListener {
     }
 
     private void disappear() {
-        mContainer.setVisibility(View.GONE);
+        mContainer.setVisibility(View.INVISIBLE);
         mNavigationShown = false;
         mContainer.removeCallbacks(mAutoHide);
         mCircleLayout.setOffset(0, 0);

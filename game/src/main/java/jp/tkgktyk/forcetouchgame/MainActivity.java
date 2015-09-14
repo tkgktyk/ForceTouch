@@ -315,8 +315,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void cancelTouchEvent(MotionEvent cancel) {
-        MainActivity.super.dispatchTouchEvent(cancel);
+    public void performOriginalOnTouchEvent(MotionEvent event) {
+        super.dispatchTouchEvent(event);
     }
 
     @Override

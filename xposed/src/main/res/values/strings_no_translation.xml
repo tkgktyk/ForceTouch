@@ -69,6 +69,7 @@
     <string name="key_wiggle_touch_magnification" translatable="false">key_wiggle_touch_magnification</string>
     <string name="key_wiggle_touch_action_tap" translatable="false">key_wiggle_touch_action_tap</string>
     <string name="key_wiggle_touch_action_long_press" translatable="false">key_wiggle_touch_action_long_press</string>
+    <string name="key_force_touch_screen_enable" translatable="false">key_force_touch_screen_enable</string>
 
     <!-- Scratch Touch -->
     <string name="key_scratch_touch_enable" translatable="false">key_scratch_touch_enable</string>

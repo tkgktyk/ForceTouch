@@ -30,8 +30,13 @@ public class Mod implements IXposedHookZygoteInit {
         mPrefs = new XSharedPreferences(FTD.PACKAGE_NAME);
         mPrefs.makeWorldReadable();
 
+        FTD.Settings settings = new FTD.Settings(null, mPrefs);
         ModInternal.initZygote(mPrefs);
-        ModForceTouch.initZygote(mPrefs);
-        ModLongPress.initZygote(mPrefs);
+        if (settings.forceTouchScreenEnable) {
+            ModForceTouchScreen.initZygote(mPrefs);
+        }else {
+            ModForceTouch.initZygote(mPrefs);
+            ModLongPress.initZygote(mPrefs);
+        }
     }
 }

@@ -216,25 +216,9 @@ public abstract class BaseSettingsActivity extends AppCompatActivity {
             boolean onChange(EditTextPreference edit, String text);
         }
 
-        protected void setUpSwitch(@StringRes int id, final OnSwitchChangeListener listener) {
+        protected void setUpSwitch(@StringRes int id, final Preference.OnPreferenceChangeListener listener) {
             SwitchPreference sw = (SwitchPreference) findPreference(id);
-            sw.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    boolean enabled = (Boolean) newValue;
-                    if (listener != null) {
-                        listener.onChange((SwitchPreference) preference, enabled, true);
-                    }
-                    return true;
-                }
-            });
-            if (listener != null) {
-                listener.onChange(sw, sw.isChecked(), false);
-            }
-        }
-
-        protected interface OnSwitchChangeListener {
-            void onChange(SwitchPreference sw, boolean enabled, boolean fromUser);
+            sw.setOnPreferenceChangeListener(listener);
         }
 
         protected void openActivity(@StringRes int id, final Class<?> cls) {

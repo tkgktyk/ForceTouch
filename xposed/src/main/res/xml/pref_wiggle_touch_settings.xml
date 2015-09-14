@@ -33,6 +33,13 @@
             android:dialogMessage="@string/message_magnification"
             android:key="@string/key_wiggle_touch_magnification"
             android:title="@string/title_magnification"/>
+        <!-- Force Touch Screen Enable -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="false"
+            android:icon="@null"
+            android:key="@string/key_force_touch_screen_enable"
+            android:title="@string/title_force_touch_screen"
+            android:summary="@string/summary_force_touch_screen"/>
     </PreferenceCategory>
 
     <!-- Action -->

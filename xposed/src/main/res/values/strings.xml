@@ -184,5 +184,7 @@
     <!-- Wiggle Touch -->
     <string name="title_magnification">Magnification</string>
     <string name="message_magnification">More than 1.0\nSmall value makes detector sensitive.</string>
+    <string name="title_force_touch_screen">Force Touch Screen (BETA)</string>
+    <string name="summary_force_touch_screen">Requires Floating Action. Other detectors and actions of Wiggle Touch are disabled. (Requires reboot)</string>
 
 </resources>
