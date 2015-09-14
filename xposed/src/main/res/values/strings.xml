@@ -55,6 +55,8 @@
     <string name="action_lock_screen">Lock Screen</string>
     <string name="action_last_app">Last App</string>
     <string name="action_menu">Menu</string>
+    <string name="action_brightness_up">Brightness Up</string>
+    <string name="action_brightness_down">Brightness Down</string>
     <!-- status bar -->
     <string name="action_notifications">Notifications</string>
     <string name="action_quick_settings">Quick Settings</string>

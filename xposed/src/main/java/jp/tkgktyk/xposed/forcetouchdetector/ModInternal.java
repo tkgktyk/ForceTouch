@@ -83,6 +83,14 @@ public class ModInternal extends XposedModule {
                     sendKeyEventAlt(KeyEvent.KEYCODE_TAB);
                 } else if (action.equals(FTD.ACTION_MENU)) {
                     sendKeyEvent(KeyEvent.KEYCODE_MENU);
+                } else if (action.equals(FTD.ACTION_BRIGHTNESS_UP)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        sendKeyEvent(KeyEvent.KEYCODE_BRIGHTNESS_UP);
+                    }
+                } else if (action.equals(FTD.ACTION_BRIGHTNESS_DOWN)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        sendKeyEvent(KeyEvent.KEYCODE_BRIGHTNESS_DOWN);
+                    }
 
                     //
                     // status bar service

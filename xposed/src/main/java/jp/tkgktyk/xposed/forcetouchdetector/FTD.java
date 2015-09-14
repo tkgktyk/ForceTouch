@@ -74,6 +74,8 @@ public class FTD {
     public static final String ACTION_LOCK_SCREEN = PREFIX_ACTION + "LOCK_SCREEN";
     public static final String ACTION_LAST_APP = PREFIX_ACTION + "LAST_APP";
     public static final String ACTION_MENU = PREFIX_ACTION + "MENU";
+    public static final String ACTION_BRIGHTNESS_UP = PREFIX_ACTION + "BRIGHTNESS_UP";
+    public static final String ACTION_BRIGHTNESS_DOWN = PREFIX_ACTION + "BRIGHTNESS_DOWN";
     // status bar
     public static final String ACTION_NOTIFICATIONS = PREFIX_ACTION + "NOTIFICATIONS";
     public static final String ACTION_QUICK_SETTINGS = PREFIX_ACTION + "QUICK_SETTINGS";
@@ -124,6 +126,8 @@ public class FTD {
         ENTRIES.put(ACTION_LOCK_SCREEN, new Entry(R.string.action_lock_screen, R.drawable.ic_phonelink_lock_white_24dp));
         ENTRIES.put(ACTION_LAST_APP, new Entry(R.string.action_last_app, R.drawable.ic_swap_horiz_white_24dp));
         ENTRIES.put(ACTION_MENU, new Entry(R.string.action_menu, R.drawable.ic_menu_white_24dp));
+        ENTRIES.put(ACTION_BRIGHTNESS_UP, new Entry(R.string.action_brightness_up, R.drawable.ic_brightness_high_white_24dp));
+        ENTRIES.put(ACTION_BRIGHTNESS_DOWN, new Entry(R.string.action_brightness_down, R.drawable.ic_brightness_low_white_24dp));
         //
         // status bar
         //
@@ -167,6 +171,8 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_LOCK_SCREEN);
         INTERNAL_ACTION_FILTER.addAction(ACTION_LAST_APP);
         INTERNAL_ACTION_FILTER.addAction(ACTION_MENU);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_BRIGHTNESS_UP);
+        INTERNAL_ACTION_FILTER.addAction(ACTION_BRIGHTNESS_DOWN);
         // status bar
         INTERNAL_ACTION_FILTER.addAction(ACTION_NOTIFICATIONS);
         INTERNAL_ACTION_FILTER.addAction(ACTION_QUICK_SETTINGS);

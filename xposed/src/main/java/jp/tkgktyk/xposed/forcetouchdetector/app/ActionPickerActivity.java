@@ -228,6 +228,8 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_LOCK_SCREEN,
                 FTD.ACTION_LAST_APP,
                 FTD.ACTION_MENU,
+                FTD.ACTION_BRIGHTNESS_UP,
+                FTD.ACTION_BRIGHTNESS_DOWN,
                 // status bar
                 FTD.ACTION_NOTIFICATIONS,
                 FTD.ACTION_QUICK_SETTINGS,
@@ -267,6 +269,8 @@ public class ActionPickerActivity extends AppCompatActivity {
                 FTD.ACTION_LOCK_SCREEN,
                 FTD.ACTION_LAST_APP,
                 FTD.ACTION_MENU,
+                FTD.ACTION_BRIGHTNESS_UP,
+                FTD.ACTION_BRIGHTNESS_DOWN,
                 // status bar
                 FTD.ACTION_NOTIFICATIONS,
                 FTD.ACTION_QUICK_SETTINGS,
