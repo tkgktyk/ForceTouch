@@ -87,6 +87,7 @@ public class FloatingAction implements View.OnClickListener {
 
     private final PointF mFraction = new PointF();
 
+    private boolean mActionEnabled;
     private boolean mNavigationShown;
     private ObjectAnimator mShowAnimation;
     private ObjectAnimator mDimAnimation;
@@ -255,6 +256,9 @@ public class FloatingAction implements View.OnClickListener {
     }
 
     private void performAction(float x, float y) {
+        if (!mActionEnabled) {
+            return;
+        }
         View view = findViewAtPosition(x, y);
         if (view != null) {
             ActionInfo actionInfo = (ActionInfo) view.getTag();
@@ -387,6 +391,30 @@ public class FloatingAction implements View.OnClickListener {
             mShowAnimation = ObjectAnimator.ofPropertyValuesHolder(mCircleLayout,
                     holderScaleX, holderScaleY);
 //            mShowAnimation.setDuration(300); // default 300
+            mShowAnimation.addListener(new Animator.AnimatorListener() {
+                private boolean mIsCanceled;
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mIsCanceled = false;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (!mIsCanceled) {
+                        mActionEnabled = true;
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    mIsCanceled = true;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
 
             PropertyValuesHolder holderAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 0.0f, 1.0f);
             mDimAnimation = ObjectAnimator.ofPropertyValuesHolder(mContainer, holderAlpha);
@@ -469,6 +497,9 @@ public class FloatingAction implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        if (!mActionEnabled) {
+            return;
+        }
         // get action before erasing recent apps by hide()
         ActionInfo action = (ActionInfo) v.getTag();
         boolean sticky = false;
@@ -555,6 +586,7 @@ public class FloatingAction implements View.OnClickListener {
 
     private void disappear() {
         mContainer.setVisibility(View.INVISIBLE);
+        mActionEnabled = false;
         mNavigationShown = false;
         mContainer.removeCallbacks(mAutoHide);
         mCircleLayout.setOffset(0, 0);
