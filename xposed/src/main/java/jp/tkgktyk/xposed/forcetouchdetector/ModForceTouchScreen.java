@@ -33,7 +33,6 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import jp.tkgktyk.lib.ForceTouchDetector;
 import jp.tkgktyk.lib.ForceTouchScreenHelper;
-import jp.tkgktyk.xposed.forcetouchdetector.app.FloatingAction;
 
 /**
  * Created by tkgktyk on 2015/02/12.
@@ -172,10 +171,10 @@ public class ModForceTouchScreen extends XposedModule {
     }
 
     public static abstract class Detector {
-        protected final ViewGroup mTargetView;
+        private final ViewGroup mTargetView;
         protected FTD.Settings mSettings;
 
-        protected XC_MethodHook.MethodHookParam mMethodHookParam;
+        private XC_MethodHook.MethodHookParam mMethodHookParam;
 
         public Detector(ViewGroup targetView, FTD.Settings settings) {
             mTargetView = targetView;
@@ -189,7 +188,7 @@ public class ModForceTouchScreen extends XposedModule {
 
         protected abstract void onSettingsLoaded();
 
-        public abstract void onDestroy();
+        protected abstract void onDestroy();
 
         protected float getMethodParameter(MotionEvent event, int index) {
             return mSettings.detectorMethod == FTD.METHOD_PRESSURE ?
@@ -230,6 +229,26 @@ public class ModForceTouchScreen extends XposedModule {
                 mTargetView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
         }
+
+        protected boolean invokeOriginalDispatchTouchEvent(MotionEvent event) {
+            boolean ret = false;
+            Object backup = mMethodHookParam.args[0];
+            mMethodHookParam.args[0] = event;
+            try {
+                ret = (Boolean) invokeOriginalMethod(mMethodHookParam);
+            } catch (Throwable t) {
+                logE(t);
+            }
+            mMethodHookParam.args[0] = backup;
+            return ret;
+        }
+
+        protected void sendBroadcast(String action, float x, float y) {
+            Intent intent = new Intent(action);
+            intent.putExtra(FTD.EXTRA_X, x);
+            intent.putExtra(FTD.EXTRA_Y, y);
+            getContext().sendBroadcast(intent);
+        }
     }
 
     private static class ForceTouchScreen extends Detector
@@ -258,50 +277,51 @@ public class ModForceTouchScreen extends XposedModule {
         }
 
         @Override
-        public void onDestroy() {
-            FloatingAction.hide(getContext());
+        protected void onDestroy() {
+            if (mForceTouchScreenHelper.getCount() > 0) {
+                onForceTouchCancel(0.0f, 0.0f, mForceTouchScreenHelper.getCount());
+            }
         }
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.wiggleTouchEnable && mForceTouchScreenHelper.onTouchEvent(event);
+            return mSettings.forceTouchScreenEnable && mForceTouchScreenHelper.onTouchEvent(event);
         }
 
         @Override
-        public boolean onForceTouch(float x, float y, int count) {
+        public boolean onForceTouchBegin(float x, float y) {
             if (isInDetectionArea(x, y)) {
                 performHapticFeedback();
-                if (count == 1) {
-                    FloatingAction.showWithAbsolutePosition(getContext(), x, y);
-                } else {
-                    FloatingAction.performAction(getContext(), x, y);
-                }
+                sendBroadcast(FTD.ACTION_FORCE_TOUCH_BEGIN, x, y);
                 return true;
             }
             return false;
         }
 
         @Override
-        public boolean onForceTouchUp(float x, float y, int count) {
-            if (count == 1) {
-                FloatingAction.performAction(getContext(), x, y);
-            }
-            FloatingAction.hide(getContext());
-            return false;
+        public void onForceTouchDown(float x, float y, int count) {
+            performHapticFeedback();
+            sendBroadcast(FTD.ACTION_FORCE_TOUCH_DOWN, x, y);
+        }
+
+        @Override
+        public void onForceTouchUp(float x, float y, int count) {
+            sendBroadcast(FTD.ACTION_FORCE_TOUCH_UP, x, y);
+        }
+
+        @Override
+        public void onForceTouchEnd(float x, float y, int count) {
+            sendBroadcast(FTD.ACTION_FORCE_TOUCH_END, x, y);
+        }
+
+        @Override
+        public void onForceTouchCancel(float x, float y, int count) {
+            sendBroadcast(FTD.ACTION_FORCE_TOUCH_CANCEL, x, y);
         }
 
         @Override
         public boolean performOriginalOnTouchEvent(MotionEvent event) {
-            boolean ret = false;
-            Object backup = mMethodHookParam.args[0];
-            mMethodHookParam.args[0] = event;
-            try {
-                ret = (Boolean) invokeOriginalMethod(mMethodHookParam);
-            } catch (Throwable t) {
-                logE(t);
-            }
-            mMethodHookParam.args[0] = backup;
-            return ret;
+            return invokeOriginalDispatchTouchEvent(event);
         }
 
         @Override

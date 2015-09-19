@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -68,13 +69,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButt
 public class FloatingAction implements View.OnClickListener {
 
     private static final String PREFIX_ACTION = FTD.PREFIX_ACTION + FloatingAction.class.getSimpleName() + ".";
-    private static final String PREFIX_EXTRA = FTD.PREFIX_EXTRA + FloatingAction.class.getSimpleName() + ".";
     private static final String ACTION_SHOW_RECENTS = PREFIX_ACTION + "SHOW_RECENTS";
-    private static final String ACTION_HIDE = PREFIX_ACTION + "HIDE";
-    private static final String ACTION_PERFORM = PREFIX_ACTION + "PERFORM";
-
-    private static final String EXTRA_X = PREFIX_EXTRA + "X";
-    private static final String EXTRA_Y = PREFIX_EXTRA + "Y";
 
     private Context mContext;
     private FTD.Settings mSettings;
@@ -87,6 +82,7 @@ public class FloatingAction implements View.OnClickListener {
 
     private final PointF mFraction = new PointF();
 
+    private boolean mOneShotMode;
     private boolean mActionEnabled;
     private boolean mNavigationShown;
     private ObjectAnimator mShowAnimation;
@@ -190,33 +186,11 @@ public class FloatingAction implements View.OnClickListener {
         }
     };
 
-    public static void show(Context context) {
+    public static void show(Activity activity) {
         Intent intent = new Intent(FTD.ACTION_FLOATING_ACTION);
-        intent.putExtra(FTD.EXTRA_FRACTION_X, 0.0f);
-        intent.putExtra(FTD.EXTRA_FRACTION_Y, 0.5f);
-        context.sendBroadcast(intent);
-    }
-
-    public static void showWithAbsolutePosition(Context context, float x, float y) {
-        Intent intent = new Intent(FTD.ACTION_FLOATING_ACTION);
-        Point size = new Point();
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getRealSize(size);
-        intent.putExtra(FTD.EXTRA_FRACTION_X, x / size.x);
-        intent.putExtra(FTD.EXTRA_FRACTION_Y, y / size.y);
-        context.sendBroadcast(intent);
-    }
-
-    public static void hide(Context context) {
-        Intent intent = new Intent(ACTION_HIDE);
-        context.sendBroadcast(intent);
-    }
-
-    public static void performAction(Context context, float x, float y) {
-        Intent intent = new Intent(ACTION_PERFORM);
-        intent.putExtra(EXTRA_X, x);
-        intent.putExtra(EXTRA_Y, y);
-        context.sendBroadcast(intent);
+        intent.putExtra(FTD.EXTRA_X, 0.0f);
+        intent.putExtra(FTD.EXTRA_Y, activity.getWindow().getDecorView().getHeight() / 2.0f);
+        activity.sendBroadcast(intent);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -224,17 +198,32 @@ public class FloatingAction implements View.OnClickListener {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Objects.equal(action, FTD.ACTION_FLOATING_ACTION)) {
-                mFraction.x = intent.getFloatExtra(FTD.EXTRA_FRACTION_X, 0.0f);
-                mFraction.y = intent.getFloatExtra(FTD.EXTRA_FRACTION_Y, 0.0f);
-                show();
+                float x = intent.getFloatExtra(FTD.EXTRA_X, 0.0f);
+                float y = intent.getFloatExtra(FTD.EXTRA_Y, 0.5f);
+                show(x, y);
             } else if (Objects.equal(action, ACTION_SHOW_RECENTS)) {
                 showRecents();
-            } else if (Objects.equal(action, ACTION_HIDE)) {
-                hide();
-            } else if (Objects.equal(action, ACTION_PERFORM)) {
-                float x = intent.getFloatExtra(EXTRA_X, 0.0f);
-                float y = intent.getFloatExtra(EXTRA_Y, 0.0f);
+            } else if (Objects.equal(action, FTD.ACTION_FORCE_TOUCH_BEGIN)) {
+                mOneShotMode = true;
+                float x = intent.getFloatExtra(FTD.EXTRA_X, 0.0f);
+                float y = intent.getFloatExtra(FTD.EXTRA_Y, 0.5f);
+                show(x, y);
+            } else if (Objects.equal(action, FTD.ACTION_FORCE_TOUCH_DOWN)) {
+                mOneShotMode = false;
+                float x = intent.getFloatExtra(FTD.EXTRA_X, 0.0f);
+                float y = intent.getFloatExtra(FTD.EXTRA_Y, 0.5f);
                 performAction(x, y);
+            } else if (Objects.equal(action, FTD.ACTION_FORCE_TOUCH_UP)) {
+                // doing nothing
+            } else if (Objects.equal(action, FTD.ACTION_FORCE_TOUCH_END)) {
+                if (mOneShotMode) {
+                    float x = intent.getFloatExtra(FTD.EXTRA_X, 0.0f);
+                    float y = intent.getFloatExtra(FTD.EXTRA_Y, 0.5f);
+                    performAction(x, y);
+                }
+                hide();
+            } else if (Objects.equal(action, FTD.ACTION_FORCE_TOUCH_CANCEL)) {
+                hide();
             }
         }
     };
@@ -379,8 +368,11 @@ public class FloatingAction implements View.OnClickListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(FTD.ACTION_FLOATING_ACTION);
         filter.addAction(ACTION_SHOW_RECENTS);
-        filter.addAction(ACTION_HIDE);
-        filter.addAction(ACTION_PERFORM);
+        filter.addAction(FTD.ACTION_FORCE_TOUCH_BEGIN);
+        filter.addAction(FTD.ACTION_FORCE_TOUCH_DOWN);
+        filter.addAction(FTD.ACTION_FORCE_TOUCH_UP);
+        filter.addAction(FTD.ACTION_FORCE_TOUCH_END);
+        filter.addAction(FTD.ACTION_FORCE_TOUCH_CANCEL);
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -518,11 +510,11 @@ public class FloatingAction implements View.OnClickListener {
         action.launch(v.getContext());
     }
 
-    private void show() {
+    private void show(float x, float y) {
         hide();
 
-        float x;
-        float y = mFraction.y * mDisplaySize.y;
+        mFraction.x = x / mDisplaySize.x;
+        mFraction.y = y / mDisplaySize.y;
         float rotation;
         if (mFraction.x > 0.5) {
             x = mDisplaySize.x;
@@ -605,7 +597,7 @@ public class FloatingAction implements View.OnClickListener {
     public void onConfigurationChanged(Configuration newConfig) {
         mWindowManager.getDefaultDisplay().getRealSize(mDisplaySize);
         if (mNavigationShown) {
-            show();
+            show(mFraction.x * mDisplaySize.x, mFraction.y * mDisplaySize.y);
         }
     }
 

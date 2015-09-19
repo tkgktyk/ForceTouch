@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.BatteryManager;
 import android.os.SystemClock;
 import android.support.annotation.DrawableRes;
@@ -34,7 +33,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -91,6 +89,13 @@ public class FTD {
     public static final String ACTION_SCROLL_DOWN = PREFIX_ACTION + "SCROLL_DOWN" + SUFFIX_TOUCH_ACTION;
     // other local app
     public static final String ACTION_FLOATING_ACTION = PREFIX_ACTION + "FLOATING_ACTION";
+
+    // Force Touch Screen
+    public static final String ACTION_FORCE_TOUCH_BEGIN = PREFIX_ACTION + "FORCE_TOUCH_BEGIN";
+    public static final String ACTION_FORCE_TOUCH_DOWN = PREFIX_ACTION + "FORCE_TOUCH_DOWN";
+    public static final String ACTION_FORCE_TOUCH_UP = PREFIX_ACTION + "FORCE_TOUCH_UP";
+    public static final String ACTION_FORCE_TOUCH_END = PREFIX_ACTION + "FORCE_TOUCH_END";
+    public static final String ACTION_FORCE_TOUCH_CANCEL = PREFIX_ACTION + "FORCE_TOUCH_CANCEL";
 
     public static final IntentFilter INTERNAL_ACTION_FILTER;
 
@@ -182,10 +187,8 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_SELECT_KEYBOARD);
     }
 
-    public static final String EXTRA_FRACTION_X = PREFIX_EXTRA + "FRACTION_X";
-    public static final String EXTRA_FRACTION_Y = PREFIX_EXTRA + "FRACTION_Y";
-
-    private static final Point mDisplaySize = new Point();
+    public static final String EXTRA_X = PREFIX_EXTRA + "X";
+    public static final String EXTRA_Y = PREFIX_EXTRA + "Y";
 
     @NonNull
     public static String getActionName(Context context, String action) {
@@ -228,10 +231,8 @@ public class FTD {
             return false;
         }
         // add coordinates
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getRealSize(mDisplaySize);
-        intent.putExtra(EXTRA_FRACTION_X, x / mDisplaySize.x);
-        intent.putExtra(EXTRA_FRACTION_Y, y / mDisplaySize.y);
+        intent.putExtra(EXTRA_X, x);
+        intent.putExtra(EXTRA_Y, y);
         // launch action like ActionInfo#launch
         switch (actionInfo.getType()) {
             case ActionInfo.TYPE_TOOL:
