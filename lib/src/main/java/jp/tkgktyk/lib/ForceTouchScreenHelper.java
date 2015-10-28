@@ -37,7 +37,7 @@ public class ForceTouchScreenHelper {
     private static final int INVALID_POINTER_ID = -1;
 
     public interface Callback {
-        boolean onForceTouchBegin(float x, float y);
+        boolean onForceTouchBegin(float x, float y, float startX, float startY);
 
         void onForceTouchDown(float x, float y, int count);
 
@@ -89,8 +89,8 @@ public class ForceTouchScreenHelper {
 
         float upper = INVALID_PARAMETER;
         float lower = INVALID_PARAMETER;
-        float x = 0.0f;
-        float y = 0.0f;
+        float startX = 0.0f;
+        float startY = 0.0f;
         boolean forceTouch = false;
         boolean window = false;
     }
@@ -202,8 +202,8 @@ public class ForceTouchScreenHelper {
             return;
         }
         TouchState state = new TouchState();
-        state.x = event.getX(index);
-        state.y = event.getY(index);
+        state.startX = event.getX(index);
+        state.startY = event.getY(index);
         final float parameter = mCallback.getParameter(event, index);
         sendStartDetectorMessage(state);
         if (state.window) {
@@ -305,13 +305,11 @@ public class ForceTouchScreenHelper {
                             }
                         } else if (isForceTouch(state, parameter)) {
                             removeMessages(state);
-                            state.x = x;
-                            state.y = y;
                             state.forceTouch = true;
                             ++mCount;
                             if (mCount == 1) {
                                 onForceTouchStarted(event, index);
-                                if (!mCallback.onForceTouchBegin(x, y)) {
+                                if (!mCallback.onForceTouchBegin(x, y, state.startX, state.startY)) {
                                     mCount = 0;
                                 }
                             } else {

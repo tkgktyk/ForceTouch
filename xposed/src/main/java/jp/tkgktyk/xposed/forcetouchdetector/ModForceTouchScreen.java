@@ -290,8 +290,8 @@ public class ModForceTouchScreen extends XposedModule {
         }
 
         @Override
-        public boolean onForceTouchBegin(float x, float y) {
-            if (isInDetectionArea(x, y)) {
+        public boolean onForceTouchBegin(float x, float y, float startX, float startY) {
+            if (isInDetectionArea(startX, startY)) {
                 performHapticFeedback();
                 sendBroadcast(FTD.ACTION_FORCE_TOUCH_BEGIN, x, y);
                 return true;
