@@ -274,6 +274,7 @@ public class ModForceTouchScreen extends XposedModule {
             mForceTouchScreenHelper.setSensitivity(getContext(), mSettings.detectionSensitivity);
             mForceTouchScreenHelper.setMagnification(mSettings.wiggleTouchMagnification);
             mForceTouchScreenHelper.setType(ForceTouchDetector.TYPE_WIGGLE);
+            mForceTouchScreenHelper.setRewind(false);
         }
 
         @Override
