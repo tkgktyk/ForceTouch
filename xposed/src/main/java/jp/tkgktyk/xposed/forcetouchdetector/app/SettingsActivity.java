@@ -462,10 +462,9 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Setting
             showTextSummary(R.string.key_wiggle_touch_magnification);
             // Action
-            if (MyApp.isDonated(getActivity())) {
-                pickAction(R.string.key_wiggle_touch_action_tap);
-                pickAction(R.string.key_wiggle_touch_action_long_press);
-            } else {
+            pickAction(R.string.key_wiggle_touch_action_tap);
+            pickAction(R.string.key_wiggle_touch_action_long_press);
+            if (!MyApp.isDonated(getActivity())) {
                 Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
@@ -480,10 +479,6 @@ public class SettingsActivity extends BaseSettingsActivity {
                     }
                 });
                 findPreference(R.string.key_force_touch_screen_enable)
-                        .setOnPreferenceClickListener(listener);
-                findPreference(R.string.key_wiggle_touch_action_tap)
-                        .setOnPreferenceClickListener(listener);
-                findPreference(R.string.key_wiggle_touch_action_long_press)
                         .setOnPreferenceClickListener(listener);
             }
         }

@@ -39,7 +39,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
  */
 public class MyApp extends BaseApplication {
 
-    private static final boolean DONATED = true;
+    private static final boolean DONATED = false;
 
     /**
      * for version name
@@ -95,7 +95,7 @@ public class MyApp extends BaseApplication {
         SharedPreferences prefs = getDefaultSharedPreferences();
         setFloatingActionAsDefault(prefs, R.string.key_force_touch_action_tap);
         setFloatingActionAsDefault(prefs, R.string.key_knuckle_touch_action_tap);
-//        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
+        setFloatingActionAsDefault(prefs, R.string.key_wiggle_touch_action_tap);
 //        setFloatingActionAsDefault(prefs, R.string.key_scratch_touch_action_tap);
 
         //
