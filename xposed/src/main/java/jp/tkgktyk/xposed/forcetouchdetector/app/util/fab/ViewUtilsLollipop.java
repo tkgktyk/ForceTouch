@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * Copyright 2015 Takagi Katsuyuki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector.app.util.fab;
 
-import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 
-interface ShadowViewDelegate {
-    float getRadius();
-    void setShadowPadding(int left, int top, int right, int bottom);
-    void setBackgroundDrawable(Drawable background);
+class ViewUtilsLollipop {
+
+    static void setBoundsViewOutlineProvider(View view) {
+        view.setOutlineProvider(ViewOutlineProvider.BOUNDS);
+    }
+
 }

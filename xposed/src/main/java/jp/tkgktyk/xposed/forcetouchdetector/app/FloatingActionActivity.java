@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +44,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.FTD;
 import jp.tkgktyk.xposed.forcetouchdetector.R;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButton;
 
 /**
  * Created by tkgktyk on 2015/07/02.
@@ -150,7 +150,7 @@ public class FloatingActionActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.add_fab)
-    void onAddClicked(FloatingActionButton button) {
+    void onAddClicked(LocalFloatingActionButton button) {
         Intent intent = new Intent(this, ActionPickerActivity.class);
         ActionPickerActivity.putExtras(intent, getSupportActionBar().getTitle(), false);
         startActivityForResult(intent, REQUEST_ACTION);
@@ -197,7 +197,7 @@ public class FloatingActionActivity extends AppCompatActivity {
 
     protected static class Holder extends RecyclerView.ViewHolder {
         @Bind(R.id.icon)
-        FloatingActionButton icon;
+        LocalFloatingActionButton icon;
         @Bind(R.id.action_name)
         TextView name;
         @Bind(R.id.action_type)

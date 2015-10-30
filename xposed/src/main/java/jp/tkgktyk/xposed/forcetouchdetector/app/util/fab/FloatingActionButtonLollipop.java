@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Takagi Katsuyuki
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import android.annotation.TargetApi;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -32,32 +33,44 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class FloatingActionButtonLollipop extends FloatingActionButtonImpl {
+class FloatingActionButtonLollipop extends FloatingActionButtonHoneycombMr1 {
 
     private Drawable mShapeDrawable;
     private RippleDrawable mRippleDrawable;
+    private Drawable mBorderDrawable;
 
-    private final Interpolator mInterpolator;
+    private Interpolator mInterpolator;
 
     FloatingActionButtonLollipop(View view, ShadowViewDelegate shadowViewDelegate) {
         super(view, shadowViewDelegate);
 
-        mInterpolator = AnimationUtils.loadInterpolator(
-                mView.getContext(), android.R.interpolator.fast_out_slow_in);
+        if (!view.isInEditMode()) {
+            mInterpolator = AnimationUtils.loadInterpolator(mView.getContext(),
+                    android.R.interpolator.fast_out_slow_in);
+        }
     }
 
     @Override
     void setBackgroundDrawable(Drawable originalBackground, ColorStateList backgroundTint,
-                               PorterDuff.Mode backgroundTintMode, int rippleColor) {
-        mShapeDrawable = DrawableCompat.wrap(originalBackground);
-
+            PorterDuff.Mode backgroundTintMode, int rippleColor, int borderWidth) {
+        // Now we need to tint the original background with the tint
+        mShapeDrawable = DrawableCompat.wrap(originalBackground.mutate());
         DrawableCompat.setTintList(mShapeDrawable, backgroundTint);
         if (backgroundTintMode != null) {
             DrawableCompat.setTintMode(mShapeDrawable, backgroundTintMode);
         }
 
+        final Drawable rippleContent;
+        if (borderWidth > 0) {
+            mBorderDrawable = createBorderDrawable(borderWidth, backgroundTint);
+            rippleContent = new LayerDrawable(new Drawable[]{mBorderDrawable, mShapeDrawable});
+        } else {
+            mBorderDrawable = null;
+            rippleContent = mShapeDrawable;
+        }
+
         mRippleDrawable = new RippleDrawable(ColorStateList.valueOf(rippleColor),
-                mShapeDrawable, null);
+                rippleContent, null);
 
         mShadowViewDelegate.setBackgroundDrawable(mRippleDrawable);
         mShadowViewDelegate.setShadowPadding(0, 0, 0, 0);
@@ -66,6 +79,9 @@ class FloatingActionButtonLollipop extends FloatingActionButtonImpl {
     @Override
     void setBackgroundTintList(ColorStateList tint) {
         DrawableCompat.setTintList(mShapeDrawable, tint);
+        if (mBorderDrawable != null) {
+            DrawableCompat.setTintList(mBorderDrawable, tint);
+        }
     }
 
     @Override
@@ -75,7 +91,7 @@ class FloatingActionButtonLollipop extends FloatingActionButtonImpl {
 
     @Override
     void setRippleColor(int rippleColor) {
-        DrawableCompat.setTint(mRippleDrawable, rippleColor);
+        mRippleDrawable.setColor(ColorStateList.valueOf(rippleColor));
     }
 
     @Override
@@ -112,5 +128,10 @@ class FloatingActionButtonLollipop extends FloatingActionButtonImpl {
     private Animator setupAnimator(Animator animator) {
         animator.setInterpolator(mInterpolator);
         return animator;
+    }
+
+    @Override
+    CircularBorderDrawable newCircularDrawable() {
+        return new CircularBorderDrawableLollipop();
     }
 }

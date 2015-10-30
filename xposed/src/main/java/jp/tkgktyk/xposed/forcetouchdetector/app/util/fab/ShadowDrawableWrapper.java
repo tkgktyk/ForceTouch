@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Takagi Katsuyuki
+ * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import android.support.design.R;
 import android.support.v7.graphics.drawable.DrawableWrapper;
 
 /**
- * A {@link Drawable} which wraps another drawable and
+ * A {@link android.graphics.drawable.Drawable} which wraps another drawable and
  * draws a shadow around it.
  */
 class ShadowDrawableWrapper extends DrawableWrapper {
@@ -77,12 +77,12 @@ class ShadowDrawableWrapper extends DrawableWrapper {
     private boolean mPrintedShadowClipWarning = false;
 
     public ShadowDrawableWrapper(Resources resources, Drawable content, float radius,
-                                 float shadowSize, float maxShadowSize) {
+            float shadowSize, float maxShadowSize) {
         super(content);
 
-        mShadowStartColor = resources.getColor(R.color.shadow_start_color);
-        mShadowMiddleColor = resources.getColor(R.color.shadow_mid_color);
-        mShadowEndColor = resources.getColor(R.color.shadow_end_color);
+        mShadowStartColor = resources.getColor(R.color.design_fab_shadow_start_color);
+        mShadowMiddleColor = resources.getColor(R.color.design_fab_shadow_mid_color);
+        mShadowEndColor = resources.getColor(R.color.design_fab_shadow_end_color);
 
         mCornerShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mCornerShadowPaint.setStyle(Paint.Style.FILL);
@@ -152,7 +152,7 @@ class ShadowDrawableWrapper extends DrawableWrapper {
     }
 
     public static float calculateVerticalPadding(float maxShadowSize, float cornerRadius,
-                                                 boolean addPaddingForCorners) {
+            boolean addPaddingForCorners) {
         if (addPaddingForCorners) {
             return (float) (maxShadowSize * SHADOW_MULTIPLIER + (1 - COS_45) * cornerRadius);
         } else {
@@ -161,7 +161,7 @@ class ShadowDrawableWrapper extends DrawableWrapper {
     }
 
     public static float calculateHorizontalPadding(float maxShadowSize, float cornerRadius,
-                                                   boolean addPaddingForCorners) {
+            boolean addPaddingForCorners) {
         if (addPaddingForCorners) {
             return (float) (maxShadowSize + (1 - COS_45) * cornerRadius);
         } else {

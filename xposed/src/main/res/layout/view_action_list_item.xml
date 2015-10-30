@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.FloatingActionButton
+        <jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButton
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

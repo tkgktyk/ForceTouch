@@ -46,7 +46,7 @@
         android:layout_above="@id/test_button"
         android:layout_below="@id/toolbar"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <jp.tkgktyk.xposed.forcetouchdetector.app.util.fab.LocalFloatingActionButton
         android:id="@+id/add_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

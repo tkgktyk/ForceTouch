@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '23.0.0'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 22
@@ -21,6 +21,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.google.guava:guava:18.0'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Takagi Katsuyuki
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ final class StateListAnimator {
      * Associates the given Animation with the provided drawable state specs so that it will be run
      * when the View's drawable state matches the specs.
      *
-     * @param specs     The drawable state specs to match against
+     * @param specs    The drawable state specs to match against
      * @param animation The Animation to run when the specs match
      */
     public void addState(int[] specs, Animation animation) {
