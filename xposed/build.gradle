@@ -6,9 +6,9 @@ android {
     defaultConfig {
         applicationId 'jp.tkgktyk.xposed.forcetouchdetector'
         minSdkVersion 17
-        targetSdkVersion 22
-        versionCode 25
-        versionName '0.5.1'
+        targetSdkVersion 23
+        versionCode 26
+        versionName '0.5.2'
     }
     buildTypes {
         release {
