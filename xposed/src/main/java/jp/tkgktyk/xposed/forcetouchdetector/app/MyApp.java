@@ -39,7 +39,7 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfoList;
  */
 public class MyApp extends BaseApplication {
 
-    private static final boolean DONATED = false;
+    private static final boolean DONATED = true;
 
     /**
      * for version name
@@ -62,7 +62,7 @@ public class MyApp extends BaseApplication {
     }
 
     public static boolean isDonated(Context context) {
-        return isDonatedImpl(context) || (BuildConfig.DEBUG && DONATED);
+        return (BuildConfig.DEBUG && DONATED) || isDonatedImpl(context);
     }
 
     private static boolean isDonatedImpl(Context context) {
