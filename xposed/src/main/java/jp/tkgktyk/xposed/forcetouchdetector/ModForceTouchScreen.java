@@ -272,7 +272,6 @@ public class ModForceTouchScreen extends XposedModule {
             }
             mForceTouchScreenHelper.setWindowTimeInMillis(window);
             mForceTouchScreenHelper.setWindowDelayInMillis(delay);
-            mForceTouchScreenHelper.setSensitivity(getContext(), mSettings.detectionSensitivity);
             mForceTouchScreenHelper.setMagnification(mSettings.wiggleTouchMagnification);
             mForceTouchScreenHelper.setType(ForceTouchDetector.TYPE_WIGGLE);
             mForceTouchScreenHelper.setRewind(false);

@@ -16,11 +16,9 @@
 
 package jp.tkgktyk.lib;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
-import android.view.ViewConfiguration;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -95,7 +93,6 @@ public class ForceTouchScreenHelper {
         boolean window = false;
     }
 
-    private int mTouchSlopeSquare;
     private float mMagnification;
     private int mWindowTimeInMillis;
     private int mWindowDelayInMillis;
@@ -116,11 +113,6 @@ public class ForceTouchScreenHelper {
 
     public ForceTouchScreenHelper(Callback callback) {
         mCallback = callback;
-    }
-
-    public void setSensitivity(Context context, int sensitivity) {
-        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop() * sensitivity;
-        mTouchSlopeSquare = touchSlop * touchSlop;
     }
 
     public void setMagnification(float magnification) {
