@@ -246,8 +246,11 @@ public class ModForceTouchScreen extends XposedModule {
         protected void sendBroadcast(String action, float x, float y) {
             Intent intent = new Intent(action);
             intent.putExtra(FTD.EXTRA_PACKAGE_NAME, getContext().getPackageName());
-            intent.putExtra(FTD.EXTRA_X, x);
-            intent.putExtra(FTD.EXTRA_Y, y);
+
+            int location[] = new int[2];
+            mTargetView.getLocationOnScreen(location);
+            intent.putExtra(FTD.EXTRA_X, x + location[0]);
+            intent.putExtra(FTD.EXTRA_Y, y + location[1]);
             getContext().sendBroadcast(intent);
         }
     }
