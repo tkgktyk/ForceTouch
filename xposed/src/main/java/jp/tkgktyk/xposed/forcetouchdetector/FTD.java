@@ -187,6 +187,7 @@ public class FTD {
         INTERNAL_ACTION_FILTER.addAction(ACTION_SELECT_KEYBOARD);
     }
 
+    public static final String EXTRA_PACKAGE_NAME = PREFIX_EXTRA + "PACKAGE_NAME";
     public static final String EXTRA_X = PREFIX_EXTRA + "X";
     public static final String EXTRA_Y = PREFIX_EXTRA + "Y";
 
