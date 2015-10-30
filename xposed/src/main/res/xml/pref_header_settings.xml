@@ -51,6 +51,10 @@
             android:icon="@null"
             android:key="@string/key_header_knuckle_touch"
             android:title="@string/header_knuckle_touch"/>
+        <!-- Troubleshooting -->
+        <Preference
+            android:icon="@null"
+            android:summary="@string/summary_troubleshooting"/>
         <!-- Wiggle Touch -->
         <Preference
             android:icon="@null"
