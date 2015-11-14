@@ -206,7 +206,12 @@ public class ActionPickerActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
                 View root = super.getView(position, convertView, parent);
                 ImageView icon = (ImageView) root.findViewById(R.id.icon);
-                icon.setImageResource(FTD.getActionIconResource(getActionList()[position]));
+                int iconId = FTD.getActionIconResource(getActionList()[position]);
+                if (iconId != 0) {
+                    icon.setImageResource(iconId);
+                } else {
+                    icon.setImageDrawable(null);
+                }
                 return root;
             }
         }
