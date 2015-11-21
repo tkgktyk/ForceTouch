@@ -113,6 +113,7 @@ public class ForceTouchDetector {
     private boolean mMultipleForceTouch;
     private boolean mRewind;
     private boolean mLongClickable = true;
+    private boolean mAllowUnknownType;
 
     public static final int TYPE_ONE_SHOT = 0;
     public static final int TYPE_WIGGLE = 1;
@@ -168,6 +169,10 @@ public class ForceTouchDetector {
 
     public void setLongClickable(boolean longClickable) {
         mLongClickable = longClickable;
+    }
+
+    public void allowUnknownType(boolean allow) {
+        mAllowUnknownType = allow;
     }
 
     public void setType(int type) {
@@ -232,7 +237,9 @@ public class ForceTouchDetector {
 
     private void addTouch(MotionEvent event) {
         final int index = event.getActionIndex();
-        if (event.getToolType(index) != MotionEvent.TOOL_TYPE_FINGER) {
+        final int toolType = event.getToolType(index);
+        if (!(toolType == MotionEvent.TOOL_TYPE_FINGER ||
+                (mAllowUnknownType && toolType == MotionEvent.TOOL_TYPE_UNKNOWN))) {
             return;
         }
         TouchState state = new TouchState();

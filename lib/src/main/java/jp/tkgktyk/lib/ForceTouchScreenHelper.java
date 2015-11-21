@@ -97,6 +97,7 @@ public class ForceTouchScreenHelper {
     private int mWindowTimeInMillis;
     private int mWindowDelayInMillis;
     private boolean mRewind;
+    private boolean mAllowUnknownType;
 
     public static final int TYPE_WIGGLE = 1;
     public static final int TYPE_SCRATCH = 2;
@@ -129,6 +130,10 @@ public class ForceTouchScreenHelper {
 
     public void setRewind(boolean rewind) {
         mRewind = rewind;
+    }
+
+    public void allowUnknownType(boolean allow) {
+        mAllowUnknownType = allow;
     }
 
     public void setType(int type) {
@@ -190,7 +195,9 @@ public class ForceTouchScreenHelper {
 
     private void addTouch(MotionEvent event) {
         final int index = event.getActionIndex();
-        if (event.getToolType(index) != MotionEvent.TOOL_TYPE_FINGER) {
+        final int toolType = event.getToolType(index);
+        if (!(toolType == MotionEvent.TOOL_TYPE_FINGER ||
+                (mAllowUnknownType && toolType == MotionEvent.TOOL_TYPE_UNKNOWN))) {
             return;
         }
         TouchState state = new TouchState();

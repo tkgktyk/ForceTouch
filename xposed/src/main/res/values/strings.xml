@@ -141,6 +141,8 @@
     <string name="title_extra_long_press_timeout">Extra Long Press Timeout</string>
     <string name="title_blacklist">Blacklist</string>
     <string name="summary_blacklist">Stop app process for changes to take effect</string>
+    <string name="title_allow_unknown_input_type">Unknown Input Type</string>
+    <string name="summary_allow_unknown_input_type">Allow unknown input type to detect touch for some game frameworks.</string>
     <!-- Feedback -->
     <string name="category_feedback">Feedback</string>
     <string name="title_vibration">Vibration</string>

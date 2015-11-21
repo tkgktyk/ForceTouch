@@ -54,6 +54,13 @@
             android:key="@string/key_blacklist"
             android:summary="@string/summary_blacklist"
             android:title="@string/title_blacklist"/>
+        <!-- Unknown Input Type -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="false"
+            android:icon="@null"
+            android:key="@string/key_allow_unknown_input_type"
+            android:title="@string/title_allow_unknown_input_type"
+            android:summary="@string/summary_allow_unknown_input_type"/>
     </PreferenceCategory>
     <!-- Feedback -->
     <PreferenceCategory

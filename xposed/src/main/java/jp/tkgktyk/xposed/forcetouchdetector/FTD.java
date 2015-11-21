@@ -455,6 +455,7 @@ public class FTD {
         public final int detectionWindow;
         public final int extraLongPressTimeout;
         public final Set<String> blacklist;
+        public final boolean allowUnknownInputType;
         // Feedback
         public final boolean vibration;
         public final int rippleColor;
@@ -533,6 +534,7 @@ public class FTD {
             detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
             extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "300"));
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
+            allowUnknownInputType = prefs.getBoolean("key_allow_unknown_input_type", false);
             // Feedback
             vibration = prefs.getBoolean("key_vibration", true);
             rippleColor = Color.parseColor(getStringToParse(prefs, "key_ripple_color", "#212121"));
