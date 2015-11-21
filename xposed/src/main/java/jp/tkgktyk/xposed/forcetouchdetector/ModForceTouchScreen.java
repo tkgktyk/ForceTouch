@@ -323,7 +323,7 @@ public class ModForceTouchScreen extends XposedModule {
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.forceTouchEnable ?
+            return mSettings.forceTouchScreenEnable ?
                     mForceTouchScreenHelper.onTouchEvent(event) :
                     performOriginalOnTouchEvent(event);
         }
