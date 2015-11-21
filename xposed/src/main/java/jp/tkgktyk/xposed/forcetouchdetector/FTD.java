@@ -232,8 +232,10 @@ public class FTD {
             return false;
         }
         // add coordinates
-        intent.putExtra(EXTRA_X, x);
-        intent.putExtra(EXTRA_Y, y);
+        int location[] = new int[2];
+        container.getLocationOnScreen(location);
+        intent.putExtra(EXTRA_X, x + location[0]);
+        intent.putExtra(EXTRA_Y, y + location[1]);
         // launch action like ActionInfo#launch
         switch (actionInfo.getType()) {
             case ActionInfo.TYPE_TOOL:
