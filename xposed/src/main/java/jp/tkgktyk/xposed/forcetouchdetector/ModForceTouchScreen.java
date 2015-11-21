@@ -21,10 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.support.annotation.Nullable;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -61,7 +61,7 @@ public class ModForceTouchScreen extends XposedModule {
             protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                 boolean handled;
                 try {
-                    ViewGroup container = (ViewGroup) methodHookParam.thisObject;
+                    View container = (View) methodHookParam.thisObject;
                     MotionEvent event = (MotionEvent) methodHookParam.args[0];
                     Detector detector = getDetector(container);
                     if (detector != null) {
@@ -77,7 +77,10 @@ public class ModForceTouchScreen extends XposedModule {
             }
         };
         class Installer extends XC_MethodHook {
-            protected void run(View target) {
+            protected void run(@Nullable View target) {
+                if (target == null) {
+                    return;
+                }
                 try {
                     install(target);
                     registerReceiver(target);
@@ -127,7 +130,10 @@ public class ModForceTouchScreen extends XposedModule {
             }
         }
         class Uninstaller extends XC_MethodHook {
-            protected void run(View target) {
+            protected void run(@Nullable View target) {
+                if (target == null) {
+                    return;
+                }
                 try {
                     unregisterReceiver(target);
                     uninstall(target);
@@ -305,6 +311,7 @@ public class ModForceTouchScreen extends XposedModule {
             mForceTouchScreenHelper.setMagnification(mSettings.wiggleTouchMagnification);
             mForceTouchScreenHelper.setType(ForceTouchDetector.TYPE_WIGGLE);
             mForceTouchScreenHelper.setRewind(false);
+            mForceTouchScreenHelper.allowUnknownType(mSettings.allowUnknownInputType);
         }
 
         @Override
@@ -316,7 +323,9 @@ public class ModForceTouchScreen extends XposedModule {
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.forceTouchScreenEnable && mForceTouchScreenHelper.onTouchEvent(event);
+            return mSettings.forceTouchEnable ?
+                    mForceTouchScreenHelper.onTouchEvent(event) :
+                    performOriginalOnTouchEvent(event);
         }
 
         @Override
