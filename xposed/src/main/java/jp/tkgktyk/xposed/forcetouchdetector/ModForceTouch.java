@@ -27,12 +27,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
@@ -43,7 +44,6 @@ import java.util.List;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import jp.tkgktyk.lib.ForceTouchDetector;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
@@ -53,6 +53,8 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
  */
 public class ModForceTouch extends XposedModule {
     private static final String CLASS_DECOR_VIEW = "com.android.internal.policy.impl.PhoneWindow$DecorView";
+    private static final String CLASS_POPUP_WINDOW = "android.widget.PopupWindow";
+    private static final String CLASS_POPUP_VIEW_CONTAINER = "android.widget.PopupWindow$PopupViewContainer";
     private static final String FIELD_DETECTORS = FTD.NAME + "_forceTouchDetectors";
     private static final String FIELD_SETTINGS_CHANGED_RECEIVER = FTD.NAME + "_settingsChangedReceiver";
 
@@ -68,114 +70,156 @@ public class ModForceTouch extends XposedModule {
     }
 
     private static void install() {
-        final Class<?> classDecorView = XposedHelpers.findClass(CLASS_DECOR_VIEW, null);
-        XposedBridge.hookAllConstructors(classDecorView, new XC_MethodHook() {
+        final XC_MethodReplacement dispatchTouchEvent = new XC_MethodReplacement() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                boolean handled = false;
                 try {
-                    FrameLayout decorView = (FrameLayout) param.thisObject;
-                    Context context = decorView.getContext();
-                    mPrefs.reload();
-                    FTD.Settings settings = new FTD.Settings(context, mPrefs);
-                    settings.blacklist.add(FTD.PACKAGE_NAME);
-                    String packageName = context.getPackageName();
-                    if (settings.blacklist.contains(packageName)) {
-                        // blacklist
-                        logD("ignore: " + packageName);
-                        return;
+                    View container = (View) methodHookParam.thisObject;
+                    MotionEvent event = (MotionEvent) methodHookParam.args[0];
+                    List<Detector> detectors = getDetectors(container);
+                    if (detectors != null) {
+                        for (Detector ftd : detectors) {
+                            handled = handled || ftd.dispatchTouchEvent(event, methodHookParam);
+                        }
                     }
-                    List<Detector> detectors = Lists.newArrayList();
-                    detectors.add(new ForceGestureDetector(decorView, settings));
-                    detectors.add(new LargeTouchDetector(decorView, settings));
-                    detectors.add(new KnuckleTouchDetector(decorView, settings));
-                    detectors.add(new WiggleTouchDetector(decorView, settings));
-                    detectors.add(new ScratchTouchDetector(decorView, settings));
-                    XposedHelpers.setAdditionalInstanceField(decorView,
-                            FIELD_DETECTORS, detectors);
+                } catch (Throwable t) {
+                    logE(t);
+                }
+                if (handled) {
+                    return true;
+                }
+                return invokeOriginalMethod(methodHookParam);
+            }
+        };
+        class Installer extends XC_MethodHook {
+            protected void run(@Nullable ViewGroup target) {
+                if (target == null) {
+                    return;
+                }
+                try {
+                    install(target);
+                    registerReceiver(target);
                 } catch (Throwable t) {
                     logE(t);
                 }
             }
-        });
-//        XposedHelpers.findAndHookMethod(View.class, "dispatchPointerEvent", MotionEvent.class,
-//                new XC_MethodHook() {
-//                    @Override
-//                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                        View view = (View) param.thisObject;
-//                        MotionEvent event = (MotionEvent) param.args[0];
-//                        logD("dispatchPointerEvent: " + event.toString());
-//                        logD("isRootView: " + (view.getRootView() == view));
-//                    }
-//                });
-        XposedHelpers.findAndHookMethod(classDecorView, "dispatchTouchEvent", MotionEvent.class,
-                new XC_MethodReplacement() {
-                    @Override
-                    protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                        boolean handled = false;
-                        try {
-                            FrameLayout decorView = (FrameLayout) methodHookParam.thisObject;
-                            MotionEvent event = (MotionEvent) methodHookParam.args[0];
-                            List<Detector> detectors = getDetectors(decorView);
-                            if (detectors != null) {
-                                for (Detector ftd : detectors) {
-                                    handled = handled || ftd.dispatchTouchEvent(event, methodHookParam);
-                                }
-                            }
-                        } catch (Throwable t) {
-                            logE(t);
-                        }
-                        if (handled) {
-                            return true;
-                        }
-                        return invokeOriginalMethod(methodHookParam);
-                    }
-                });
 
+            private void install(ViewGroup target) {
+                List<Detector> detectors = getDetectors(target);
+                if (detectors != null) {
+                    return;
+                }
+                Context context = target.getContext();
+                mPrefs.reload();
+                FTD.Settings settings = new FTD.Settings(context, mPrefs);
+                settings.blacklist.add(FTD.PACKAGE_NAME);
+                String packageName = context.getPackageName();
+                if (settings.blacklist.contains(packageName)) {
+                    // blacklist
+                    logD("ignore: " + packageName);
+                    return;
+                }
+                detectors = Lists.newArrayList();
+                detectors.add(new ForceGestureDetector(target, settings));
+                detectors.add(new LargeTouchDetector(target, settings));
+                detectors.add(new KnuckleTouchDetector(target, settings));
+                detectors.add(new WiggleTouchDetector(target, settings));
+                detectors.add(new ScratchTouchDetector(target, settings));
+                XposedHelpers.setAdditionalInstanceField(target,
+                        FIELD_DETECTORS, detectors);
+            }
+
+            private void registerReceiver(final View target) {
+                BroadcastReceiver settingsChangedReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        List<Detector> detectors = getDetectors(target);
+                        if (detectors == null) {
+                            return;
+                        }
+                        logD(target.getContext().getPackageName() + ": reload settings");
+                        FTD.Settings settings = (FTD.Settings) intent
+                                .getSerializableExtra(FTD.EXTRA_SETTINGS);
+                        for (Detector detector : detectors) {
+                            detector.onSettingsLoaded(settings);
+                        }
+                    }
+                };
+                XposedHelpers.setAdditionalInstanceField(target,
+                        FIELD_SETTINGS_CHANGED_RECEIVER, settingsChangedReceiver);
+                target.getContext().registerReceiver(settingsChangedReceiver,
+                        new IntentFilter(FTD.ACTION_SETTINGS_CHANGED));
+            }
+        }
+        class Uninstaller extends XC_MethodHook {
+            protected void run(@Nullable View target) {
+                if (target == null) {
+                    return;
+                }
+                try {
+                    unregisterReceiver(target);
+                    uninstall(target);
+                } catch (Throwable t) {
+                    logE(t);
+                }
+            }
+
+            private void unregisterReceiver(View target) {
+                BroadcastReceiver settingsChangedReceiver =
+                        (BroadcastReceiver) XposedHelpers.getAdditionalInstanceField(target,
+                                FIELD_SETTINGS_CHANGED_RECEIVER);
+                if (settingsChangedReceiver != null) {
+                    target.getContext().unregisterReceiver(settingsChangedReceiver);
+                }
+            }
+
+            private void uninstall(View target) {
+                List<Detector> detectors = getDetectors(target);
+                if (detectors != null) {
+                    XposedHelpers.removeAdditionalInstanceField(target, FIELD_DETECTORS);
+                }
+            }
+        }
+
+        final Class<?> classDecorView = XposedHelpers.findClass(CLASS_DECOR_VIEW, null);
+        XposedHelpers.findAndHookMethod(classDecorView, "dispatchTouchEvent", MotionEvent.class,
+                dispatchTouchEvent);
         XposedHelpers.findAndHookMethod(classDecorView, "onAttachedToWindow",
-                new XC_MethodHook() {
+                new Installer() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        try {
-                            final FrameLayout decorView = (FrameLayout) param.thisObject;
-                            BroadcastReceiver settingsChangedReceiver = new BroadcastReceiver() {
-                                @Override
-                                public void onReceive(Context context, Intent intent) {
-                                    List<Detector> detectors = getDetectors(decorView);
-                                    if (detectors == null) {
-                                        return;
-                                    }
-                                    logD(decorView.getContext().getPackageName() + ": reload settings");
-                                    FTD.Settings settings = (FTD.Settings) intent
-                                            .getSerializableExtra(FTD.EXTRA_SETTINGS);
-                                    for (Detector ftd : detectors) {
-                                        ftd.onSettingsLoaded(settings);
-                                    }
-                                }
-                            };
-                            XposedHelpers.setAdditionalInstanceField(decorView,
-                                    FIELD_SETTINGS_CHANGED_RECEIVER, settingsChangedReceiver);
-                            decorView.getContext().registerReceiver(settingsChangedReceiver,
-                                    new IntentFilter(FTD.ACTION_SETTINGS_CHANGED));
-                        } catch (Throwable t) {
-                            logE(t);
-                        }
+                        run((ViewGroup) param.thisObject);
                     }
                 });
         XposedHelpers.findAndHookMethod(classDecorView, "onDetachedFromWindow",
-                new XC_MethodHook() {
+                new Uninstaller() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        try {
-                            FrameLayout decorView = (FrameLayout) param.thisObject;
-                            BroadcastReceiver settingsChangedReceiver =
-                                    (BroadcastReceiver) XposedHelpers.getAdditionalInstanceField(decorView,
-                                            FIELD_SETTINGS_CHANGED_RECEIVER);
-                            if (settingsChangedReceiver != null) {
-                                decorView.getContext().unregisterReceiver(settingsChangedReceiver);
-                            }
-                        } catch (Throwable t) {
-                            logE(t);
+                        run((View) param.thisObject);
+                    }
+                });
+
+        final Class<?> classPopupWindow = XposedHelpers.findClass(CLASS_POPUP_WINDOW, null);
+        final Class<?> classPopupViewContainer = XposedHelpers
+                .findClass(CLASS_POPUP_VIEW_CONTAINER, null);
+        XposedHelpers.findAndHookMethod(classPopupViewContainer, "dispatchTouchEvent", MotionEvent.class,
+                dispatchTouchEvent);
+        XposedHelpers.findAndHookMethod(classPopupWindow, "invokePopup", WindowManager.LayoutParams.class,
+                new Installer() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        Object popupView = XposedHelpers.getObjectField(param.thisObject, "mPopupView");
+                        if (popupView instanceof ViewGroup) {
+                            run((ViewGroup) popupView);
                         }
+                    }
+                });
+        XposedHelpers.findAndHookMethod(classPopupWindow, "dismiss",
+                new Uninstaller() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        run((View) XposedHelpers.getObjectField(param.thisObject, "mPopupView"));
                     }
                 });
     }
@@ -597,7 +641,7 @@ public class ModForceTouch extends XposedModule {
             boolean consumed = mIntercepted;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
-                    int window = mSettings.wiggleTouchEnable? 0: Math.abs(mSettings.detectionWindow);
+                    int window = mSettings.wiggleTouchEnable ? 0 : Math.abs(mSettings.detectionWindow);
                     mHandler.postDelayed(mStopDetector, window);
                     mIsDetectionWindowOpened = true;
                     break;
@@ -728,6 +772,7 @@ public class ModForceTouch extends XposedModule {
             mForceTouchDetector.setMultipleForceTouch(false);
             mForceTouchDetector.setLongClickable(mSettings.forceTouchActionLongPress.type != ActionInfo.TYPE_NONE);
             mForceTouchDetector.setRewind(false);
+            mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
 
             mUseGesture = gesture(mSettings);
         }
@@ -783,6 +828,7 @@ public class ModForceTouch extends XposedModule {
             mForceTouchDetector.setMultipleForceTouch(false);
             mForceTouchDetector.setLongClickable(mSettings.knuckleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
             mForceTouchDetector.setRewind(false);
+            mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
         }
 
         @Override
@@ -842,6 +888,7 @@ public class ModForceTouch extends XposedModule {
                 mForceTouchDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mForceTouchDetector.setType(ForceTouchDetector.TYPE_WIGGLE);
                 mForceTouchDetector.setRewind(false);
+                mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
             }
         }
 
@@ -876,7 +923,7 @@ public class ModForceTouch extends XposedModule {
             return false;
         }
     }
-    
+
     private static class ScratchTouchDetector extends BaseForceTouchDetector
             implements ForceTouchDetector.Callback {
 
@@ -902,6 +949,7 @@ public class ModForceTouch extends XposedModule {
                 mForceTouchDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mForceTouchDetector.setType(ForceTouchDetector.TYPE_SCRATCH);
                 mForceTouchDetector.setRewind(false);
+                mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
             }
         }
 
