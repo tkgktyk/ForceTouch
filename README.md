@@ -1,4 +1,4 @@
-# Add Extra Screen Button
+# Bring Extra Screen Buttons
 
 ## Introduction
 Android OS reports pressure and/or size of your touch when you tap, press, swipe, and so on.
