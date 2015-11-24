@@ -1,25 +1,33 @@
-# Force Touch for Android
+# Add Extra Screen Button for Android by Special Touch
 
 ## Introduction
-Android reports pressure of your touch when you tap, press, swipe, and so on.
-However the pressure is different from Apple's Force Touch Technology. (It is mechanical implementation, isn't it?)
-**Android's pressure is depending on touch area of your finger, not strength.**
-But the touch area provides us new UI.
+Android OS reports pressure and/or size of your touch when you tap, press, swipe, and so on.
+You can use special pressure/size value to fire any action, and this project provides interfaces and triggers to do so.
+The trigger works like an extra button on your screen by unique touching.
 
-## Force Touch on Android
+The special values are
+
+*  Large touch area -> Force Touch
+*  Small touch area -> Knuckle Touch
+*  Touch area growing so much -> Wiggle Touch.
+
+## Force Touch
 ![touch2](art/touch2.png)
 ![touch3](art/touch3.png)
 
-If you touch with the ball of thumb, the touch area increases.
+If you touch your screen with the ball of thumb, the touch area increases.
 Call it "Force Touch" in this project.
 It is possible to distinguish ordinary touch operation from deliberately Force Touch because there is a distinct difference between these touch area.
-By checking whether a touch event is started from Force Touch, you can change the action of the touch.
+By checking if a touch event is started from Force Touch, you can change the action of the touch.
 
-Examples:
+## Knuckle Touch
+If you touch your screen with knuckle, you can make very small touch area.
+The same as Force Touch, you can fire specified action when you touch on small area.
 
-*  Open launcher when you do **force tap** that is a tap started from Force Touch.
-*  Go back by performing **force flick to right** that is a flick started from Force Touch.
-*  Expand notifications by performing **force flick to bottom** anywhere.
+## Wiggle Touch
+Above two methods use absolute threshold value to detect unique touching. However the absolute value causes inconvenient situations, such as, you cannot fire specified action with other fingers that have not been adjusted, it is not working while charging because characteristics of touch sensor is changed by charging current on some phones.
+
+aaa
 
 ## Xposed Module is here!
 [tkgktyk/ForceTouch/xposed](xposed) is a Xposed modeule to detect Force Touch and switch touch action.
