@@ -1,4 +1,4 @@
-# Add Extra Screen Button for Android by Special Touch
+# Add Extra Screen Button by Special Touching
 
 ## Introduction
 Android OS reports pressure and/or size of your touch when you tap, press, swipe, and so on.
