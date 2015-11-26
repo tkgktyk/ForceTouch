@@ -533,7 +533,7 @@ public class FTD {
             detectionAreaMirror = prefs.getBoolean("key_detection_area_mirror", false);
             detectionAreaReverse = prefs.getBoolean("key_detection_area_reverse", false);
             detectionSensitivity = Integer.parseInt(getStringToParse(prefs, "key_detection_sensitivity", "9"));
-            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "1000"));
+            detectionWindow = Integer.parseInt(getStringToParse(prefs, "key_detection_window", "500"));
             extraLongPressTimeout = Integer.parseInt(getStringToParse(prefs, "key_extra_long_press_timeout", "300"));
             blacklist = prefs.getStringSet("key_blacklist", Sets.<String>newHashSet());
             allowUnknownInputType = prefs.getBoolean("key_allow_unknown_input_type", false);
@@ -551,7 +551,7 @@ public class FTD {
             floatingActionBackgroundColor = Color.parseColor(getStringToParse(prefs, "key_floating_action_background_color", "#90A4AE"));
             floatingActionBackgroundAlpha = Integer.parseInt(getStringToParse(prefs, "key_floating_action_background_alpha", "64"));
             floatingActionTimeout = Integer.parseInt(getStringToParse(prefs, "key_floating_action_timeout", "3000"));
-            floatingActionMovable = prefs.getBoolean("key_floating_action_movable", true);
+            floatingActionMovable = prefs.getBoolean("key_floating_action_movable", false);
             floatingActionRecents = prefs.getBoolean("key_floating_action_recents", false);
             floatingActionStickyNavigation = prefs.getBoolean("key_floating_action_sticky_navigation", false);
             useLocalFAB = prefs.getBoolean("key_use_local_fab", true);

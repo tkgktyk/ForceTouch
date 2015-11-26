@@ -60,7 +60,7 @@
         android:title="@string/title_floating_action_timeout"/>
     <!-- Movable -->
     <jp.tkgktyk.lib.SwitchPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:icon="@null"
         android:key="@string/key_floating_action_movable"
         android:title="@string/title_floating_action_movable"/>
