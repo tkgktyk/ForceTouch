@@ -1,9 +1,9 @@
-# Bring Invisible Screen Buttons
+# Touch Pressure/Size Gesture
 
 ## Introduction
 Android OS reports pressure and/or size of your touch when you tap, press, swipe, and so on.
-You can use special pressure/size value to fire any action, and this project provides interfaces and triggers to do so.
-The trigger works like an extra button on your screen by unique touching.
+You can use special pressure/size value to fire any action, and this project provides interface and triggers to do that.
+The triggers are new gestures by unique touching based on touch pressure/size.
 
 The special values are
 
@@ -26,8 +26,9 @@ The same as Force Touch, you can fire specified action when you touch on small a
 
 ## Wiggle Touch
 Above two methods use absolute threshold value to detect unique touching. However the absolute value causes inconvenient situations, such as, you cannot fire specified action with other fingers that have not been adjusted, it is not working while charging because characteristics of touch sensor is changed by charging current on some phones.
+The solution is using relative threshold.
 
-aaa
+Relative method needs more than two touch events. By calculating the ratio between respective data, we can get normalized pressure/size.
 
 ## Xposed Module is here!
 [tkgktyk/ForceTouch/xposed](xposed) is a Xposed modeule to detect Force Touch and switch touch action.
