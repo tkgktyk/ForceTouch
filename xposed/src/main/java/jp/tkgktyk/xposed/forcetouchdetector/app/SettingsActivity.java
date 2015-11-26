@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -48,6 +49,8 @@ import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 public class SettingsActivity extends BaseSettingsActivity {
 
+    private static final int REQUEST_OVERLAY_PERMISSION = 1;
+
     @Override
     protected BaseFragment newRootFragment() {
         return new HeaderFragment();
@@ -69,6 +72,37 @@ public class SettingsActivity extends BaseSettingsActivity {
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!canDrawOverlays()) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
+        }
+    }
+
+    public boolean canDrawOverlays() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        return Settings.canDrawOverlays(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_OVERLAY_PERMISSION:
+                if (!canDrawOverlays()) {
+                    finish();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public static abstract class XposedFragment extends BaseFragment {
