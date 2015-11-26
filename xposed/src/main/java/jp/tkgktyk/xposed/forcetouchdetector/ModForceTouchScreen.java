@@ -21,11 +21,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -39,6 +42,7 @@ import jp.tkgktyk.lib.ForceTouchScreenHelper;
  */
 public class ModForceTouchScreen extends XposedModule {
     private static final String CLASS_DECOR_VIEW = "com.android.internal.policy.impl.PhoneWindow$DecorView";
+    private static final String CLASS_DECOR_VIEW_M = "com.android.internal.policy.PhoneWindow$DecorView";
     private static final String CLASS_POPUP_WINDOW = "android.widget.PopupWindow";
     private static final String CLASS_POPUP_VIEW_CONTAINER = "android.widget.PopupWindow$PopupViewContainer";
     private static final String FIELD_DETECTOR = FTD.NAME + "_forceTouchDetector";
@@ -64,11 +68,9 @@ public class ModForceTouchScreen extends XposedModule {
                     View container = (View) methodHookParam.thisObject;
                     MotionEvent event = (MotionEvent) methodHookParam.args[0];
                     Detector detector = getDetector(container);
-                    if (detector != null) {
-                        handled = detector.dispatchTouchEvent(event, methodHookParam);
-                    } else {
-                        handled = (Boolean) invokeOriginalMethod(methodHookParam);
-                    }
+                    handled = detector != null ?
+                            detector.dispatchTouchEvent(event, methodHookParam) :
+                            (Boolean) invokeOriginalMethod(methodHookParam);
                 } catch (Throwable t) {
                     logE(t);
                     handled = (Boolean) invokeOriginalMethod(methodHookParam);
@@ -160,9 +162,20 @@ public class ModForceTouchScreen extends XposedModule {
             }
         }
 
-        final Class<?> classDecorView = XposedHelpers.findClass(CLASS_DECOR_VIEW, null);
-        XposedHelpers.findAndHookMethod(classDecorView, "dispatchTouchEvent", MotionEvent.class,
-                dispatchTouchEvent);
+        Class<?> classDecorView;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            XposedHelpers.findAndHookMethod(ViewGroup.class, "dispatchTouchEvent",
+                    MotionEvent.class, dispatchTouchEvent);
+            classDecorView = XposedHelpers.findClass(CLASS_DECOR_VIEW_M, null);
+        } else {
+            classDecorView = XposedHelpers.findClass(CLASS_DECOR_VIEW, null);
+            XposedHelpers.findAndHookMethod(classDecorView, "dispatchTouchEvent",
+                    MotionEvent.class, dispatchTouchEvent);
+            final Class<?> classPopupViewContainer = XposedHelpers
+                    .findClass(CLASS_POPUP_VIEW_CONTAINER, null);
+            XposedHelpers.findAndHookMethod(classPopupViewContainer, "dispatchTouchEvent",
+                    MotionEvent.class, dispatchTouchEvent);
+        }
         XposedHelpers.findAndHookMethod(classDecorView, "onAttachedToWindow",
                 new Installer() {
                     @Override
@@ -179,28 +192,30 @@ public class ModForceTouchScreen extends XposedModule {
                 });
 
         final Class<?> classPopupWindow = XposedHelpers.findClass(CLASS_POPUP_WINDOW, null);
-        final Class<?> classPopupViewContainer = XposedHelpers
-                .findClass(CLASS_POPUP_VIEW_CONTAINER, null);
-        XposedHelpers.findAndHookMethod(classPopupViewContainer, "dispatchTouchEvent", MotionEvent.class,
-                dispatchTouchEvent);
         XposedHelpers.findAndHookMethod(classPopupWindow, "invokePopup", WindowManager.LayoutParams.class,
                 new Installer() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        run((View) XposedHelpers.getObjectField(param.thisObject, "mPopupView"));
+                        run(getPopupView(param));
                     }
                 });
         XposedHelpers.findAndHookMethod(classPopupWindow, "dismiss",
                 new Uninstaller() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        run((View) XposedHelpers.getObjectField(param.thisObject, "mPopupView"));
+                        run(getPopupView(param));
                     }
                 });
     }
 
     private static Detector getDetector(View decorView) {
         return (Detector) XposedHelpers.getAdditionalInstanceField(decorView, FIELD_DETECTOR);
+    }
+
+    private static View getPopupView(XC_MethodHook.MethodHookParam param) {
+        return (View) XposedHelpers.getObjectField(param.thisObject,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
+                        "mBackgroundView" : "mPopupView");
     }
 
     public static abstract class Detector {

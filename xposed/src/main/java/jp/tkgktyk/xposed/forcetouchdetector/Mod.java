@@ -16,13 +16,15 @@
 
 package jp.tkgktyk.xposed.forcetouchdetector;
 
+import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
  * Created by tkgktyk on 2015/06/03.
  */
-public class Mod implements IXposedHookZygoteInit {
+public class Mod implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     private XSharedPreferences mPrefs;
 
     @Override
@@ -34,9 +36,17 @@ public class Mod implements IXposedHookZygoteInit {
         ModInternal.initZygote(mPrefs);
         if (settings.forceTouchScreenEnable) {
             ModForceTouchScreen.initZygote(mPrefs);
-        }else {
+        } else {
             ModForceTouch.initZygote(mPrefs);
             ModLongPress.initZygote(mPrefs);
+        }
+    }
+
+    @Override
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
+        if (loadPackageParam.packageName.equals("android") &&
+                loadPackageParam.processName.equals("android")) {
+            ModInternal.handleLoadPackage(loadPackageParam.classLoader);
         }
     }
 }

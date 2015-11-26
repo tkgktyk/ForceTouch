@@ -40,6 +40,7 @@ import de.robv.android.xposed.XposedHelpers;
  */
 public class ModInternal extends XposedModule {
     private static final String CLASS_PHONE_WINDOW_MANAGER = "com.android.internal.policy.impl.PhoneWindowManager";
+    private static final String CLASS_PHONE_WINDOW_MANAGER_M = "com.android.server.policy.PhoneWindowManager";
     private static final String CLASS_WINDOW_MANAGER_FUNCS = "android.view.WindowManagerPolicy.WindowManagerFuncs";
     private static final String CLASS_IWINDOW_MANAGER = "android.view.IWindowManager";
 
@@ -249,24 +250,42 @@ public class ModInternal extends XposedModule {
         }
     };
 
+    private static XC_MethodHook init = new XC_MethodHook() {
+        @Override
+        protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+            mPhoneWindowManager = param.thisObject;
+            Context context = (Context) XposedHelpers
+                    .getObjectField(mPhoneWindowManager, "mContext");
+            context.registerReceiver(mActionReceiver, FTD.INTERNAL_ACTION_FILTER);
+        }
+    };
+
     public static void initZygote(XSharedPreferences prefs) {
         mPrefs = prefs;
-        try {
-            final Class<?> classPhoneWindowManager = XposedHelpers.findClass(CLASS_PHONE_WINDOW_MANAGER, null);
-            XposedHelpers.findAndHookMethod(classPhoneWindowManager, "init",
-                    Context.class, CLASS_IWINDOW_MANAGER, CLASS_WINDOW_MANAGER_FUNCS,
-                    new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            mPhoneWindowManager = param.thisObject;
-                            Context context = (Context) XposedHelpers
-                                    .getObjectField(mPhoneWindowManager, "mContext");
-                            context.registerReceiver(mActionReceiver, FTD.INTERNAL_ACTION_FILTER);
-                        }
-                    });
-        } catch (Throwable t) {
-            logE(t);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                final Class<?> classPhoneWindowManager = XposedHelpers
+                        .findClass(CLASS_PHONE_WINDOW_MANAGER, null);
+                XposedHelpers.findAndHookMethod(classPhoneWindowManager, "init",
+                        Context.class, CLASS_IWINDOW_MANAGER, CLASS_WINDOW_MANAGER_FUNCS,
+                        init);
+            } catch (Throwable t) {
+                logE(t);
+            }
         }
     }
 
+    public static void handleLoadPackage(ClassLoader classLoader) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                final Class<?> classPhoneWindowManager = XposedHelpers
+                        .findClass(CLASS_PHONE_WINDOW_MANAGER_M, classLoader);
+                XposedHelpers.findAndHookMethod(classPhoneWindowManager, "init",
+                        Context.class, CLASS_IWINDOW_MANAGER, CLASS_WINDOW_MANAGER_FUNCS,
+                        init);
+            } catch (Throwable t) {
+                logE(t);
+            }
+        }
+    }
 }
