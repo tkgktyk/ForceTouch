@@ -498,23 +498,6 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Action
             pickAction(R.string.key_wiggle_touch_action_tap);
             pickAction(R.string.key_wiggle_touch_action_long_press);
-            if (!MyApp.isDonated(getActivity())) {
-                Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        MyApp.showToast(R.string.message_unlock);
-                        return false;
-                    }
-                };
-                setUpSwitch(R.string.key_force_touch_screen_enable, new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        return false;
-                    }
-                });
-                findPreference(R.string.key_force_touch_screen_enable)
-                        .setOnPreferenceClickListener(listener);
-            }
         }
     }
 
