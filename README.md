@@ -35,13 +35,13 @@ However the absolute value causes inconvenient situations, such as, you cannot f
 The solution is using relative threshold.
 
 Relative method needs more than two touch events.
-When android read out initial pressure/size of each touch stroke, calculate threshold value by "initial pressure/size * ratio(variable)".
+When android read out initial pressure/size of each touch stroke, calculate threshold value by `initial pressure/size * ratio(variable)`.
 After that, when pressure/size of your touch is changed and grows over threshold, fire specified action.
 The ratio must be more than 1.0 for Wiggle Touch.
 
 ## Scratch Touch
 A pair method of Wiggle Touch.
-When android read out initial pressure/size of each touch stroke, calculate threshold value by "initial pressure/size * ratio(variable)".
+When android read out initial pressure/size of each touch stroke, calculate threshold value by `initial pressure/size * ratio(variable)`.
 After that, when pressure/size of your touch is changed and reduces under threshold, fire specified action.
 The ratio must be less than 1.0 for Scratch Touch.
 
