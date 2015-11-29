@@ -9,7 +9,12 @@ The special values are
 
 *  Large touch area -> Force Touch
 *  Small touch area -> Knuckle Touch
-*  Touch area growing so much -> Wiggle Touch.
+*  Increasing touch area -> Wiggle Touch
+*  Reducing touch area -> Scratch Touch.
+
+## Xposed Module is here!
+[tkgktyk/ForceTouch/xposed](xposed) is a Xposed modeule to detect Touch Pressure/Size and recognize them as Gesture.
+Repository: [Force Touch Detector (FTD)](http://repo.xposed.info/module/jp.tkgktyk.xposed.forcetouchdetector).
 
 ## Force Touch
 ![touch2](art/touch2.png)
@@ -25,28 +30,44 @@ If you touch your screen with knuckle, you can make very small touch area.
 The same as Force Touch, you can fire specified action when you touch on small area.
 
 ## Wiggle Touch
-Above two methods use absolute threshold value to detect unique touching. However the absolute value causes inconvenient situations, such as, you cannot fire specified action with other fingers that have not been adjusted, it is not working while charging because characteristics of touch sensor is changed by charging current on some phones.
+Above two methods use absolute threshold value to detect unique touching.
+However the absolute value causes inconvenient situations, such as, you cannot fire specified action with other fingers that have not been adjusted, it is not working while charging because characteristics of touch sensor is changed by charging current on some phones.
 The solution is using relative threshold.
 
-Relative method needs more than two touch events. By calculating the ratio between respective data, we can get normalized pressure/size.
+Relative method needs more than two touch events.
+When android read out initial pressure/size of each touch stroke, calculate threshold value by "initial pressure/size * ratio(variable)".
+After that, when pressure/size of your touch is changed and grows over threshold, fire specified action.
+The ratio must be more than 1.0 for Wiggle Touch.
 
-## Xposed Module is here!
-[tkgktyk/ForceTouch/xposed](xposed) is a Xposed modeule to detect Force Touch and switch touch action.
-Repository: [Force Touch Detector (FTD)](http://repo.xposed.info/module/jp.tkgktyk.xposed.forcetouchdetector).
+## Scratch Touch
+A pair method of Wiggle Touch.
+When android read out initial pressure/size of each touch stroke, calculate threshold value by "initial pressure/size * ratio(variable)".
+After that, when pressure/size of your touch is changed and reduces under threshold, fire specified action.
+The ratio must be less than 1.0 for Scratch Touch.
 
-FTD assigns seven force actions:
+## Force Touch Screen
+This is an option for Wiggle Touch (available) and Scratch Touch (in the future).
+The concept is to fire actions without releasing your finger like pie, and realize force touch button.
 
-*  Tap
-*  Double Tap
-*  Long Press
-*  Flick Left
-*  Flick Right
-*  Flick Up
-*  Flick Down
+Trigger to start Force Touch Screen is Wiggle Touch or Scratch Touch.
+Then FTD sends a broadcast named `FORCE_TOUCH_BEGIN` with touched position on screen.
+And other actions for Force Touch Screen are also notified by broadcasting.
+So any app that receives broadcast can handle this feature, such as Floating Actin.
 
-Of course FTD doesn't bother normal operation by the threshold of pressure.
+### Broadcast Actions
+Syntax of full action name is jp.tkgktyk.xposed.forcetouchdetector.intent.action._NAME_.
+And all actions has package name and touch position as extra.
+Package name is `jp.tkgktyk.xposed.forcetouchdetector.intent.extra.PACKAGE_NAME`, touch positions are `jp.tkgktyk.xposed.forcetouchdetector.intent.extra.X` and `jp.tkgktyk.xposed.forcetouchdetector.intent.extra.Y`.
 
-### Getting Started
+| NAME | Parameters | Description|
+|:-----|:-----------|:-----------|
+|`FORCE_TOUCH_BEGIN`||Enter in Force Touch Screen.|
+|`FORCE_TOUCH_DOWN`||Pressure/size passed threshold again.|
+|`FORCE_TOUCH_UP`||Pressure/size reverted to initial value.|
+|`FORCE_TOUCH_END`||The finger that's trigger was released.|
+|`FORCE_TOUCH_CANCEL`||This touch stroke was canceled by some reason.|
+
+## Getting Started
 At first, check your hardware supports FTD functions or not.
 Open a threshold screen, `Pressure -> Threshold`, and then test *tap* and *force touch* with two buttons.
 If Max, Pressure and Ave are changed by each touch, your touch screen supports the pressure parameter, you can use FTD by pressure.
@@ -61,7 +82,7 @@ The Ave value must be **higher** than the Max value, you should practice force t
 
 Finally, input a number between the Ave and the Max, and turn `Master Switch` on.
 
-### Adjustment
+## Adjustment
 There are 3 parameters to adjust sensitivity for force touch.
 
 <dl>
