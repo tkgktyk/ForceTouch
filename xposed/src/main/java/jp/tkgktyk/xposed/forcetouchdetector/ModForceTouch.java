@@ -46,7 +46,9 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
+import jp.tkgktyk.lib.AbsoluteDetector;
 import jp.tkgktyk.lib.ForceTouchDetector;
+import jp.tkgktyk.lib.RelativeDetector;
 import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
@@ -743,13 +745,8 @@ public class ModForceTouch extends XposedModule {
 
     private static abstract class BaseForceTouchDetector extends Detector
             implements ForceTouchDetector.Callback {
-        protected final ForceTouchDetector mForceTouchDetector;
-
         public BaseForceTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
-
-            mForceTouchDetector = new ForceTouchDetector(this);
-            onSettingsLoaded(settings);
         }
 
         @Override
@@ -770,8 +767,39 @@ public class ModForceTouch extends XposedModule {
         }
     }
 
-    private static class LargeTouchDetector extends BaseForceTouchDetector
-            implements ForceTouchDetector.Callback {
+    private static abstract class BaseAbsoluteDetector extends BaseForceTouchDetector {
+        protected final AbsoluteDetector mAbsoluteDetector;
+
+        public BaseAbsoluteDetector(ViewGroup targetView, FTD.Settings settings) {
+            super(targetView, settings);
+
+            mAbsoluteDetector = new AbsoluteDetector(this);
+            onSettingsLoaded(settings);
+        }
+        
+        @Override
+        public boolean onRelativeTouch(float x, float y, float startX, float startY) {
+            return false;
+        }
+    }
+
+    private static abstract class BaseRelativeDetector extends BaseForceTouchDetector {
+        protected final RelativeDetector mRelativeDetector;
+
+        public BaseRelativeDetector(ViewGroup targetView, FTD.Settings settings) {
+            super(targetView, settings);
+
+            mRelativeDetector = new RelativeDetector(this);
+            onSettingsLoaded(settings);
+        }
+
+        @Override
+        public boolean onAbsoluteTouch(float x, float y, float parameter) {
+            return false;
+        }
+    }
+
+    private static class LargeTouchDetector extends BaseAbsoluteDetector {
 
         private boolean mUseGesture;
 
@@ -781,16 +809,11 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onSettingsLoaded() {
-            mForceTouchDetector.setExtraLongPressTimeout(0);
-            mForceTouchDetector.setWindowTimeInMillis(0);
-            mForceTouchDetector.setWindowDelayInMillis(0);
-            mForceTouchDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
-            mForceTouchDetector.setBlockDragging(true);
-            mForceTouchDetector.setMagnification(0);
-            mForceTouchDetector.setMultipleForceTouch(false);
-            mForceTouchDetector.setLongClickable(mSettings.forceTouchActionLongPress.type != ActionInfo.TYPE_NONE);
-            mForceTouchDetector.setRewind(false);
-            mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
+            mAbsoluteDetector.setExtraLongPressTimeout(0);
+            mAbsoluteDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+            mAbsoluteDetector.setLongClickable(
+                    mSettings.forceTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+            mAbsoluteDetector.allowUnknownType(mSettings.allowUnknownInputType);
 
             mUseGesture = gesture(mSettings);
         }
@@ -798,38 +821,34 @@ public class ModForceTouch extends XposedModule {
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
             return mSettings.forceTouchEnable && !mUseGesture &&
-                    mForceTouchDetector.onTouchEvent(event);
+                    mAbsoluteDetector.onTouchEvent(event);
         }
 
         @Override
-        public boolean onForceTouch(float x, float y) {
-            return false;
-        }
-
-        @Override
-        public void onForceTap(float x, float y) {
-            performAction(mSettings.forceTouchActionTap, x, y, "large tap");
-        }
-
-        @Override
-        public void onForceLongPress(float x, float y) {
-            performHapticFeedback();
-            performAction(mSettings.forceTouchActionLongPress, x, y, "large long press");
-        }
-
-        @Override
-        public boolean onTouchDown(float x, float y, float size) {
-            if (isInDetectionArea(x, y) && size > mSettings.forceTouchThreshold) {
+        public boolean onAbsoluteTouch(float x, float y, float parameter) {
+            if (isInDetectionArea(x, y) && parameter > mSettings.forceTouchThreshold) {
                 performHapticFeedback();
                 startRipple(x, y);
                 return true;
             }
             return false;
         }
+        
+        @Override
+        public boolean onForceTap(float x, float y) {
+            performAction(mSettings.forceTouchActionTap, x, y, "large tap");
+            return true;
+        }
+
+        @Override
+        public boolean onForceLongPress(float x, float y) {
+            performHapticFeedback();
+            performAction(mSettings.forceTouchActionLongPress, x, y, "large long press");
+            return true;
+        }
     }
 
-    private static class KnuckleTouchDetector extends BaseForceTouchDetector
-            implements ForceTouchDetector.Callback {
+    private static class KnuckleTouchDetector extends BaseAbsoluteDetector {
 
         public KnuckleTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
@@ -837,52 +856,43 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onSettingsLoaded() {
-            mForceTouchDetector.setExtraLongPressTimeout(0);
-            mForceTouchDetector.setWindowTimeInMillis(0);
-            mForceTouchDetector.setWindowDelayInMillis(0);
-            mForceTouchDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
-            mForceTouchDetector.setBlockDragging(true);
-            mForceTouchDetector.setMagnification(0);
-            mForceTouchDetector.setMultipleForceTouch(false);
-            mForceTouchDetector.setLongClickable(mSettings.knuckleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
-            mForceTouchDetector.setRewind(false);
-            mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
+            mAbsoluteDetector.setExtraLongPressTimeout(0);
+            mAbsoluteDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+            mAbsoluteDetector.setLongClickable(
+                    mSettings.knuckleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+            mAbsoluteDetector.allowUnknownType(mSettings.allowUnknownInputType);
         }
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.knuckleTouchEnable && mForceTouchDetector.onTouchEvent(event);
+            return mSettings.knuckleTouchEnable && mAbsoluteDetector.onTouchEvent(event);
         }
 
         @Override
-        public boolean onForceTouch(float x, float y) {
-            return false;
-        }
-
-        @Override
-        public void onForceTap(float x, float y) {
-            performAction(mSettings.knuckleTouchActionTap, x, y, "knuckle tap");
-        }
-
-        @Override
-        public void onForceLongPress(float x, float y) {
-            performHapticFeedback();
-            performAction(mSettings.knuckleTouchActionLongPress, x, y, "knuckle long press");
-        }
-
-        @Override
-        public boolean onTouchDown(float x, float y, float size) {
-            if (isInDetectionArea(x, y) && size < mSettings.knuckleTouchThreshold) {
+        public boolean onAbsoluteTouch(float x, float y, float parameter) {
+            if (isInDetectionArea(x, y) && parameter < mSettings.knuckleTouchThreshold) {
                 performHapticFeedback();
                 startRipple(x, y);
                 return true;
             }
             return false;
         }
+        
+        @Override
+        public boolean onForceTap(float x, float y) {
+            performAction(mSettings.knuckleTouchActionTap, x, y, "knuckle tap");
+            return true;
+        }
+
+        @Override
+        public boolean onForceLongPress(float x, float y) {
+            performHapticFeedback();
+            performAction(mSettings.knuckleTouchActionLongPress, x, y, "knuckle long press");
+            return true;
+        }
     }
 
-    private static class WiggleTouchDetector extends BaseForceTouchDetector
-            implements ForceTouchDetector.Callback {
+    private static class WiggleTouchDetector extends BaseRelativeDetector {
 
         public WiggleTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
@@ -890,34 +900,34 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onSettingsLoaded() {
-            if (mForceTouchDetector != null) {
+            if (mRelativeDetector != null) {
                 final int delay = 100;
                 int window = mSettings.detectionWindow - delay;
                 if (window < 0) {
                     window = 0;
                 }
-                mForceTouchDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
-                mForceTouchDetector.setWindowTimeInMillis(window);
-                mForceTouchDetector.setWindowDelayInMillis(delay);
-                mForceTouchDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
-                mForceTouchDetector.setBlockDragging(true);
-                mForceTouchDetector.setMagnification(mSettings.wiggleTouchMagnification);
-                mForceTouchDetector.setMultipleForceTouch(false);
-                mForceTouchDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
-                mForceTouchDetector.setType(ForceTouchDetector.TYPE_WIGGLE);
-                mForceTouchDetector.setRewind(false);
-                mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
+                mRelativeDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
+                mRelativeDetector.setWindowTimeInMillis(window);
+                mRelativeDetector.setWindowDelayInMillis(delay);
+                mRelativeDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+                mRelativeDetector.setBlockDragging(true);
+                mRelativeDetector.setMagnification(mSettings.wiggleTouchMagnification);
+                mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+                mRelativeDetector.setType(RelativeDetector.TYPE_WIGGLE);
+                mRelativeDetector.setRewind(false);
+                mRelativeDetector.allowUnknownType(mSettings.allowUnknownInputType);
             }
         }
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.wiggleTouchEnable && mForceTouchDetector.onTouchEvent(event);
+            return mSettings.wiggleTouchEnable && mRelativeDetector.onTouchEvent(event);
         }
 
         @Override
-        public boolean onForceTouch(float x, float y) {
-            if (isInDetectionArea(x, y)) {
+        public boolean onRelativeTouch(float x, float y, float startX, float startY) {
+            if (isInDetectionArea(startX, startY)) {
                 performHapticFeedback();
                 startRipple(x, y);
                 return true;
@@ -926,24 +936,20 @@ public class ModForceTouch extends XposedModule {
         }
 
         @Override
-        public void onForceTap(float x, float y) {
+        public boolean onForceTap(float x, float y) {
             performAction(mSettings.wiggleTouchActionTap, x, y, "wiggle tap");
+            return true;
         }
 
         @Override
-        public void onForceLongPress(float x, float y) {
+        public boolean onForceLongPress(float x, float y) {
             performHapticFeedback();
             performAction(mSettings.wiggleTouchActionLongPress, x, y, "wiggle long press");
-        }
-
-        @Override
-        public boolean onTouchDown(float x, float y, float size) {
-            return false;
+            return true;
         }
     }
 
-    private static class ScratchTouchDetector extends BaseForceTouchDetector
-            implements ForceTouchDetector.Callback {
+    private static class ScratchTouchDetector extends BaseRelativeDetector {
 
         public ScratchTouchDetector(ViewGroup targetView, FTD.Settings settings) {
             super(targetView, settings);
@@ -951,55 +957,52 @@ public class ModForceTouch extends XposedModule {
 
         @Override
         public void onSettingsLoaded() {
-            if (mForceTouchDetector != null) {
+            if (mRelativeDetector != null) {
                 final int delay = 100;
                 int window = mSettings.detectionWindow - delay;
                 if (window < 0) {
                     window = 0;
                 }
-                mForceTouchDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
-                mForceTouchDetector.setWindowTimeInMillis(window);
-                mForceTouchDetector.setWindowDelayInMillis(delay);
-                mForceTouchDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
-                mForceTouchDetector.setBlockDragging(true);
-                mForceTouchDetector.setMagnification(mSettings.scratchTouchMagnification);
-                mForceTouchDetector.setMultipleForceTouch(false);
-                mForceTouchDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
-                mForceTouchDetector.setType(ForceTouchDetector.TYPE_SCRATCH);
-                mForceTouchDetector.setRewind(false);
-                mForceTouchDetector.allowUnknownType(mSettings.allowUnknownInputType);
+                mRelativeDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
+                mRelativeDetector.setWindowTimeInMillis(window);
+                mRelativeDetector.setWindowDelayInMillis(delay);
+                mRelativeDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+                mRelativeDetector.setBlockDragging(true);
+                mRelativeDetector.setMagnification(mSettings.scratchTouchMagnification);
+                mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+                mRelativeDetector.setType(RelativeDetector.TYPE_SCRATCH);
+                mRelativeDetector.setRewind(false);
+                mRelativeDetector.allowUnknownType(mSettings.allowUnknownInputType);
             }
         }
 
         @Override
         protected boolean dispatchTouchEvent(MotionEvent event) {
-            return mSettings.scratchTouchEnable && mForceTouchDetector.onTouchEvent(event);
+            return mSettings.scratchTouchEnable && mRelativeDetector.onTouchEvent(event);
         }
 
         @Override
-        public boolean onForceTouch(float x, float y) {
-            if (isInDetectionArea(x, y)) {
-                performHapticFeedback();
-                startRipple(x, y);
+        public boolean onRelativeTouch(float x, float y, float startX, float startY) {
+            if (isInDetectionArea(startX, startY)) {
+//                performHapticFeedback();
+//                startRipple(x, y);
                 return true;
             }
             return false;
         }
 
         @Override
-        public void onForceTap(float x, float y) {
-            performAction(mSettings.scratchTouchActionTap, x, y, "scratch tap");
-        }
-
-        @Override
-        public void onForceLongPress(float x, float y) {
-            performHapticFeedback();
-            performAction(mSettings.scratchTouchActionLongPress, x, y, "scratch long press");
-        }
-
-        @Override
-        public boolean onTouchDown(float x, float y, float size) {
+        public boolean onForceTap(float x, float y) {
             return false;
+        }
+
+        @Override
+        public boolean onForceLongPress(float x, float y) {
+            performHapticFeedback();
+            startRipple(x, y);
+            performAction(mSettings.scratchTouchActionLongPress, x, y, "scratch long press");
+            return true;
         }
     }
 }

@@ -164,13 +164,13 @@ public class SettingsActivity extends BaseSettingsActivity {
             changeScreen(R.string.key_header_force_touch, ForceTouchSettingsFragment.class);
             changeScreen(R.string.key_header_knuckle_touch, KnuckleTouchSettingsFragment.class);
             changeScreen(R.string.key_header_wiggle_touch, WiggleTouchSettingsFragment.class);
-//            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class);
+            changeScreen(R.string.key_header_scratch_touch, ScratchTouchSettingsFragment.class);
 
             updateState(R.string.key_header_floating_action, R.string.key_floating_action_enable);
             updateState(R.string.key_header_force_touch, R.string.key_force_touch_enable);
             updateState(R.string.key_header_knuckle_touch, R.string.key_knuckle_touch_enable);
             updateState(R.string.key_header_wiggle_touch, R.string.key_wiggle_touch_enable);
-//            updateState(R.string.key_header_scratch_touch, R.string.key_scratch_touch_enable);
+            updateState(R.string.key_header_scratch_touch, R.string.key_scratch_touch_enable);
 
             // Information
             Preference about = findPreference(R.string.key_about);
@@ -178,6 +178,15 @@ public class SettingsActivity extends BaseSettingsActivity {
             if (MyApp.isDonated(getActivity())) {
                 ((PreferenceCategory) findPreference(R.string.key_information))
                         .removePreference(findPreference(R.string.key_donate));
+            } else {
+                findPreference(R.string.key_header_scratch_touch)
+                        .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                            @Override
+                            public boolean onPreferenceClick(Preference preference) {
+                                MyApp.showToast(R.string.message_unlock);
+                                return false;
+                            }
+                        });
             }
         }
 
@@ -199,9 +208,9 @@ public class SettingsActivity extends BaseSettingsActivity {
                 MyApp.updateService(getActivity(), sharedPreferences);
             } else if (Objects.equal(key, getString(R.string.key_force_touch_screen_enable))) {
                 MyApp.updateService(getActivity(), sharedPreferences);
-//            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
-//                updateState(R.string.key_header_scratch_touch, key);
-//                MyApp.updateService(getActivity(), sharedPreferences);
+            } else if (Objects.equal(key, getString(R.string.key_scratch_touch_enable))) {
+                updateState(R.string.key_header_scratch_touch, key);
+                MyApp.updateService(getActivity(), sharedPreferences);
             }
         }
 
@@ -374,11 +383,19 @@ public class SettingsActivity extends BaseSettingsActivity {
         }
 
         protected void pickAction(@StringRes int id) {
+            pickAction(id, true);
+        }
+
+        protected void pickActionForLongPress(@StringRes int id) {
+            pickAction(id, false);
+        }
+
+        private void pickAction(@StringRes int id, final boolean touchable) {
             openActivityForResult(id, ActionPickerActivity.class, REQUEST_ACTION, new ExtraPutter() {
                 @Override
                 public void putExtras(Preference preference, Intent activityIntent) {
                     mPrefKey = preference.getKey();
-                    ActionPickerActivity.putExtras(activityIntent, preference.getTitle(), true);
+                    ActionPickerActivity.putExtras(activityIntent, preference.getTitle(), touchable);
                 }
             });
             Preference pref = findPreference(id);
@@ -447,7 +464,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Action
             pickAction(R.string.key_force_touch_action_tap);
             pickAction(R.string.key_force_touch_action_double_tap);
-            pickAction(R.string.key_force_touch_action_long_press);
+            pickActionForLongPress(R.string.key_force_touch_action_long_press);
             pickAction(R.string.key_force_touch_action_flick_left);
             pickAction(R.string.key_force_touch_action_flick_right);
             pickAction(R.string.key_force_touch_action_flick_up);
@@ -474,7 +491,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             openActivity(R.string.key_knuckle_touch_threshold, ThresholdActivity.KnuckleTouch.class);
             // Action
             pickAction(R.string.key_knuckle_touch_action_tap);
-            pickAction(R.string.key_knuckle_touch_action_long_press);
+            pickActionForLongPress(R.string.key_knuckle_touch_action_long_press);
         }
     }
 
@@ -497,7 +514,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             showTextSummary(R.string.key_wiggle_touch_magnification);
             // Action
             pickAction(R.string.key_wiggle_touch_action_tap);
-            pickAction(R.string.key_wiggle_touch_action_long_press);
+            pickActionForLongPress(R.string.key_wiggle_touch_action_long_press);
         }
     }
 
@@ -519,22 +536,7 @@ public class SettingsActivity extends BaseSettingsActivity {
             // Setting
             showTextSummary(R.string.key_scratch_touch_magnification);
             // Action
-            if (MyApp.isDonated(getActivity())) {
-                pickAction(R.string.key_scratch_touch_action_tap);
-                pickAction(R.string.key_scratch_touch_action_long_press);
-            } else {
-                Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        MyApp.showToast(R.string.message_unlock);
-                        return false;
-                    }
-                };
-                findPreference(R.string.key_scratch_touch_action_tap)
-                        .setOnPreferenceClickListener(listener);
-                findPreference(R.string.key_scratch_touch_action_long_press)
-                        .setOnPreferenceClickListener(listener);
-            }
+            pickActionForLongPress(R.string.key_scratch_touch_action_long_press);
         }
     }
 }

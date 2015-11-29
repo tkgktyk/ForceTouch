@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Takagi Katsuyuki
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,36 +15,35 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- How to -->
+    <Preference
+        android:icon="@null"
+        android:title="@string/title_how_to"
+        android:summary="@string/how_to_scratch_touch" />
     <!-- Setting -->
-    <PreferenceCategory
-        android:title="@string/category_setting">
+    <PreferenceCategory android:title="@string/category_setting">
         <!-- Enable -->
         <jp.tkgktyk.lib.SwitchPreference
             android:defaultValue="false"
             android:icon="@null"
             android:key="@string/key_scratch_touch_enable"
-            android:title="@string/title_enable"/>
+            android:title="@string/title_enable" />
         <!-- Magnification -->
         <EditTextPreference
-            android:defaultValue="1.5"
+            android:defaultValue="0.6"
+            android:dialogMessage="@string/message_magnification_scratch"
             android:icon="@null"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:key="@string/key_scratch_touch_magnification"
-            android:title="@string/title_magnification"/>
+            android:title="@string/title_magnification" />
     </PreferenceCategory>
 
     <!-- Action -->
-    <PreferenceCategory
-        android:title="@string/category_action">
-        <!-- Tap -->
-        <Preference
-            android:defaultValue=""
-            android:key="@string/key_scratch_touch_action_tap"
-            android:title="@string/title_action_tap"/>
+    <PreferenceCategory android:title="@string/category_action">
         <!-- Long Press -->
         <Preference
             android:defaultValue=""
             android:key="@string/key_scratch_touch_action_long_press"
-            android:title="@string/title_action_long_press"/>
+            android:title="@string/title_action_long_press" />
     </PreferenceCategory>
 </PreferenceScreen>

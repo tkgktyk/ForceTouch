@@ -28,7 +28,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
+
+import com.google.common.collect.Lists;
+
+import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -36,6 +39,8 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import jp.tkgktyk.lib.ForceTouchDetector;
 import jp.tkgktyk.lib.ForceTouchScreenHelper;
+import jp.tkgktyk.lib.RelativeDetector;
+import jp.tkgktyk.xposed.forcetouchdetector.app.util.ActionInfo;
 
 /**
  * Created by tkgktyk on 2015/02/12.
@@ -45,7 +50,7 @@ public class ModForceTouchScreen extends XposedModule {
     private static final String CLASS_DECOR_VIEW_M = "com.android.internal.policy.PhoneWindow$DecorView";
     private static final String CLASS_POPUP_WINDOW = "android.widget.PopupWindow";
     private static final String CLASS_POPUP_VIEW_CONTAINER = "android.widget.PopupWindow$PopupViewContainer";
-    private static final String FIELD_DETECTOR = FTD.NAME + "_forceTouchDetector";
+    private static final String FIELD_DETECTORS = FTD.NAME + "_forceTouchDetectors";
     private static final String FIELD_SETTINGS_CHANGED_RECEIVER = FTD.NAME + "_settingsChangedReceiver";
 
     private static XSharedPreferences mPrefs;
@@ -63,14 +68,19 @@ public class ModForceTouchScreen extends XposedModule {
         final XC_MethodReplacement dispatchTouchEvent = new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                boolean handled;
+                boolean handled = false;
                 try {
                     View container = (View) methodHookParam.thisObject;
                     MotionEvent event = (MotionEvent) methodHookParam.args[0];
-                    Detector detector = getDetector(container);
-                    handled = detector != null ?
-                            detector.dispatchTouchEvent(event, methodHookParam) :
-                            (Boolean) invokeOriginalMethod(methodHookParam);
+                    List<Detector> detectors = getDetectors(container);
+                    if (detectors != null) {
+                        for (Detector ftd : detectors) {
+                            handled = handled || ftd.dispatchTouchEvent(event, methodHookParam);
+                        }
+                    }
+                    if (!handled) {
+                        handled = (Boolean) invokeOriginalMethod(methodHookParam);
+                    }
                 } catch (Throwable t) {
                     logE(t);
                     handled = (Boolean) invokeOriginalMethod(methodHookParam);
@@ -92,8 +102,8 @@ public class ModForceTouchScreen extends XposedModule {
             }
 
             private void install(View target) {
-                Detector detector = getDetector(target);
-                if (detector != null) {
+                List<Detector> detectors = getDetectors(target);
+                if (detectors != null) {
                     return;
                 }
                 Context context = target.getContext();
@@ -106,23 +116,27 @@ public class ModForceTouchScreen extends XposedModule {
                     logD("ignore: " + packageName);
                     return;
                 }
-                detector = new ForceTouchScreen(target, settings);
+                detectors = Lists.newArrayList();
+                detectors.add(new ForceTouchScreen(target, settings));
+                detectors.add(new ScratchTouchDetector(target, settings));
                 XposedHelpers.setAdditionalInstanceField(target,
-                        FIELD_DETECTOR, detector);
+                        FIELD_DETECTORS, detectors);
             }
 
             private void registerReceiver(final View target) {
                 BroadcastReceiver settingsChangedReceiver = new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        Detector detector = getDetector(target);
-                        if (detector == null) {
+                        List<Detector> detectors = getDetectors(target);
+                        if (detectors == null) {
                             return;
                         }
                         logD(target.getContext().getPackageName() + ": reload settings");
                         FTD.Settings settings = (FTD.Settings) intent
                                 .getSerializableExtra(FTD.EXTRA_SETTINGS);
-                        detector.onSettingsLoaded(settings);
+                        for (Detector detector : detectors) {
+                            detector.onSettingsLoaded(settings);
+                        }
                     }
                 };
                 XposedHelpers.setAdditionalInstanceField(target,
@@ -154,10 +168,12 @@ public class ModForceTouchScreen extends XposedModule {
             }
 
             private void uninstall(View target) {
-                Detector detector = getDetector(target);
-                if (detector != null) {
-                    detector.onDestroy();
-                    XposedHelpers.removeAdditionalInstanceField(target, FIELD_DETECTOR);
+                List<Detector> detectors = getDetectors(target);
+                if (detectors != null) {
+                    for (Detector detector : detectors) {
+                        detector.onDestroy();
+                    }
+                    XposedHelpers.removeAdditionalInstanceField(target, FIELD_DETECTORS);
                 }
             }
         }
@@ -208,8 +224,8 @@ public class ModForceTouchScreen extends XposedModule {
                 });
     }
 
-    private static Detector getDetector(View decorView) {
-        return (Detector) XposedHelpers.getAdditionalInstanceField(decorView, FIELD_DETECTOR);
+    private static List<Detector> getDetectors(View decorView) {
+        return (List<Detector>) XposedHelpers.getAdditionalInstanceField(decorView, FIELD_DETECTORS);
     }
 
     private static View getPopupView(XC_MethodHook.MethodHookParam param) {
@@ -219,7 +235,7 @@ public class ModForceTouchScreen extends XposedModule {
     }
 
     public static abstract class Detector {
-        private final View mTargetView;
+        protected final View mTargetView;
         protected FTD.Settings mSettings;
 
         private XC_MethodHook.MethodHookParam mMethodHookParam;
@@ -324,7 +340,7 @@ public class ModForceTouchScreen extends XposedModule {
             mForceTouchScreenHelper.setWindowTimeInMillis(window);
             mForceTouchScreenHelper.setWindowDelayInMillis(delay);
             mForceTouchScreenHelper.setMagnification(mSettings.wiggleTouchMagnification);
-            mForceTouchScreenHelper.setType(ForceTouchDetector.TYPE_WIGGLE);
+            mForceTouchScreenHelper.setType(ForceTouchScreenHelper.TYPE_WIGGLE);
             mForceTouchScreenHelper.setRewind(false);
             mForceTouchScreenHelper.allowUnknownType(mSettings.allowUnknownInputType);
         }
@@ -382,6 +398,97 @@ public class ModForceTouchScreen extends XposedModule {
         @Override
         public float getParameter(MotionEvent event, int index) {
             return getMethodParameter(event, index);
+        }
+    }
+
+    private static class ScratchTouchDetector extends Detector
+            implements ForceTouchDetector.Callback {
+
+        private final RelativeDetector mRelativeDetector;
+
+        public ScratchTouchDetector(View targetView, FTD.Settings settings) {
+            super(targetView, settings);
+
+            mRelativeDetector = new RelativeDetector(this);
+            onSettingsLoaded(settings);
+        }
+
+        @Override
+        public void onSettingsLoaded() {
+            if (mRelativeDetector != null) {
+                final int delay = 100;
+                int window = mSettings.detectionWindow - delay;
+                if (window < 0) {
+                    window = 0;
+                }
+                mRelativeDetector.setExtraLongPressTimeout(mSettings.extraLongPressTimeout);
+                mRelativeDetector.setWindowTimeInMillis(window);
+                mRelativeDetector.setWindowDelayInMillis(delay);
+                mRelativeDetector.setSensitivity(getContext(), mSettings.detectionSensitivity);
+                mRelativeDetector.setBlockDragging(true);
+                mRelativeDetector.setMagnification(mSettings.scratchTouchMagnification);
+                mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
+                mRelativeDetector.setType(RelativeDetector.TYPE_SCRATCH);
+                mRelativeDetector.setRewind(false);
+                mRelativeDetector.allowUnknownType(mSettings.allowUnknownInputType);
+            }
+        }
+
+        @Override
+        protected void onDestroy() {
+        }
+
+        @Override
+        protected boolean dispatchTouchEvent(MotionEvent event) {
+            return mSettings.scratchTouchEnable && mRelativeDetector.onTouchEvent(event);
+        }
+
+        @Override
+        public void performOriginalOnTouchEvent(MotionEvent event) {
+            invokeOriginalDispatchTouchEvent(event);
+        }
+
+        @Override
+        public float getParameter(MotionEvent event, int index) {
+            return getMethodParameter(event, index);
+        }
+
+        @Override
+        public boolean onAbsoluteTouch(float x, float y, float parameter) {
+            // never reach
+            return false;
+        }
+
+        @Override
+        public boolean onRelativeTouch(float x, float y, float startX, float startY) {
+            if (isInDetectionArea(startX, startY)) {
+//                performHapticFeedback();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onForceTap(float x, float y) {
+            return false;
+        }
+
+        @Override
+        public boolean onForceLongPress(float x, float y) {
+            performHapticFeedback();
+            performAction(mSettings.scratchTouchActionLongPress, x, y);
+            return true;
+        }
+
+        private void performAction(final ActionInfo.Record record, final float x, final float y) {
+            // force delay for complete ACTION_UP of gesture detector
+            mTargetView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    FTD.performAction(mTargetView, new ActionInfo(record), x, y);
+                }
+            }, 1);
         }
     }
 }

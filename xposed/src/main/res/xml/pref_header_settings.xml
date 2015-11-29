@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Takagi Katsuyuki
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,54 +16,54 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Setting -->
-    <PreferenceCategory
-        android:title="@string/category_setting">
+    <PreferenceCategory android:title="@string/category_setting">
         <!-- General -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_general"
-            android:title="@string/header_general"/>
+            android:title="@string/header_general" />
         <!-- Floating Action -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_floating_action"
-            android:title="@string/header_floating_action"/>
+            android:title="@string/header_floating_action" />
     </PreferenceCategory>
     <!-- Detector  -->
     <PreferenceCategory
+        android:key="@string/key_detector"
         android:title="@string/category_detector">
         <!-- Method -->
         <ListPreference
             android:defaultValue="@string/default_detector_method_value"
+            android:entries="@array/detector_methods"
+            android:entryValues="@array/detector_method_values"
             android:icon="@null"
             android:key="@string/key_detector_method"
-            android:title="@string/title_detector_method"
-            android:entries="@array/detector_methods"
-            android:entryValues="@array/detector_method_values"/>
+            android:title="@string/title_detector_method" />
         <!-- Force Touch -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_force_touch"
-            android:title="@string/header_force_touch"/>
+            android:title="@string/header_force_touch" />
         <!-- Knuckle Touch -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_knuckle_touch"
-            android:title="@string/header_knuckle_touch"/>
+            android:title="@string/header_knuckle_touch" />
         <!-- Troubleshooting -->
         <Preference
             android:icon="@null"
-            android:summary="@string/summary_troubleshooting"/>
+            android:summary="@string/summary_troubleshooting" />
         <!-- Wiggle Touch -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_wiggle_touch"
-            android:title="@string/header_wiggle_touch"/>
-        <!-- Scratch Touch
+            android:title="@string/header_wiggle_touch" />
+        <!-- Scratch Touch -->
         <Preference
             android:icon="@null"
             android:key="@string/key_header_scratch_touch"
-            android:title="@string/header_scratch_touch"/> -->
+            android:title="@string/header_scratch_touch" />
     </PreferenceCategory>
 
     <!-- Information -->
@@ -78,7 +77,7 @@
             android:title="@string/title_about">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/tkgktyk/ForceTouch"/>
+                android:data="https://github.com/tkgktyk/ForceTouch" />
         </Preference>
         <!-- Support -->
         <Preference
@@ -88,7 +87,7 @@
             android:title="@string/title_support">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://forum.xda-developers.com/xposed/modules/mod-force-touch-detector-t3130154"/>
+                android:data="http://forum.xda-developers.com/xposed/modules/mod-force-touch-detector-t3130154" />
         </Preference>
         <!-- Donate -->
         <Preference
@@ -98,7 +97,7 @@
             android:title="@string/title_donate">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="market://details?id=jp.tkgktyk.key.forcetouchdetector"/>
+                android:data="market://details?id=jp.tkgktyk.key.forcetouchdetector" />
         </Preference>
     </PreferenceCategory>
 

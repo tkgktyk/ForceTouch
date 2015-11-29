@@ -210,30 +210,30 @@ public class FTD {
         return 0;
     }
 
-    public static boolean performAction(@NonNull ViewGroup container,
+    public static boolean performAction(@NonNull View view,
                                         @NonNull ActionInfo actionInfo,
                                         @NonNull MotionEvent event) {
-        return performAction(container, actionInfo, event.getX(), event.getY(), event);
+        return performAction(view, actionInfo, event.getX(), event.getY(), event);
     }
 
-    public static boolean performAction(@NonNull ViewGroup container,
+    public static boolean performAction(@NonNull View view,
                                         @NonNull ActionInfo actionInfo,
                                         float x, float y) {
-        return performAction(container, actionInfo, x, y, null);
+        return performAction(view, actionInfo, x, y, null);
     }
 
-    public static boolean performAction(@NonNull ViewGroup container,
+    public static boolean performAction(@NonNull View view,
                                         @NonNull ActionInfo actionInfo,
                                         float x, float y,
                                         @Nullable MotionEvent event) {
-        Context context = container.getContext();
+        Context context = view.getContext();
         Intent intent = actionInfo.getIntent();
         if (intent == null) {
             return false;
         }
         // add coordinates
         int location[] = new int[2];
-        container.getLocationOnScreen(location);
+        view.getLocationOnScreen(location);
         intent.putExtra(EXTRA_X, x + location[0]);
         intent.putExtra(EXTRA_Y, y + location[1]);
         // launch action like ActionInfo#launch
@@ -241,7 +241,7 @@ public class FTD {
             case ActionInfo.TYPE_TOOL:
                 String action = intent.getAction();
                 if (event != null && action.endsWith(SUFFIX_TOUCH_ACTION)) {
-                    performTouchAction(container, action, event);
+                    performTouchAction(view, action, event);
                 } else {
                     context.sendBroadcast(intent);
                 }
@@ -262,7 +262,7 @@ public class FTD {
         return true;
     }
 
-    private static void performTouchAction(@NonNull final ViewGroup container,
+    private static void performTouchAction(@NonNull final View container,
                                            @NonNull String action,
                                            @NonNull final MotionEvent event) {
         if (action.equals(ACTION_DOUBLE_TAP)) {
@@ -336,23 +336,23 @@ public class FTD {
         }
     }
 
-    private static void injectMotionEvent(@NonNull ViewGroup container, @NonNull MotionEvent base,
+    private static void injectMotionEvent(@NonNull View view, @NonNull MotionEvent base,
                                           int action) {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
         MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
                 base.getX(), base.getY(), 0.0f, 0.0f, 0, 1.0f, 1.0f, 0, 0);
-        container.dispatchTouchEvent(event);
+        view.dispatchTouchEvent(event);
         event.recycle();
     }
 
-    private static void injectMotionEventForLongPress(@NonNull ViewGroup container, @NonNull MotionEvent base,
+    private static void injectMotionEventForLongPress(@NonNull View view, @NonNull MotionEvent base,
                                                       int action) {
         long downTime = SystemClock.uptimeMillis() - 1000;
         long eventTime = SystemClock.uptimeMillis() + 100;
         MotionEvent event = MotionEvent.obtain(downTime, eventTime, action,
                 base.getX(), base.getY(), 0.0f, 0.0f, 0, 1.0f, 1.0f, -1, 0);
-        container.dispatchTouchEvent(event);
+        view.dispatchTouchEvent(event);
         event.recycle();
     }
 
@@ -360,20 +360,22 @@ public class FTD {
         boolean onViewFound(View view);
     }
 
-    private static View findViewAtPosition(@NonNull final ViewGroup container, int x, int y,
+    private static View findViewAtPosition(@NonNull final View view, int x, int y,
                                            OnViewFoundListener listener) {
-        int count = container.getChildCount();
-        for (int i = count; i > 0; --i) {
-            View child = container.getChildAt(i - 1);
-            if (isPointInsideView(x, y, child)) {
-                if (child instanceof ViewGroup) {
-                    View v = findViewAtPosition((ViewGroup) child, x, y, listener);
+        if (isPointInsideView(x, y, view)) {
+            if (view instanceof ViewGroup) {
+                ViewGroup container = (ViewGroup) view;
+                int count = container.getChildCount();
+                for (int i = count; i > 0; --i) {
+                    View child = container.getChildAt(i - 1);
+                    View v = findViewAtPosition(child, x, y, listener);
                     if (v != null) {
                         return v;
                     }
                 }
-                if (listener.onViewFound(child)) {
-                    return child;
+            } else {
+                if (listener.onViewFound(view)) {
+                    return view;
                 }
             }
         }
@@ -509,7 +511,6 @@ public class FTD {
         // Scratch Touch
         public final boolean scratchTouchEnable;
         public final float scratchTouchMagnification;
-        public final ActionInfo.Record scratchTouchActionTap;
         public final ActionInfo.Record scratchTouchActionLongPress;
 
         public Settings(Context context, SharedPreferences prefs) {
@@ -590,8 +591,7 @@ public class FTD {
             
             // Scratch Touch
             scratchTouchEnable = prefs.getBoolean("key_scratch_touch_enable", false);
-            scratchTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_scratch_touch_magnification", "1.5"));
-            scratchTouchActionTap = getActionRecord(prefs, "key_scratch_touch_action_tap");
+            scratchTouchMagnification = Float.parseFloat(getStringToParse(prefs, "key_scratch_touch_magnification", "0.6"));
             scratchTouchActionLongPress = getActionRecord(prefs, "key_scratch_touch_action_long_press");
         }
 

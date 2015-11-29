@@ -3,6 +3,7 @@
     <!-- Header -->
     <string name="key_header_general" translatable="false">key_header_general</string>
     <string name="key_header_floating_action" translatable="false">key_header_floating_action</string>
+    <string name="key_detector" translatable="false">key_detector</string>
     <string name="key_detector_method" translatable="false">key_detector_method</string>
     <string name="key_header_force_touch" translatable="false">key_header_force_touch</string>
     <string name="key_header_knuckle_touch" translatable="false">key_header_knuckle_touch</string>
@@ -75,7 +76,6 @@
     <!-- Scratch Touch -->
     <string name="key_scratch_touch_enable" translatable="false">key_scratch_touch_enable</string>
     <string name="key_scratch_touch_magnification" translatable="false">key_scratch_touch_magnification</string>
-    <string name="key_scratch_touch_action_tap" translatable="false">key_scratch_touch_action_tap</string>
     <string name="key_scratch_touch_action_long_press" translatable="false">key_scratch_touch_action_long_press</string>
 
 </resources>

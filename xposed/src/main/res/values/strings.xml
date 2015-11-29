@@ -94,10 +94,10 @@
     <string name="pressure">Pressure</string>
     <string name="header_force_touch">Force Touch</string>
     <string name="header_knuckle_touch">Knuckle Touch</string>
-    <string name="summary_troubleshooting">Some issues are reported:\n - Touch pressure is changed while charging\n - Can not force touch with other fingers\nA solution is Wiggle Touch.</string>
+    <string name="summary_troubleshooting">Some issues are reported:\n - Touch pressure is changed while charging\n - Can not force touch with other fingers\nThe solution is Wiggle Touch.</string>
     <string name="header_wiggle_touch">Wiggle Touch</string>
     <string name="header_scratch_touch">Scratch Touch</string>
-    <string name="message_unlock">You have to get a key app from donate button to unlock this feature.</string>
+    <string name="message_unlock">You have to get a key app from donate button to unlock the latest feature.</string>
     <!-- Information -->
     <string name="category_information">Information</string>
     <string name="title_about">About</string>
@@ -187,9 +187,15 @@
     <string name="title_action_flick_down">Flick Down</string>
 
     <!-- Wiggle Touch -->
-    <string name="title_magnification">Magnification</string>
-    <string name="message_magnification">More than 1.0\nSmall value makes detector sensitive.</string>
+    <string name="title_how_to">How To</string>
+    <string name="how_to_wiggle_touch">Start a touch with small touch area, and then increase the area without releasing your finger. Threshold value is calculated by \"initial pressure/size * ratio\".</string>
+    <string name="title_magnification">Ratio</string>
+    <string name="message_magnification_wiggle">More than 1.0.\nSmall value makes detector sensitive.</string>
     <string name="title_force_touch_screen">Force Touch Screen</string>
-    <string name="summary_force_touch_screen">Launch seamless force touch app. Requires Floating Action or compatible app. Other detectors and actions of Wiggle Touch are disabled. (Requires reboot)</string>
+    <string name="summary_force_touch_screen">Launch seamless force touch app. Requires Floating Action or compatible app. Other detectors except Scratch Touch, and actions of Wiggle Touch are disabled. (Requires reboot)</string>
+
+    <!-- Scratch Touch -->
+    <string name="how_to_scratch_touch">Start a touch with large touch area, and then reduce the area without releasing your finger. Threshold value is calculated by \"initial pressure/size * ratio\".</string>
+    <string name="message_magnification_scratch">Less than 1.0.\nBig value makes detector sensitive.</string>
 
 </resources>

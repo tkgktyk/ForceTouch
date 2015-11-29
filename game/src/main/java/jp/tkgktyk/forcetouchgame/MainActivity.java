@@ -39,12 +39,13 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.tkgktyk.lib.ForceTouchDetector;
+import jp.tkgktyk.lib.RelativeDetector;
 
 public class MainActivity extends AppCompatActivity
         implements ForceTouchDetector.Callback, View.OnClickListener {
     private static final String TAG = "ForceTouchGame";
 
-    private ForceTouchDetector mForceTouchDetector;
+    private RelativeDetector mRelativeDetector;
     private int mForceTouch;
     private boolean mUsePressure;
 
@@ -93,16 +94,17 @@ public class MainActivity extends AppCompatActivity
         mAndroidText.setText("Android " + Build.VERSION.RELEASE);
         mBuildText.setText("Build " + Build.DISPLAY);
 
-        mForceTouchDetector = new ForceTouchDetector(this);
-        mForceTouchDetector.setBlockDragging(false);
-        mForceTouchDetector.setSensitivity(this, 7);
-        mForceTouchDetector.setMagnification(1.7f);
-        mForceTouchDetector.setWindowDelayInMillis(50);
-        mForceTouchDetector.setWindowTimeInMillis(-1);
-        mForceTouchDetector.setExtraLongPressTimeout(300);
-        mForceTouchDetector.setMultipleForceTouch(true);
-        mForceTouchDetector.setLongClickable(true);
-//        mForceTouchDetector.updateParameters(this, 7, 1.7f, 0, 0); // test of Knuckle Touch
+        mRelativeDetector = new RelativeDetector(this);
+        mRelativeDetector.setBlockDragging(false);
+        mRelativeDetector.setSensitivity(this, 9);
+        mRelativeDetector.setMagnification(1.4f);
+        mRelativeDetector.setWindowDelayInMillis(100);
+        mRelativeDetector.setWindowTimeInMillis(-1);
+        mRelativeDetector.setExtraLongPressTimeout(300);
+        mRelativeDetector.setMultipleForceTouch(true);
+        mRelativeDetector.setLongClickable(true);
+        mRelativeDetector.setRewind(false);
+        mRelativeDetector.setType(RelativeDetector.TYPE_WIGGLE);
 
         View content = findViewById(android.R.id.content);
         content.setOnClickListener(this);
@@ -285,11 +287,22 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
-        return mForceTouchDetector.onTouchEvent(ev) || super.dispatchTouchEvent(ev);
+        return mRelativeDetector.onTouchEvent(ev) || super.dispatchTouchEvent(ev);
     }
 
     @Override
-    public boolean onForceTouch(float x, float y) {
+    public boolean onAbsoluteTouch(float x, float y, float parameter) {
+        // never reach
+        if (mUsePressure) {
+            mTextView.setText(getString(R.string.hello_world) + " pressure=" + parameter);
+        } else {
+            mTextView.setText(getString(R.string.hello_world) + " size=" + parameter);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onRelativeTouch(float x, float y, float startX, float startY) {
         ++mForceTouch;
         mTextView.setText("event: Force Touch " + mForceTouch);
         mRippleAnimator.cancel();
@@ -302,32 +315,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onForceTap(float x, float y) {
+    public boolean onForceTap(float x, float y) {
         mTextView.setText("event: Force Tap");
+        return true;
     }
 
     @Override
-    public void onForceLongPress(float x, float y) {
+    public boolean onForceLongPress(float x, float y) {
         mTextView.setText("event: Force Long Press");
         if (!mGrabSprite) {
             removeAllSprites();
         }
+        return true;
     }
 
     @Override
     public void performOriginalOnTouchEvent(MotionEvent event) {
         super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public boolean onTouchDown(float x, float y, float parameter) {
-        if (mUsePressure) {
-            mTextView.setText(getString(R.string.hello_world) + " pressure=" + parameter);
-        } else {
-            mTextView.setText(getString(R.string.hello_world) + " size=" + parameter);
-        }
-//        return down.getSize() < 0.23; // test of Knuckle Touch
-        return false;
     }
 
     @Override

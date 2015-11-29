@@ -16,9 +16,11 @@
 
 package jp.tkgktyk.lib;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -29,43 +31,14 @@ import java.util.Map;
 /**
  * Created by tkgktyk on 2015/08/12.
  */
-public class ForceTouchScreenHelper {
-    private static final String TAG = ForceTouchScreenHelper.class.getSimpleName();
-
-    private static final int INVALID_POINTER_ID = -1;
-
-    public interface Callback {
-        boolean onForceTouchBegin(float x, float y, float startX, float startY);
-
-        void onForceTouchDown(float x, float y, int count);
-
-        void onForceTouchUp(float x, float y, int count);
-
-        void onForceTouchEnd(float x, float y, int count);
-
-        void onForceTouchCancel(float x, float y, int count);
-
-        boolean performOriginalOnTouchEvent(MotionEvent event);
-
-        float getParameter(MotionEvent event, int index);
-    }
-
-    public static float getPressure(MotionEvent event, int index) {
-        final int historySize = event.getHistorySize();
-        return historySize == 0 ? event.getPressure(index) :
-                event.getHistoricalPressure(index, historySize - 1);
-    }
-
-    public static float getSize(MotionEvent event, int index) {
-        final int historySize = event.getHistorySize();
-        return historySize == 0 ? event.getSize(index) :
-                event.getHistoricalSize(index, historySize - 1);
-    }
+public class RelativeDetector extends ForceTouchDetector {
+    private static final String TAG = RelativeDetector.class.getSimpleName();
 
     private static final int MSG_START_DETECTOR = 1;
     private static final int MSG_STOP_DETECTOR = 2;
+    private static final int MSG_LONG_PRESS = 3;
 
-    private class TouchState {
+    protected class TouchState {
         class TouchHandler extends Handler {
             @Override
             public void handleMessage(Message msg) {
@@ -76,6 +49,12 @@ public class ForceTouchScreenHelper {
                         break;
                     case MSG_STOP_DETECTOR:
                         window = false;
+                        break;
+                    case MSG_LONG_PRESS:
+                        window = false;
+                        if (mLongClickable && mCallback.onForceLongPress(x, y)) {
+                            onHandled();
+                        }
                         break;
                 }
             }
@@ -89,35 +68,53 @@ public class ForceTouchScreenHelper {
         float hysteresis = INVALID_PARAMETER;
         float startX = 0.0f;
         float startY = 0.0f;
+        float x = 0.0f;
+        float y = 0.0f;
         boolean forceTouch = false;
+        boolean inTapRegion = true;
         boolean window = false;
     }
 
+    private static final int LONG_PRESS_TIMEOUT = ViewConfiguration.getLongPressTimeout();
+
+    private int mTouchSlopeSquare;
     private float mMagnification;
+    private int mExtraLongPressTimeout;
     private int mWindowTimeInMillis;
     private int mWindowDelayInMillis;
+    private boolean mBlockDragging;
+    private boolean mMultipleForceTouch;
     private boolean mRewind;
+    private boolean mLongClickable = true;
     private boolean mAllowUnknownType;
 
     public static final int TYPE_WIGGLE = 1;
     public static final int TYPE_SCRATCH = 2;
     private int mType = TYPE_WIGGLE;
 
-    private final Callback mCallback;
-
     private final Map<Integer, TouchState> mTouchStates = Maps.newHashMap();
 
-    private int mCount;
+    private boolean mHandled;
     private int mActivePointerId;
     private MotionEvent mCancelEvent;
     private final List<MotionEvent> mMotionEvents = Lists.newArrayList();
 
-    public ForceTouchScreenHelper(Callback callback) {
-        mCallback = callback;
+    public RelativeDetector(Callback callback) {
+        super(callback);
+    }
+
+    public void setSensitivity(Context context, int sensitivity) {
+        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop() * sensitivity;
+        mTouchSlopeSquare = touchSlop * touchSlop;
     }
 
     public void setMagnification(float magnification) {
         mMagnification = magnification;
+    }
+
+
+    public void setBlockDragging(boolean blockDragging) {
+        mBlockDragging = blockDragging;
     }
 
     public void setWindowDelayInMillis(int windowDelayInMillis) {
@@ -128,8 +125,20 @@ public class ForceTouchScreenHelper {
         mWindowTimeInMillis = windowTimeInMillis;
     }
 
+    public void setExtraLongPressTimeout(int extraLongPressTimeout) {
+        mExtraLongPressTimeout = extraLongPressTimeout;
+    }
+
+    public void setMultipleForceTouch(boolean multipleForceTouch) {
+        mMultipleForceTouch = multipleForceTouch;
+    }
+
     public void setRewind(boolean rewind) {
         mRewind = rewind;
+    }
+
+    public void setLongClickable(boolean longClickable) {
+        mLongClickable = longClickable;
     }
 
     public void allowUnknownType(boolean allow) {
@@ -142,7 +151,7 @@ public class ForceTouchScreenHelper {
 
     private void cleanUp() {
         mActivePointerId = INVALID_POINTER_ID;
-        mCount = 0;
+        mHandled = false;
         if (mCancelEvent != null) {
             mCancelEvent.recycle();
             mCancelEvent = null;
@@ -152,10 +161,6 @@ public class ForceTouchScreenHelper {
         }
         mTouchStates.clear();
         clearMotionEvents();
-    }
-
-    public int getCount() {
-        return mCount;
     }
 
     private void clearMotionEvents() {
@@ -188,9 +193,16 @@ public class ForceTouchScreenHelper {
         }
     }
 
+    void sendLongPressMessage(TouchState state) {
+        state.mHandler.removeMessages(MSG_LONG_PRESS);
+        state.mHandler.sendEmptyMessageDelayed(MSG_LONG_PRESS,
+                LONG_PRESS_TIMEOUT + mExtraLongPressTimeout);
+    }
+
     void removeMessages(TouchState state) {
         state.mHandler.removeMessages(MSG_START_DETECTOR);
         state.mHandler.removeMessages(MSG_STOP_DETECTOR);
+        state.mHandler.removeMessages(MSG_LONG_PRESS);
     }
 
     private void addTouch(MotionEvent event) {
@@ -201,8 +213,12 @@ public class ForceTouchScreenHelper {
             return;
         }
         TouchState state = new TouchState();
-        state.startX = event.getX(index);
-        state.startY = event.getY(index);
+        final float x = event.getX(index);
+        final float y = event.getY(index);
+        state.startX = x;
+        state.startY = y;
+        state.x = x;
+        state.y = y;
         final float parameter = mCallback.getParameter(event, index);
         sendStartDetectorMessage(state);
         if (state.window) {
@@ -226,7 +242,7 @@ public class ForceTouchScreenHelper {
         return false;
     }
 
-    protected boolean isForceTouch(TouchState state, float parameter) {
+    protected boolean isRelativeTouch(TouchState state, float parameter) {
         switch (mType) {
             case TYPE_WIGGLE:
                 return parameter > state.threshold;
@@ -236,33 +252,45 @@ public class ForceTouchScreenHelper {
         return false;
     }
 
-    private void removeTouchAndPerformTap(int pointerId, float x, float y) {
+    private void removeTouchAndPerformTap(int pointerId) {
         if (mActivePointerId == pointerId) {
-            mCallback.onForceTouchEnd(x, y, mCount);
             TouchState state = mTouchStates.get(pointerId);
+            if (!mHandled && state.inTapRegion) {
+                if (mCallback.onForceTap(state.x, state.y)) {
+                    onHandled();
+                }
+            }
             removeMessages(state);
             mActivePointerId = INVALID_POINTER_ID;
         }
         mTouchStates.remove(pointerId);
     }
 
-    private void onForceTouchStarted(MotionEvent event, int index) {
-        mActivePointerId = event.getPointerId(index);
-        if (mCancelEvent != null) {
-            mCancelEvent.recycle();
-        }
+    private void onHandled() {
         if (mRewind) {
-            // rewind movements
-            for (MotionEvent e : mMotionEvents) {
-                mCallback.performOriginalOnTouchEvent(e);
+            TouchState state = mTouchStates.get(mActivePointerId);
+            if (state != null) {
+                // rewind movements
+                for (MotionEvent event : mMotionEvents) {
+                    mCallback.performOriginalOnTouchEvent(event);
+                }
             }
             clearMotionEvents();
         }
-        mCancelEvent = MotionEvent.obtain(event);
-        mCancelEvent.setAction(MotionEvent.ACTION_CANCEL);
         mCallback.performOriginalOnTouchEvent(mCancelEvent);
         mCancelEvent.recycle();
         mCancelEvent = null;
+        mHandled = true;
+    }
+
+    private void onRelativeTouchStarted(MotionEvent event, int index, TouchState state) {
+        mActivePointerId = event.getPointerId(index);
+        sendLongPressMessage(state);
+        if (mCancelEvent != null) {
+            mCancelEvent.recycle();
+        }
+        mCancelEvent = MotionEvent.obtain(event);
+        mCancelEvent.setAction(MotionEvent.ACTION_CANCEL);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -273,78 +301,76 @@ public class ForceTouchScreenHelper {
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                if (mRewind && mCount == 0) {
-                    mMotionEvents.add(0, MotionEvent.obtain(event));
-                }
-                int count = event.getPointerCount();
-                for (int index = 0; index < count; ++index) {
-                    TouchState state = mTouchStates.get(event.getPointerId(index));
-                    if (state == null) {
-                        continue;
+                if (!mHandled) {
+                    if (!mMultipleForceTouch && mRewind) {
+                        mMotionEvents.add(0, MotionEvent.obtain(event));
                     }
-                    if (state.window) {
+                    int count = event.getPointerCount();
+                    for (int index = 0; index < count; ++index) {
+                        TouchState state = mTouchStates.get(event.getPointerId(index));
+                        if (state == null) {
+                            continue;
+                        }
+                        if (mBlockDragging && !state.inTapRegion) {
+                            continue;
+                        }
                         final float parameter = mCallback.getParameter(event, index);
                         final float x = event.getX(index);
                         final float y = event.getY(index);
-                        if (state.threshold == TouchState.INVALID_PARAMETER) {
-                            setParameter(state, parameter);
-                        } else if (state.forceTouch) {
-                            if (isReset(state, parameter)) {
-                                state.forceTouch = false;
-                                clearMotionEvents();
-                                mCallback.onForceTouchUp(x, y, mCount);
-                            }
-                        } else if (isForceTouch(state, parameter)) {
+                        final float dx = x - state.x;
+                        final float dy = y - state.y;
+                        if ((dx * dx + dy * dy) > mTouchSlopeSquare) {
+//                            Log.d(TAG, "out of tap region");
+                            state.inTapRegion = false;
                             removeMessages(state);
-                            state.forceTouch = true;
-                            ++mCount;
-                            if (mCount == 1) {
-                                onForceTouchStarted(event, index);
-                                if (!mCallback.onForceTouchBegin(x, y, state.startX, state.startY)) {
-                                    mCount = 0;
+                        }
+                        if (state.window) {
+                            if (state.threshold == TouchState.INVALID_PARAMETER) {
+                                setParameter(state, parameter);
+                            } else if (state.forceTouch) {
+                                if (mMultipleForceTouch && isReset(state, parameter)) {
+                                    state.forceTouch = false;
+                                    clearMotionEvents();
+                                    removeMessages(state);
                                 }
-                            } else {
-                                mCallback.onForceTouchDown(x, y, mCount);
+                            } else if (isRelativeTouch(state, parameter)) {
+                                state.x = x;
+                                state.y = y;
+                                state.inTapRegion = true;
+                                state.forceTouch = true;
+                                if (mCallback.onRelativeTouch(x, y, state.startX, state.startY)) {
+                                    onRelativeTouchStarted(event, index, state);
+//                                    break;
+                                }
                             }
                         }
                     }
                 }
                 break;
             }
-            case MotionEvent.ACTION_CANCEL: {
-                cleanUp();
-                final int index = event.getActionIndex();
-                final float x = event.getX(index);
-                final float y = event.getY(index);
-                mCallback.onForceTouchCancel(x, y, mCount);
-                break;
-            }
-            case MotionEvent.ACTION_UP: {
-                final int index = event.getActionIndex();
-                final float x = event.getX(index);
-                final float y = event.getY(index);
-                removeTouchAndPerformTap(event.getPointerId(index), x, y);
+            case MotionEvent.ACTION_CANCEL:
                 cleanUp();
                 break;
-            }
+            case MotionEvent.ACTION_UP:
+                removeTouchAndPerformTap(event.getPointerId(event.getActionIndex()));
+                cleanUp();
+                break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (mActivePointerId == INVALID_POINTER_ID) {
-                    addTouch(event);
-                }
+                addTouch(event);
                 break;
             case MotionEvent.ACTION_POINTER_UP: {
                 final int index = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
                         MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                final float x = event.getX(index);
-                final float y = event.getY(index);
-                removeTouchAndPerformTap(event.getPointerId(index), x, y);
+                final int pointerId = event.getPointerId(index);
+                removeTouchAndPerformTap(pointerId);
                 break;
             }
         }
 
         // disable for multiple force touch detector
-//        return mCount != 0 || mCallback.performOriginalOnTouchEvent(event);
-
-        return mCount != 0;
+//        if (!mHandled) {
+//           return mCallback.performOriginalOnTouchEvent(event);
+//        }
+        return mHandled;
     }
 }
