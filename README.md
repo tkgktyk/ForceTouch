@@ -52,7 +52,7 @@ The concept is to fire actions without releasing your finger like pie, and reali
 Trigger to start Force Touch Screen is Wiggle Touch or Scratch Touch.
 Then FTD sends a broadcast named `FORCE_TOUCH_BEGIN` with touched position on screen.
 And other actions for Force Touch Screen are also notified by broadcasting.
-So any app that receives broadcast can handle this feature, such as Floating Actin.
+So any app that receives broadcast can handle this feature, such as Floating Action.
 
 ### Broadcast Actions
 Syntax of full action name is jp.tkgktyk.xposed.forcetouchdetector.intent.action._NAME_.
