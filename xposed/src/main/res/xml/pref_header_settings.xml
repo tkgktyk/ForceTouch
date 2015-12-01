@@ -15,6 +15,10 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:icon="@drawable/ic_warning_black_24dp"
+        android:title="@string/title_caution"
+        android:summary="@string/summary_caution" />
     <!-- Setting -->
     <PreferenceCategory android:title="@string/category_setting">
         <!-- General -->

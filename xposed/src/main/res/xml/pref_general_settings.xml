@@ -98,7 +98,8 @@
             android:defaultValue="true"
             android:icon="@null"
             android:key="@string/key_show_notification"
-            android:title="@string/title_show_notification"/>
+            android:title="@string/title_show_notification"
+            android:summary="@string/summary_show_notification"/>
         <!-- Hide App Icon -->
         <jp.tkgktyk.lib.SwitchPreference
             android:defaultValue="false"

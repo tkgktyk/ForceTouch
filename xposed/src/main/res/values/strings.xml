@@ -84,6 +84,8 @@
     <string name="note_floating_action">Enable at least one detector</string>
 
     <!-- Header -->
+    <string name="title_caution">Caution</string>
+    <string name="summary_caution">FTD hacks your all touch event and makes your phone gone if you set incorrect value to threshold. Notification is emergency button to open this screen to disable FTD because this mod does not work on them always.</string>
     <!-- Setting -->
     <string name="category_setting">Setting</string>
     <string name="header_general">General</string>
@@ -152,6 +154,7 @@
     <string name="title_show_disabled_action_toast">Disabled-Action Toast</string>
     <string name="title_show_enabled_action_toast">Enabled-Action Toast</string>
     <string name="title_show_notification">Notification</string>
+    <string name="summary_show_notification">You can open this screen from notification to disable FTD even if you set incorrect value to threshold and FTD grabs all touch events.</string>
     <string name="title_hide_app_icon">Hide App Icon</string>
 
     <!-- Floating Action -->
