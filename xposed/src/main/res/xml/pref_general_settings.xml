@@ -61,6 +61,13 @@
             android:key="@string/key_allow_unknown_input_type"
             android:title="@string/title_allow_unknown_input_type"
             android:summary="@string/summary_allow_unknown_input_type"/>
+        <!-- Single Touch Mode -->
+        <jp.tkgktyk.lib.SwitchPreference
+            android:defaultValue="false"
+            android:icon="@null"
+            android:key="@string/key_single_touch_mode"
+            android:title="@string/title_single_touch_mode"
+            android:summary="@string/summary_single_touch_mode"/>
     </PreferenceCategory>
     <!-- Feedback -->
     <PreferenceCategory

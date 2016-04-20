@@ -24,6 +24,7 @@
     <string name="key_extra_long_press_timeout" translatable="false">key_extra_long_press_timeout</string>
     <string name="key_blacklist" translatable="false">key_blacklist</string>
     <string name="key_allow_unknown_input_type" translatable="false">key_allow_unknown_input_type</string>
+    <string name="key_single_touch_mode" translatable="false">key_single_touch_mode</string>
     <!-- Feedback -->
     <string name="key_vibration" translatable="false">key_vibration</string>
     <string name="key_ripple_color" translatable="false">key_ripple_color</string>

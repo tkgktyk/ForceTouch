@@ -36,6 +36,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -475,7 +476,7 @@ public class FloatingAction implements View.OnClickListener {
             fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionButtonColor));
             button = fab;
         } else {
-            LocalFloatingActionButton fab = new LocalFloatingActionButton(context);
+            FloatingActionButton fab = new FloatingActionButton(context);
             fab.setBackgroundTintList(ColorStateList.valueOf(mSettings.floatingActionButtonColor));
             button = fab;
         }

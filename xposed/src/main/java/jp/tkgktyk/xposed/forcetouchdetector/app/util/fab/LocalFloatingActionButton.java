@@ -153,7 +153,7 @@ public class LocalFloatingActionButton extends ImageView {
         }
 
         final int maxContentSize = (int) getResources().getDimension(
-                bigContent? R.dimen.local_fab_content_size: R.dimen.design_fab_content_size);
+                bigContent? R.dimen.local_fab_content_size: R.dimen.design_fab_image_size);
         mContentPadding = (getSizeDimension() - maxContentSize) / 2;
 
         mImpl.setBackgroundDrawable(background, mBackgroundTint,

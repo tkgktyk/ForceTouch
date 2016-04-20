@@ -343,6 +343,7 @@ public class ModForceTouchScreen extends XposedModule {
             mForceTouchScreenHelper.setType(ForceTouchScreenHelper.TYPE_WIGGLE);
             mForceTouchScreenHelper.setRewind(false);
             mForceTouchScreenHelper.allowUnknownType(mSettings.allowUnknownInputType);
+            mForceTouchScreenHelper.setCancelByMultiTouch(mSettings.singleTouchMode);
         }
 
         @Override
@@ -428,6 +429,7 @@ public class ModForceTouchScreen extends XposedModule {
                 mRelativeDetector.setBlockDragging(true);
                 mRelativeDetector.setMagnification(mSettings.scratchTouchMagnification);
                 mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setCancelByMultiTouch(mSettings.singleTouchMode);
                 mRelativeDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mRelativeDetector.setType(RelativeDetector.TYPE_SCRATCH);
                 mRelativeDetector.setRewind(false);

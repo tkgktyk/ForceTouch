@@ -913,6 +913,7 @@ public class ModForceTouch extends XposedModule {
                 mRelativeDetector.setBlockDragging(true);
                 mRelativeDetector.setMagnification(mSettings.wiggleTouchMagnification);
                 mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setCancelByMultiTouch(mSettings.singleTouchMode);
                 mRelativeDetector.setLongClickable(mSettings.wiggleTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mRelativeDetector.setType(RelativeDetector.TYPE_WIGGLE);
                 mRelativeDetector.setRewind(false);
@@ -970,6 +971,7 @@ public class ModForceTouch extends XposedModule {
                 mRelativeDetector.setBlockDragging(true);
                 mRelativeDetector.setMagnification(mSettings.scratchTouchMagnification);
                 mRelativeDetector.setMultipleForceTouch(false);
+                mRelativeDetector.setCancelByMultiTouch(mSettings.singleTouchMode);
                 mRelativeDetector.setLongClickable(mSettings.scratchTouchActionLongPress.type != ActionInfo.TYPE_NONE);
                 mRelativeDetector.setType(RelativeDetector.TYPE_SCRATCH);
                 mRelativeDetector.setRewind(false);

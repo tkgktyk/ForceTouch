@@ -84,6 +84,7 @@ public class RelativeDetector extends ForceTouchDetector {
     private int mWindowDelayInMillis;
     private boolean mBlockDragging;
     private boolean mMultipleForceTouch;
+    private boolean mCancelByMultiTouch;
     private boolean mRewind;
     private boolean mLongClickable = true;
     private boolean mAllowUnknownType;
@@ -95,6 +96,7 @@ public class RelativeDetector extends ForceTouchDetector {
     private final Map<Integer, TouchState> mTouchStates = Maps.newHashMap();
 
     private boolean mHandled;
+    private boolean mCanceled;
     private int mActivePointerId;
     private MotionEvent mCancelEvent;
     private final List<MotionEvent> mMotionEvents = Lists.newArrayList();
@@ -133,6 +135,10 @@ public class RelativeDetector extends ForceTouchDetector {
         mMultipleForceTouch = multipleForceTouch;
     }
 
+    public void setCancelByMultiTouch(boolean cancel) {
+        mCancelByMultiTouch = cancel;
+    }
+
     public void setRewind(boolean rewind) {
         mRewind = rewind;
     }
@@ -152,6 +158,7 @@ public class RelativeDetector extends ForceTouchDetector {
     private void cleanUp() {
         mActivePointerId = INVALID_POINTER_ID;
         mHandled = false;
+        mCanceled = true;
         if (mCancelEvent != null) {
             mCancelEvent.recycle();
             mCancelEvent = null;
@@ -294,9 +301,14 @@ public class RelativeDetector extends ForceTouchDetector {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getActionMasked()) {
+        final int action = event.getActionMasked();
+        if (mCanceled && action != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+        switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 cleanUp();
+                mCanceled = false;
                 addTouch(event);
                 break;
             }
@@ -356,7 +368,11 @@ public class RelativeDetector extends ForceTouchDetector {
                 cleanUp();
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                addTouch(event);
+                if (mCancelByMultiTouch) {
+                    cleanUp();
+                } else {
+                    addTouch(event);
+                }
                 break;
             case MotionEvent.ACTION_POINTER_UP: {
                 final int index = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>

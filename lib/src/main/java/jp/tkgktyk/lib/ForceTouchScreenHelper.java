@@ -98,6 +98,7 @@ public class ForceTouchScreenHelper {
     private int mWindowDelayInMillis;
     private boolean mRewind;
     private boolean mAllowUnknownType;
+    private boolean mCancelByMultiTouch;
 
     public static final int TYPE_WIGGLE = 1;
     public static final int TYPE_SCRATCH = 2;
@@ -107,6 +108,7 @@ public class ForceTouchScreenHelper {
 
     private final Map<Integer, TouchState> mTouchStates = Maps.newHashMap();
 
+    private boolean mCanceled;
     private int mCount;
     private int mActivePointerId;
     private MotionEvent mCancelEvent;
@@ -140,9 +142,14 @@ public class ForceTouchScreenHelper {
         mType = type;
     }
 
+    public void setCancelByMultiTouch(boolean cancel) {
+        mCancelByMultiTouch = cancel;
+    }
+
     private void cleanUp() {
         mActivePointerId = INVALID_POINTER_ID;
         mCount = 0;
+        mCanceled = true;
         if (mCancelEvent != null) {
             mCancelEvent.recycle();
             mCancelEvent = null;
@@ -266,9 +273,14 @@ public class ForceTouchScreenHelper {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getActionMasked()) {
+        final int action = event.getActionMasked();
+        if (mCanceled && action != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+        switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 cleanUp();
+                mCanceled = false;
                 addTouch(event);
                 break;
             }
@@ -328,7 +340,13 @@ public class ForceTouchScreenHelper {
                 break;
             }
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (mActivePointerId == INVALID_POINTER_ID) {
+                if (mCancelByMultiTouch) {
+                    cleanUp();
+                    final int index = event.getActionIndex();
+                    final float x = event.getX(index);
+                    final float y = event.getY(index);
+                    mCallback.onForceTouchCancel(x, y, mCount);
+                } else if (mActivePointerId == INVALID_POINTER_ID) {
                     addTouch(event);
                 }
                 break;
